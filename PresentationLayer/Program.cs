@@ -1,3 +1,5 @@
+using Microsoft.EntityFrameworkCore;
+
 namespace PresentationLayer
 {
     public class Program
@@ -8,6 +10,8 @@ namespace PresentationLayer
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddDbContext<ELearningDbContext>(options =>
+               options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             var app = builder.Build();
 
