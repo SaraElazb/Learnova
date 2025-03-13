@@ -39,6 +39,7 @@ namespace PresentationLayer.Controllers
             return View(courseDTOs);
         }
 
+      
         public async Task<IActionResult> UserIndex(int? categoryId)
         {
             // Fetch all active categories

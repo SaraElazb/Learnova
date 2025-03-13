@@ -20,7 +20,7 @@ namespace PresentationLayer.Controllers
 
         public IActionResult Index()
         {
-            return View();
+            return View("UserIndex");
         }
 
         public IActionResult Privacy()

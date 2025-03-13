@@ -46,22 +46,25 @@
             <hr />
             <div class="close-btn" onclick="toggleSidebar()">&times;</div>
         </div>
-        @if (categories != null)
-        {
-            foreach (var category in categories)
+        <ul>
+            <li>
+                <a href="@Url.Action("UserIndex", "Course")">All Categories</a>
+            </li>
+            @if (categories != null)
             {
-                <label class="category-item">
-                    <input type="checkbox" value="@category.Value" onchange="filterCourses()" />
-                    <span class="custom-checkmark"></span>
-                    @category.Text
-                </label>
-
+                @foreach (var category in categories)
+                {
+                    <li>
+                        <a href="@Url.Action("UserIndex", "Course", new { categoryId = category.Value })">
+                            @category.Text
+                        </a>
+                    </li>
+                }
             }
-        }
-        <button id="clearFilters" onclick="window.location='@Url.Action("UserIndex","Course")'">
+        </ul>
+        <button id="clearFilters" onclick="window.location='@Url.Action("UserIndex", "Course")'">
             Clear Filters
         </button>
-
     </div>
 
     <div class="course-list" id="course-list">
@@ -95,6 +98,6 @@
     const coursesData = @Html.Raw(JsonSerializer.Serialize(Model));
 </script>
 
-<script src="~/js/style.js"></script>
+<script src="~/js/script.js"></script>
 </body>
 </html>
