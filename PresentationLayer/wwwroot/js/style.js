@@ -19,7 +19,7 @@ function renderCourses(filteredCourses) {
             <div class="course-info">
                 <h3 class="course-title">${course.Title}</h3>
                 <div class="instructor-price">
-                    <p class="course-instructor">${course.Instructor || ''}</p>
+                    <p class="course-instructor">${course.CategoryName || ''}</p>
                     <div class="course-price">${course.Price}</div>
                 </div>
             </div>
@@ -69,18 +69,19 @@ function changePage(page) {
 function filterCourses() {
     const searchInput = document.getElementById("searchInput").value.toLowerCase();
 
-    // Convert selected checkbox values to lowercase
+    // Get all checked checkbox values (already converted to lowercase)
     const selectedCategories = Array.from(
         document.querySelectorAll('.sidebar input[type="checkbox"]:checked')
     ).map(cb => cb.value.toLowerCase());
 
     const filteredCourses = courses.filter(course => {
-        // Ensure Title is checked in lowercase
+        // Check if the course title matches the search input
         const matchesSearch = course.Title.toLowerCase().includes(searchInput);
 
-        // Use either CourseDTO property "CategoryName" or "Category" and convert to lowercase
-        const courseCategory = (course.Category || "").toLowerCase();
+        // Use the flattened property 'CategoryName' instead of a nested object
+        const courseCategory = (course.CategoryName || "").toLowerCase();
 
+        // Allow the course if no category filter is applied or if it matches the selected categories
         const matchesCategory =
             selectedCategories.length === 0 ||
             selectedCategories.includes(courseCategory);
@@ -91,6 +92,8 @@ function filterCourses() {
     currentPage = 1; // Reset to first page when filtering
     renderCourses(filteredCourses);
 }
+
+
 
 // Clear search input and category filters
 function clearFilters() {
