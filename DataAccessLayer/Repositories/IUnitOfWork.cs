@@ -25,7 +25,7 @@ namespace DataAccessLayer.Repositories
         IGenericRepository<Studies> Studies { get; }
         IGenericRepository<Submission> Submissions { get; }
 
-        IGenericRepository<Course> CourseRepository { get; }
+        //IGenericRepository<Course> CourseRepository { get; }
         Task<int> CompleteAsync();
 
        

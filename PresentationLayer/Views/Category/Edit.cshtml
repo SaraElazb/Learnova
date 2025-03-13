@@ -1,0 +1,35 @@
+﻿@model BusinessLogicLayer.DTOs.CategoryDtos.CategoryRequest
+
+@{
+    ViewData["Title"] = "Edit Category";
+}
+
+<div class="container mt-4">
+    <h2>✏️ Edit Category</h2>
+
+    <form asp-action="Edit" method="post" enctype="multipart/form-data" class="card p-4 shadow-sm">
+        <input type="hidden" asp-for="Category_Name" />
+
+        <div class="mb-3">
+            <label asp-for="Category_Name" class="form-label">Category Name</label>
+            <input asp-for="Category_Name" class="form-control">
+            <span asp-validation-for="Category_Name" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Description" class="form-label">Description</label>
+            <textarea asp-for="Description" class="form-control"></textarea>
+            <span asp-validation-for="Description" class="text-danger"></span>
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Image" class="form-label">Upload New Image</label>
+            <input type="file" asp-for="Image" class="form-control">
+            <span asp-validation-for="Image" class="text-danger"></span>
+        </div>
+
+        <button type="submit" class="btn btn-warning">💾 Save Changes</button>
+        <a asp-action="Index" class="btn btn-secondary">🔙 Back</a>
+    </form>
+</div>
+

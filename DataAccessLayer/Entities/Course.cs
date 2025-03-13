@@ -14,8 +14,11 @@ public class Course
     public string Description { get; set; }
 
     public decimal Price { get; set; }
+    public string? ImagePath { get; set; }
 
     public DateTime CreatedDate { get; set; }
+
+    public bool IsActive { get; set; } = true;
 
     public int Category_ID { get; set; }
     

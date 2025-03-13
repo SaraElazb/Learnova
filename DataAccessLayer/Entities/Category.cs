@@ -11,5 +11,9 @@ public class Category
 
     public string Description { get; set; }
 
+    public string? ImagePath { get; set; }
+
+    public bool IsActive { get; set; } = true;
+
     public ICollection<Course> Courses { get; set; }
 }

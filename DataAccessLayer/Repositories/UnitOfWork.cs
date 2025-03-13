@@ -9,30 +9,30 @@ namespace DataAccessLayer.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly DbContext _context;
+        private readonly ELearningDbContext _context;
 
-        public IGenericRepository<User> Users { get; }
-        public IGenericRepository<Course> Courses { get; }
-        public IGenericRepository<Quiz> Quizzes { get; }
-        public IGenericRepository<Question> Questions { get; }
-        public IGenericRepository<Lesson> Lessons { get; }
-        public IGenericRepository<Enrollment> Enrollments { get; }
-        public IGenericRepository<Category> Categories { get; }
-        public IGenericRepository<Answer> Answers { get; }
-        public IGenericRepository<Certificate> Certificates { get; }
-        public IGenericRepository<Notification> Notifications { get; }
-        public IGenericRepository<Payment> Payments { get; }
-        public IGenericRepository<Receive> Receives { get; }
-        public IGenericRepository<Review> Reviews { get; }
-        public IGenericRepository<Role> Roles { get; }
-        public IGenericRepository<Studies> Studies { get; }
-        public IGenericRepository<Submission> Submissions { get; }
+        public IGenericRepository<User> Users { get; private set; }
+        public IGenericRepository<Course> Courses { get; private set; }
+        public IGenericRepository<Quiz> Quizzes { get; private set; }
+        public IGenericRepository<Question> Questions { get; private set; }
+        public IGenericRepository<Lesson> Lessons { get; private set; }
+        public IGenericRepository<Enrollment> Enrollments { get; private set; }
+        public IGenericRepository<Category> Categories { get; private set; }
+        public IGenericRepository<Answer> Answers { get; private set; }
+        public IGenericRepository<Certificate> Certificates { get; private set; }
+        public IGenericRepository<Notification> Notifications { get; private set; }
+        public IGenericRepository<Payment> Payments { get; private set; }
+        public IGenericRepository<Receive> Receives { get; private set; }
+        public IGenericRepository<Review> Reviews { get; private set; }
+        public IGenericRepository<Role> Roles { get; private set; }
+        public IGenericRepository<Studies> Studies { get; private set; }
+        public IGenericRepository<Submission> Submissions { get; private set; }
 
-        public object CourseRepository => throw new NotImplementedException();
+        //public object CourseRepository => throw new NotImplementedException();
 
-        IGenericRepository<Course> IUnitOfWork.CourseRepository => throw new NotImplementedException();
+        //IGenericRepository<Course> IUnitOfWork.CourseRepository => throw new NotImplementedException();
 
-        public UnitOfWork(DbContext context)
+        public UnitOfWork(ELearningDbContext context)
         {
             _context = context;
             Users = new GenericRepository<User>(_context);

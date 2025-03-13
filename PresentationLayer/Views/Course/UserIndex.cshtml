@@ -1,0 +1,41 @@
+﻿@model IEnumerable<BusinessLogicLayer.DTOs.CourseDtos.CourseDTO>
+
+@{
+    ViewData["Title"] = "Available Courses";
+}
+
+<h2 class="text-center">Available Courses</h2>
+
+<!-- Category Filter Form -->
+<form method="get" class="mb-3">
+    <label>Filter by Category:</label>
+    <select name="categoryId" class="form-control" onchange="this.form.submit()">
+        <option value="">-- All Categories --</option>
+        @foreach (var category in ViewBag.Categories)
+        {
+            <option value="@category.Value" selected="@((ViewContext.HttpContext.Request.Query["categoryId"] == category.Value).ToString().ToLower())">
+                @category.Text
+            </option>
+        }
+    </select>
+</form>
+
+<div class="row">
+    @foreach (var course in Model)
+    {
+        <div class="col-md-4">
+            <div class="card mb-3">
+                <img src="@course.ImagePath" class="card-img-top" alt="Course Image">
+                <div class="card-body">
+                    <h5 class="card-title">@course.Title</h5>
+                    <p class="card-text">@course.Description</p>
+                    <p><strong>Price:</strong> $@course.Price</p>
+                    <p><strong>Rating:</strong> @course.Rating / 5</p>
+                    <p><strong>Category:</strong> @course.CategoryName</p>
+                    <a class="btn btn-primary" asp-action="Details" asp-route-id="@course.Course_ID">View Details</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

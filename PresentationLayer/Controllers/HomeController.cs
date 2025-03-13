@@ -1,7 +1,9 @@
-﻿using BusinessLogicLayer; // تأكدي إن namespace الصح مضاف
-using DataAccessLayer; // لو محتاجة التعامل مع الكيانات
+﻿using BusinessLogicLayer; 
+using DataAccessLayer;
 using DataAccessLayer.Repositories;
+using Grad_Project.Models;
 using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
 
 namespace PresentationLayer.Controllers
 {
@@ -18,8 +20,18 @@ namespace PresentationLayer.Controllers
 
         public IActionResult Index()
         {
-            var courses = _unitOfWork.CourseRepository.GetAllAsync(); // جلب كل الكورسات
-            return View(courses);
+            return View();
+        }
+
+        public IActionResult Privacy()
+        {
+            return View();
+        }
+
+        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
+        public IActionResult Error()
+        {
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
 }

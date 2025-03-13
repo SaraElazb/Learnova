@@ -170,6 +170,14 @@ using System;
                 .Property(c => c.Price)
                 .HasColumnType("decimal(18,2)");
 
+            modelBuilder.Entity<Course>()
+                .Property(c => c.IsActive)
+                .HasDefaultValue(true);
+
+            modelBuilder.Entity<Category>()
+                .Property(c => c.IsActive)
+                .HasDefaultValue(true);
+
             modelBuilder.Entity<Payment>()
                 .Property(p => p.Amount)
                 .HasColumnType("decimal(18,2)");
