@@ -1,5 +1,4 @@
-﻿
-@model IEnumerable<BusinessLogicLayer.DTOs.CourseDtos.CourseDTO>
+﻿@model IEnumerable<BusinessLogicLayer.DTOs.CourseDtos.CourseDTO>
 @{
     ViewBag.Title = "Courses";
     var categories = ViewBag.Categories as IEnumerable<SelectListItem>;
@@ -14,12 +13,15 @@
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>@ViewBag.Title</title>
-    <link rel="stylesheet" href="~/css/style.css" />
+    <link rel="stylesheet" href="~/css/userindex.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
 <div class="navbar">
     <div class="logo">
-        <img src="~/assets/logo.png" alt="Logo" />
+        <img src="~/assets/logonoslogan.png" alt="Logo" />
     </div>
     <div class="nav-links">
         <a href="@Url.Action("UserIndex", "Course")">Home</a>
@@ -27,16 +29,27 @@
         <a href="#">About Us</a>
         <a href="#">Contact</a>
     </div>
+    <!-- Mobile toggle icon for nav-links -->
+    <button class="nav-toggle" onclick="toggleNavLinks(event)">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+             class="size-6">
+            <path stroke-linecap="round" stroke-linejoin="round"
+                  d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25" />
+        </svg>
+    </button>
+
 </div>
 
 <div class="header">
-    <h1>Browse in E-Learning</h1>
-    <p>Discover learning content designed to help you boost your career.</p>
+    <h1>Unlock Your Potential with LearnNova</h1>
+    <p>Access a diverse library of learning content thoughtfully created to accelerate your professional growth and career advancement.</p>
     <div class="search-bar">
         <input type="text" id="searchInput" placeholder="Search for courses..." oninput="filterCourses()" />
     </div>
 </div>
 
+<!-- Button to toggle filters sidebar (remains unchanged) -->
 <button class="sidebar-toggle" onclick="toggleSidebar()">Show Filters</button>
 
 <div class="container">
@@ -51,40 +64,18 @@
             foreach (var category in categories)
             {
                 <label class="category-item">
-                    <input type="checkbox" value="@category.Value" onchange="filterCourses()" />
+                    <input type="checkbox" value="@category.Text" onchange="filterCourses()" />
                     <span class="custom-checkmark"></span>
                     @category.Text
                 </label>
-
             }
         }
         <button id="clearFilters" onclick="window.location='@Url.Action("UserIndex","Course")'">
             Clear Filters
         </button>
-
     </div>
 
     <div class="course-list" id="course-list">
-        @if (Model != null && Model.Any())
-        {
-            foreach (var course in Model)
-            {
-                <a class="course-item" href="@Url.Action("Details", "Course", new { id = course.Course_ID })">
-                    <img src="@course.ImagePath" alt="Course Image" />
-                    <div class="course-info">
-                        <h3 class="course-title">@course.Title</h3>
-                        <div class="instructor-price">
-                            <p class="course-instructor">@course.</p>
-                            <div class="course-price">@course.Price</div>
-                        </div>
-                    </div>
-                </a>
-            }
-        }
-        else
-        {
-            <p>No courses found for the selected category.</p>
-        }
     </div>
 
     <div id="pagination" class="pagination"></div>
@@ -95,6 +86,6 @@
     const coursesData = @Html.Raw(JsonSerializer.Serialize(Model));
 </script>
 
-<script src="~/js/style.js"></script>
+<script src="~/js/userindex.js"></script>
 </body>
 </html>

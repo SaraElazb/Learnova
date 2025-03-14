@@ -19,8 +19,8 @@ function renderCourses(filteredCourses) {
             <div class="course-info">
                 <h3 class="course-title">${course.Title}</h3>
                 <div class="instructor-price">
-                    <p class="course-instructor">${course.Instructor || ''}</p>
-                    <div class="course-price">${course.Price}</div>
+                    <p class="course-instructor">${course.CategoryName || ''}</p>
+                    <div class="course-price">${course.Price}$</div>
                 </div>
             </div>
         `;
@@ -69,18 +69,14 @@ function changePage(page) {
 function filterCourses() {
     const searchInput = document.getElementById("searchInput").value.toLowerCase();
 
-    // Convert selected checkbox values to lowercase
+    // Get all checked checkbox values (converted to lowercase)
     const selectedCategories = Array.from(
         document.querySelectorAll('.sidebar input[type="checkbox"]:checked')
     ).map(cb => cb.value.toLowerCase());
 
     const filteredCourses = courses.filter(course => {
-        // Ensure Title is checked in lowercase
         const matchesSearch = course.Title.toLowerCase().includes(searchInput);
-
-        // Use either CourseDTO property "CategoryName" or "Category" and convert to lowercase
-        const courseCategory = (course.Category || "").toLowerCase();
-
+        const courseCategory = (course.CategoryName || "").toLowerCase();
         const matchesCategory =
             selectedCategories.length === 0 ||
             selectedCategories.includes(courseCategory);
@@ -99,11 +95,39 @@ function clearFilters() {
     filterCourses();
 }
 
-// Toggle the sidebar (for mobile views)
+// Toggle the filters sidebar (for categories)
 function toggleSidebar() {
     const sidebar = document.getElementById("sidebar");
     sidebar.classList.toggle("active");
 }
+
+// Toggle the navigation links sidebar on mobile
+function toggleNavLinks(event) {
+    event.stopPropagation(); // Prevent click from bubbling up
+    const navLinks = document.querySelector('.nav-links');
+    navLinks.classList.toggle('active');
+}
+
+
+// Close the nav-links sidebar when clicking outside of it
+document.addEventListener('click', function(e) {
+    const navLinks = document.querySelector('.nav-links');
+    const navToggle = document.querySelector('.nav-toggle');
+    if (navLinks && navLinks.classList.contains('active') &&
+        !navLinks.contains(e.target) && !navToggle.contains(e.target)) {
+        navLinks.classList.remove('active');
+    }
+});
+
+// Close the nav-links sidebar on window resize if width > 768px
+window.addEventListener('resize', function() {
+    if (window.innerWidth > 768) {
+        const navLinks = document.querySelector('.nav-links');
+        if (navLinks && navLinks.classList.contains('active')) {
+            navLinks.classList.remove('active');
+        }
+    }
+});
 
 // On window load, initialize the courses array from the injected coursesData and render the courses
 window.onload = () => {

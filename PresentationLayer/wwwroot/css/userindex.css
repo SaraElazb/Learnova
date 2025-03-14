@@ -14,11 +14,10 @@ html {
 }
 
 body {
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Noto Sans','Roboto', sans-serif;
     margin: 0;
     padding: 0;
-    /* Reduced from 70px to 60px to account for a smaller navbar height */
-    padding-top: 60px;
+    padding-top: 60px; /* Updated for navbar height */
     background: #f5f5f5;
     color: #333;
 }
@@ -30,29 +29,25 @@ body {
     justify-content: space-between;
     align-items: center;
     background: linear-gradient(90deg, #1c1c1e, #2c2c30);
-    /* Reduced padding from 10px 30px to 8px 20px */
     padding: 8px 20px;
     color: white;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
-    position: fixed;
+    position: fixed !important;
     width: 100%;
     top: 0;
     z-index: 1000;
-    /* border-bottom: 1px solid #515151; */
 }
 
-/* Smaller logo size */
 .logo img {
-    /* Reduced from 90px to 60px */
-    width: 60px;
+    width: 130px;
 }
 
 .navbar .logo {
     font-size: 2.2rem;
-    /* Slightly smaller if you like */
     font-weight: bold;
 }
 
+/* The nav-links are visible on larger screens */
 .navbar .nav-links {
     display: flex;
     gap: 20px;
@@ -67,7 +62,6 @@ body {
     transition: opacity 0.3s;
 }
 
-/* Hover underline animation */
 .navbar .nav-links a::after {
     content: "";
     position: absolute;
@@ -87,20 +81,21 @@ body {
     opacity: 0.8;
 }
 
+/* Mobile toggle icon (hidden on larger screens) */
+.nav-toggle {
+    display: none;
+}
+
 /* HEADER */
 .header {
     background: var(--main-color);
     color: white;
-    /* Reduced padding from 40px 20px to 20px */
     padding: 50px 20px;
     text-align: center;
-    /* Adds a small gap beneath the navbar */
-    margin-top: 20px;
 }
 
 .header h1 {
     margin: 0;
-    /* Slightly smaller font size if desired */
     font-size: 2.5rem;
 }
 
@@ -116,7 +111,6 @@ body {
 
 .search-bar input[type="text"] {
     padding: 1.5rem;
-    /* Reduced width from 60% to 50% to make it narrower */
     width: 50%;
     border-radius: 2rem;
     border: none;
@@ -129,7 +123,7 @@ body {
     box-shadow: 0 0 8px var(--accent-color);
 }
 
-/* SIDEBAR TOGGLE BUTTON (MOBILE) */
+/* SIDEBAR TOGGLE BUTTON (for filters) */
 .sidebar-toggle {
     display: none;
     background-color: var(--accent-color);
@@ -155,7 +149,7 @@ body {
     position: relative;
 }
 
-/* SIDEBAR */
+/* SIDEBAR (Filters) */
 .sidebar {
     width: 15%;
     min-width: 180px;
@@ -234,7 +228,7 @@ body {
     transition: border-color 0.3s;
 }
 
-.category-item input[type="checkbox"]:checked+.custom-checkmark {
+.category-item input[type="checkbox"]:checked + .custom-checkmark {
     background-color: var(--accent-color);
     border-color: var(--accent-color);
     background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 13 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 5l3.5 3L12 1' stroke='%23fff' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
@@ -267,7 +261,7 @@ body {
     margin: 2rem auto;
     display: grid;
     grid-template-columns: repeat(auto-fit, 300px);
-    gap: 16px;
+    gap: 24px;
     justify-content: center;
 }
 
@@ -277,7 +271,6 @@ body {
     background: white;
     margin-bottom: 10px;
     border-radius: 20px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
     height: 20rem;
     overflow: hidden;
     text-decoration: none;
@@ -347,7 +340,6 @@ body {
         opacity: 0;
         transform: translateY(10px);
     }
-
     to {
         opacity: 1;
         transform: translateY(0);
@@ -359,46 +351,108 @@ body {
     .sidebar-toggle {
         display: inline-block;
     }
-
     .sidebar {
         display: none;
     }
-
     .sidebar.active {
         display: block;
         position: fixed;
-        top: 0;
+        top: 0; /* Offset to appear below the navbar */
         left: 0;
         width: 280px;
         height: 100vh;
-        z-index: 999;
+        z-index: 1100;
         overflow-y: auto;
         background-color: #fff;
+        transition: transform 0.3s ease;
     }
-
     .close-btn {
         display: block;
     }
-
     .container {
         flex-direction: column;
         padding: 20px;
     }
-
     .course-list {
         width: 100%;
         margin: 2rem auto;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     }
-
     .sidebar-header hr,
     .sidebar-header h3 {
         display: none;
     }
-
     .course-item {
         height: auto;
         margin-bottom: 20px;
+    }
+}
+
+@media (max-width: 768px) {
+    body{
+        padding: 0;
+    }
+    /* Hide nav-links from the navbar on small screens */
+    .nav-links {
+        display: none !important;
+    }
+
+    .nav-links.active {
+        display: block !important;
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 280px;
+        height: 100vh;
+        background-color: #fff;
+        z-index: 1000;
+        padding: 20px;
+        box-shadow: -2px 0 8px rgba(0, 0, 0, 0.1);
+        transform: translateX(100%); /* Start off-screen */
+        transition: transform 0.3s ease-in-out; /* Animation for sliding */
+    }
+
+    .nav-links.active {
+        transform: translateX(0); /* Slide in when active */
+    }
+
+    .nav-links.active a {
+        display: block; /* Stack links vertically */
+        color: #333; /* Dark text for white background */
+        font-size: 1.6rem; /* Slightly larger for readability */
+        padding: 15px 10px; /* More padding for touch targets */
+        border-bottom: 1px solid #eee; /* Separator line */
+        transition: background 0.3s, color 0.3s; /* Smooth hover effect */
+    }
+
+    .nav-links.active a:last-child {
+        border-bottom: none; /* Remove border from last link */
+    }
+
+    .nav-links.active a:hover {
+        background: #f5f5f5; /* Light gray hover effect */
+        color: var(--accent-color); /* Accent color on hover */
+        opacity: 1; /* Override desktop hover */
+    }
+
+    .nav-links.active a::after {
+        display: none; /* Remove underline animation in mobile */
+    }
+
+    .nav-toggle {
+        display: block;
+        background: transparent;
+        border: none;
+        position: absolute;
+        right: 20px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+    }
+
+    .navbar {
+        justify-content: center;
+        position: relative;
     }
 }
 
@@ -406,10 +460,9 @@ body {
     .course-list {
         grid-template-columns: 1fr;
     }
-
     /* Make the logo even smaller on mobile */
     .logo img {
-        width: 50px;
+        width: 110px;
     }
 }
 
@@ -438,4 +491,14 @@ body {
 
 .pagination button.active {
     background: var(--accent-color);
+}
+
+.nav-toggle svg {
+    stroke: #fff; /* Make sure lines are white */
+    fill: none;   /* or fill: #fff if needed */
+    width: 24px;
+    height: 24px;
+}
+.nav-toggle {
+    z-index: 1100; /* above the navbar’s 1000 */
 }
