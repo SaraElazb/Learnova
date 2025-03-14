@@ -357,7 +357,7 @@ body {
     .sidebar.active {
         display: block;
         position: fixed;
-        top: 0; /* Offset to appear below the navbar */
+        top: 0; 
         left: 0;
         width: 280px;
         height: 100vh;
@@ -378,8 +378,7 @@ body {
         margin: 2rem auto;
         grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
     }
-    .sidebar-header hr,
-    .sidebar-header h3 {
+    .sidebar-header hr {
         display: none;
     }
     .course-item {
@@ -390,7 +389,7 @@ body {
 
 @media (max-width: 768px) {
     body{
-        padding: 0;
+        padding-top: 64px;
     }
     /* Hide nav-links from the navbar on small screens */
     .nav-links {
@@ -413,30 +412,30 @@ body {
     }
 
     .nav-links.active {
-        transform: translateX(0); /* Slide in when active */
+        transform: translateX(0); 
     }
 
     .nav-links.active a {
-        display: block; /* Stack links vertically */
-        color: #333; /* Dark text for white background */
-        font-size: 1.6rem; /* Slightly larger for readability */
-        padding: 15px 10px; /* More padding for touch targets */
-        border-bottom: 1px solid #eee; /* Separator line */
-        transition: background 0.3s, color 0.3s; /* Smooth hover effect */
+        display: block; 
+        color: #333; 
+        font-size: 1.6rem; 
+        padding: 15px 10px;
+        border-bottom: 1px solid #eee;
+        transition: background 0.3s, color 0.3s; 
     }
 
     .nav-links.active a:last-child {
-        border-bottom: none; /* Remove border from last link */
+        border-bottom: none; 
     }
 
     .nav-links.active a:hover {
-        background: #f5f5f5; /* Light gray hover effect */
-        color: var(--accent-color); /* Accent color on hover */
-        opacity: 1; /* Override desktop hover */
+        background: #f5f5f5; 
+        color: var(--accent-color);
+        opacity: 1; 
     }
 
     .nav-links.active a::after {
-        display: none; /* Remove underline animation in mobile */
+        display: none; 
     }
 
     .nav-toggle {
@@ -460,7 +459,7 @@ body {
     .course-list {
         grid-template-columns: 1fr;
     }
-    /* Make the logo even smaller on mobile */
+  
     .logo img {
         width: 110px;
     }
@@ -494,7 +493,7 @@ body {
 }
 
 .nav-toggle svg {
-    stroke: #fff; /* Make sure lines are white */
+    stroke: #fff; 
     fill: none;   /* or fill: #fff if needed */
     width: 24px;
     height: 24px;
