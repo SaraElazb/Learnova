@@ -1,4 +1,6 @@
 using BusinessLogicLayer.Helpers;
+using BusinessLogicLayer.Manager.CategoryManager;
+using BusinessLogicLayer.Manager.CourseManager;
 using DataAccessLayer.Repositories;
 using Microsoft.EntityFrameworkCore;
 
@@ -15,6 +17,8 @@ namespace PresentationLayer
             builder.Services.AddAutoMapper(typeof(MappingProfile));
             builder.Services.AddAutoMapper(typeof(Program));
             builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
+            builder.Services.AddScoped<ICourseManager, CourseManager>();
+            builder.Services.AddScoped<ICategoryManager, CategoryManager>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddDbContext<ELearningDbContext>(options =>
                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
