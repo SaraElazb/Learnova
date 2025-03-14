@@ -40,7 +40,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("QuestionID");
 
-                    b.ToTable("Answers");
+                    b.ToTable("Answers", (string)null);
                 });
 
             modelBuilder.Entity("Category", b =>
@@ -69,7 +69,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Category_ID");
 
-                    b.ToTable("Categories");
+                    b.ToTable("Categories", (string)null);
                 });
 
             modelBuilder.Entity("Certificate", b =>
@@ -88,7 +88,7 @@ namespace DataAccessLayer.Migrations
                     b.HasIndex("EnrollmentID")
                         .IsUnique();
 
-                    b.ToTable("Certificates");
+                    b.ToTable("Certificates", (string)null);
                 });
 
             modelBuilder.Entity("Course", b =>
@@ -134,7 +134,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("Category_ID");
 
-                    b.ToTable("Courses");
+                    b.ToTable("Courses", (string)null);
                 });
 
             modelBuilder.Entity("Enrollment", b =>
@@ -162,7 +162,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("User_ID");
 
-                    b.ToTable("Enrollments");
+                    b.ToTable("Enrollments", (string)null);
                 });
 
             modelBuilder.Entity("Lesson", b =>
@@ -201,7 +201,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("Course_ID");
 
-                    b.ToTable("Lessons");
+                    b.ToTable("Lessons", (string)null);
                 });
 
             modelBuilder.Entity("Notification", b =>
@@ -222,7 +222,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Notification_ID");
 
-                    b.ToTable("Notifications");
+                    b.ToTable("Notifications", (string)null);
                 });
 
             modelBuilder.Entity("Payment", b =>
@@ -253,7 +253,7 @@ namespace DataAccessLayer.Migrations
                     b.HasIndex("Enrollment_ID")
                         .IsUnique();
 
-                    b.ToTable("Payments");
+                    b.ToTable("Payments", (string)null);
                 });
 
             modelBuilder.Entity("Question", b =>
@@ -278,7 +278,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("QuizID");
 
-                    b.ToTable("Questions");
+                    b.ToTable("Questions", (string)null);
                 });
 
             modelBuilder.Entity("Quiz", b =>
@@ -313,7 +313,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("User_ID");
 
-                    b.ToTable("Quizzes");
+                    b.ToTable("Quizzes", (string)null);
                 });
 
             modelBuilder.Entity("Receive", b =>
@@ -331,7 +331,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("Notification_ID");
 
-                    b.ToTable("Receives");
+                    b.ToTable("Receives", (string)null);
                 });
 
             modelBuilder.Entity("Review", b =>
@@ -361,7 +361,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("User_ID");
 
-                    b.ToTable("Reviews");
+                    b.ToTable("Reviews", (string)null);
                 });
 
             modelBuilder.Entity("Role", b =>
@@ -378,7 +378,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Roles");
+                    b.ToTable("Roles", (string)null);
                 });
 
             modelBuilder.Entity("Studies", b =>
@@ -405,7 +405,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("Lesson_ID");
 
-                    b.ToTable("Studies");
+                    b.ToTable("Studies", (string)null);
                 });
 
             modelBuilder.Entity("Submission", b =>
@@ -440,7 +440,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("User_ID");
 
-                    b.ToTable("Submissions");
+                    b.ToTable("Submissions", (string)null);
                 });
 
             modelBuilder.Entity("User", b =>
@@ -490,7 +490,7 @@ namespace DataAccessLayer.Migrations
 
                     b.HasIndex("Role_ID");
 
-                    b.ToTable("Users");
+                    b.ToTable("Users", (string)null);
                 });
 
             modelBuilder.Entity("Answer", b =>

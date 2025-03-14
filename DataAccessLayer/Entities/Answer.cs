@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-public class Answer
+    public class Answer
     {
         [Key]
         public int AnswerID { get; set; }  
