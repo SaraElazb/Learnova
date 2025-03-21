@@ -39,10 +39,9 @@ namespace PresentationLayer.Controllers
             return View(courseDTOs);
         }
 
-      
+      [Route("/Courses")]
         public async Task<IActionResult> UserIndex(int? categoryId)
         {
-            // Fetch all active categories
             var categories = await _unitOfWork.Categories.FindAllAsync(c => c.IsActive);
             ViewBag.Categories = categories.Select(c => new SelectListItem
             {

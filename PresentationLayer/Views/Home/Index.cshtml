@@ -1,8 +1,208 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿@using Microsoft.AspNetCore.Http
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model IEnumerable<BusinessLogicLayer.DTOs.CourseDtos.CourseDTO>
+
+@{
+    var categories = ViewBag.Categories as List<SelectListItem>;
+    var selectedCategoryId = ViewBag.SelectedCategoryId as int?;
+    Layout = null; 
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>LearnNova</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="~/css/homepage.css">
+</head>
+<body>
+<div class="site-wrapper">
+    <!-- Navbar -->
+    <header class="navbar">
+        <div class="container">
+            <div class="navbar-left">
+                <a href="/" class="logo">
+                    <img src="~/assets/logonoslogan.png" alt="logo" class="logo-img" />
+                </a>
+                <nav class="main-nav">
+                    <a href="/Courses" class="nav-link">Courses</a>
+                    <a href="#" class="nav-link">How it works</a>
+                    <a href="#" class="nav-link">About Us</a>
+                </nav>
+            </div>
+            <div class="navbar-right">
+                <div class="search-box">
+                    <input type="text" placeholder="Search courses...">
+                    <button class="search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" 
+                             viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                             stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
+                <button class="btn btn-ghost">Log in</button>
+                <button class="btn btn-primary">Sign up</button>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="container">
+                <div class="hero-grid">
+                    <div class="hero-content fade-in">
+                        <h1 class="hero-title">
+                            Advance Your Career<br>
+                            <span>in a Digitalized World</span>
+                        </h1>
+                        <p class="hero-subtitle">
+                            We provide you with curated tech courses from the top institutions, 
+                            allowing you to learn hundreds of practical business and design skills.
+                        </p>
+                        <div class="hero-search">
+                            <input type="text" placeholder="Python, UX/UI Design, Web Dev...">
+                        </div>
+                    </div>
+                    <div class="hero-image fade-in">
+                        <div class="image-container">
+                            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3"
+                                 alt="Student learning online">
+                        </div>
+                        <div class="stats-card stats-card-bottom">
+                            <p>Join Us on Our Learning Revolution</p>
+                        </div>
+                        <div class="stats-card stats-card-top">
+                            <p>Empowering Learning for Everyone</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Courses Section -->
+        <section class="courses">
+            <div class="container">
+                <div class="courses-header">
+                    <div>
+                        <p class="section-tag fade-in">Popular Courses</p>
+                        <h2 class="section-title fade-in">Explore a Growing Library of Courses</h2>
+                    </div>
+                    <p class="section-description fade-in">
+                        We provide a range of categories to help you choose courses and get the skills you need.
+                        There's something for everyone.
+                    </p>
+                </div>
+
+                <!-- Categories Slider -->
+                <div class="categories-slider fade-in">
+                    <a class="category-btn @(selectedCategoryId == null ? "active" : "")" href="/">
+                        All Categories
+                    </a>
+                    @if (categories != null && categories.Any())
+                    {
+                        foreach (var category in categories)
+                        {
+                            bool isActive = selectedCategoryId.HasValue 
+                                            && selectedCategoryId.Value.ToString() == category.Value;
+
+                            <a class="category-btn @(isActive ? "active" : "")" href="/?categoryId=@category.Value">
+                                @category.Text
+                            </a>
+                        }
+                    }
+                    else
+                    {
+                        <span>No categories found.</span>
+                    }
+                </div>
+
+                <!-- Courses Grid -->
+                <div class="courses-grid">
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var course in Model.Take(3))
+                        {
+                            <div class="course-card fade-in">
+                                <div class="course-image">
+                                    <!-- استخدم مسار الصورة المخزن في course.ImagePath -->
+                                    <img src="@course.ImagePath" alt="@course.Title" />
+                                    <div class="course-category">@course.CategoryName</div>
+                                </div>
+                                <div class="course-content">
+                                    <h3 class="course-title">@course.Title</h3>
+                                    <div class="course-meta">
+                                        <div class="meta-item">
+                                            <span>★ 4.8</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span>2345</span>
+                                        </div>
+                                        <div class="meta-item">
+                                            <span>6 weeks</span>
+                                        </div>
+                                    </div>
+                                    <div class="course-footer">
+                                        <span class="course-price">$@course.Price</span>
+                                        <a class="course-view-btn" href="/Course/Details/@course.Course_ID">
+                                            View Course
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <p>No courses found.</p>
+                    }
+                </div>
+
+                <div class="courses-footer">
+                    <button class="btn btn-outline fade-in" onclick="location.href='/Courses';">More Courses</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- CTA Section -->
+        <section class="cta-section fade-in">
+            <div class="container">
+                <h2 class="cta-title">Ready to Start Your Learning Journey?</h2>
+                <p class="cta-description">
+                    Join thousands of students worldwide and advance your career with our cutting-edge courses.
+                </p>
+                <button class="btn btn-cta">Get Started Today</button>
+            </div>
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="~/assets/logonoslogan.png" class="logo-img" alt="logo">
+                </div>
+                <div class="footer-links">
+                    <a href="#" class="footer-link">Terms</a>
+                    <a href="#" class="footer-link">Privacy</a>
+                    <a href="#" class="footer-link">Contact</a>
+                </div>
+                <div class="footer-copyright">
+                    ©2025 LearnNova. All rights reserved.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <div class="bg-gradient bg-gradient-1"></div>
+    <div class="bg-gradient bg-gradient-2"></div>
 </div>
+
+<script src="~/js/homepage.js"></script>
+</body>
+</html>

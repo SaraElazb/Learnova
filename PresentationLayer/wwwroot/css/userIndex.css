@@ -271,7 +271,8 @@ body {
     background: white;
     margin-bottom: 10px;
     border-radius: 20px;
-    height: 20rem;
+    height: 30rem;
+    width: 30rem;
     overflow: hidden;
     text-decoration: none;
     color: inherit;
@@ -283,12 +284,12 @@ body {
 
 .course-item:hover {
     transform: translateY(-10px) scale(1.03);
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
 }
 
 .course-item img {
     width: 100%;
-    height: 50%;
+    height: 60%;
     object-fit: cover;
     border-top-left-radius: 20px;
     border-top-right-radius: 20px;
