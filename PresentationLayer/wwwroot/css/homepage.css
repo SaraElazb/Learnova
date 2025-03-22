@@ -185,7 +185,7 @@ a {
     left: 0;
     right: 0;
     z-index: 50;
-    background-color: var(--dark-bg);
+    background-color: #1C1C1C;
     color: var(--text-white);
 }
 
@@ -279,6 +279,7 @@ a {
 .hero {
     padding-top: 6rem;
     padding-bottom: 3rem;
+    background-color: #1C1C1C;
 }
 
 .hero-grid {
@@ -297,11 +298,14 @@ a {
     font-size: 1.875rem;
     font-weight: 700;
     line-height: 1.2;
+    color: #F5F5F5;
+
 }
 
 .hero-subtitle {
-    color: var(--text-gray-600);
     max-width: 24rem;
+    color: #F5F5F5;
+
 }
 
 .hero-search {
@@ -637,7 +641,7 @@ a {
 
 /* Footer */
 .footer {
-    background-color: var(--dark-bg);
+    background-color: #1C1C1C;
     color: white;
     padding: 2rem 0;
 }

@@ -38,12 +38,12 @@ document.addEventListener("DOMContentLoaded", function () {
         btn.addEventListener("click", () => {
             categoryBtns.forEach((b) => b.classList.remove("active"));
             btn.classList.add("active");
-            
+
             console.log("Selected category:", btn.textContent.trim());
         });
     });
 
-  
+
     // Course hover effect enhancement
     const courseCards = document.querySelectorAll(".course-card");
     courseCards.forEach((card) => {
