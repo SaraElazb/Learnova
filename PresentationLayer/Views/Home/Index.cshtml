@@ -5,7 +5,7 @@
 @{
     var categories = ViewBag.Categories as List<SelectListItem>;
     var selectedCategoryId = ViewBag.SelectedCategoryId as int?;
-    Layout = null; 
+    Layout = null;
 }
 
 <!DOCTYPE html>
@@ -19,12 +19,11 @@
 </head>
 <body>
 <div class="site-wrapper">
-    <!-- Navbar -->
     <header class="navbar">
         <div class="container">
             <div class="navbar-left">
                 <a href="/" class="logo">
-                    <img src="~/assets/logonoslogan.png" alt="logo" class="logo-img" />
+                    <img src="~/assets/logonoslogan.png" alt="logo" class="logo-img">
                 </a>
                 <nav class="main-nav">
                     <a href="/Courses" class="nav-link">Courses</a>
@@ -33,17 +32,17 @@
                 </nav>
             </div>
             <div class="navbar-right">
-                <div class="search-box">
-                    <input type="text" placeholder="Search courses...">
-                    <button class="search-icon">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" 
-                             viewBox="0 0 24 24" fill="none" stroke="currentColor" 
+                <form method="get" action="/Courses" class="search-box">
+                    <input type="text" name="searchTerm" placeholder="Search courses...">
+                    <button type="submit" class="search-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                             viewBox="0 0 24 24" fill="none" stroke="currentColor"
                              stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <circle cx="11" cy="11" r="8"></circle>
                             <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
                         </svg>
                     </button>
-                </div>
+                </form>
                 <button class="btn btn-ghost">Log in</button>
                 <button class="btn btn-primary">Sign up</button>
             </div>
@@ -51,7 +50,6 @@
     </header>
 
     <main>
-        <!-- Hero Section -->
         <section class="hero">
             <div class="container">
                 <div class="hero-grid">
@@ -61,17 +59,16 @@
                             <span>in a Digitalized World</span>
                         </h1>
                         <p class="hero-subtitle">
-                            We provide you with curated tech courses from the top institutions, 
-                            allowing you to learn hundreds of practical business and design skills.
+                            We provide you with curated tech courses from the top institutions, allowing you to learn hundreds of
+                            practical business and design skills.
                         </p>
-                        <div class="hero-search">
-                            <input type="text" placeholder="Python, UX/UI Design, Web Dev...">
-                        </div>
+                        <form method="get" action="/Courses" class="hero-search">
+                            <input type="text" name="searchTerm" placeholder="Python, UX/UI Design, Web Dev...">
+                        </form>
                     </div>
                     <div class="hero-image fade-in">
                         <div class="image-container">
-                            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3"
-                                 alt="Student learning online">
+                            <img src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?ixlib=rb-4.0.3" alt="Student learning online">
                         </div>
                         <div class="stats-card stats-card-bottom">
                             <p>Join Us on Our Learning Revolution</p>
@@ -84,7 +81,6 @@
             </div>
         </section>
 
-        <!-- Courses Section -->
         <section class="courses">
             <div class="container">
                 <div class="courses-header">
@@ -97,8 +93,6 @@
                         There's something for everyone.
                     </p>
                 </div>
-
-                <!-- Categories Slider -->
                 <div class="categories-slider fade-in">
                     <a class="category-btn @(selectedCategoryId == null ? "active" : "")" href="/">
                         All Categories
@@ -107,9 +101,7 @@
                     {
                         foreach (var category in categories)
                         {
-                            bool isActive = selectedCategoryId.HasValue 
-                                            && selectedCategoryId.Value.ToString() == category.Value;
-
+                            bool isActive = selectedCategoryId.HasValue && selectedCategoryId.Value.ToString() == category.Value;
                             <a class="category-btn @(isActive ? "active" : "")" href="/?categoryId=@category.Value">
                                 @category.Text
                             </a>
@@ -120,8 +112,6 @@
                         <span>No categories found.</span>
                     }
                 </div>
-
-                <!-- Courses Grid -->
                 <div class="courses-grid">
                     @if (Model != null && Model.Any())
                     {
@@ -129,8 +119,7 @@
                         {
                             <div class="course-card fade-in">
                                 <div class="course-image">
-                                    <!-- استخدم مسار الصورة المخزن في course.ImagePath -->
-                                    <img src="@course.ImagePath" alt="@course.Title" />
+                                    <img src="@course.ImagePath" alt="@course.Title">
                                     <div class="course-category">@course.CategoryName</div>
                                 </div>
                                 <div class="course-content">
@@ -161,14 +150,12 @@
                         <p>No courses found.</p>
                     }
                 </div>
-
                 <div class="courses-footer">
                     <button class="btn btn-outline fade-in" onclick="location.href='/Courses';">More Courses</button>
                 </div>
             </div>
         </section>
 
-        <!-- CTA Section -->
         <section class="cta-section fade-in">
             <div class="container">
                 <h2 class="cta-title">Ready to Start Your Learning Journey?</h2>
@@ -180,7 +167,6 @@
         </section>
     </main>
 
-    <!-- Footer -->
     <footer class="footer">
         <div class="container">
             <div class="footer-content">
@@ -198,11 +184,9 @@
             </div>
         </div>
     </footer>
-
     <div class="bg-gradient bg-gradient-1"></div>
     <div class="bg-gradient bg-gradient-2"></div>
 </div>
-
 <script src="~/js/homepage.js"></script>
 </body>
 </html>

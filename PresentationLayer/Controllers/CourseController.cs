@@ -5,7 +5,7 @@ using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-
+using System.Linq;
 namespace PresentationLayer.Controllers
 {
     public class CourseController : Controller
@@ -40,27 +40,28 @@ namespace PresentationLayer.Controllers
         }
 
       [Route("/Courses")]
-        public async Task<IActionResult> UserIndex(int? categoryId)
-        {
-            var categories = await _unitOfWork.Categories.FindAllAsync(c => c.IsActive);
-            ViewBag.Categories = categories.Select(c => new SelectListItem
-            {
-                Value = c.Category_ID.ToString(),
-                Text = c.Category_Name
-            });
+      public async Task<IActionResult> UserIndex(string searchTerm, int[] selectedCategories)
+      {
+          var coursesQuery = await _unitOfWork.Courses.FindAllAsync(c => c.IsActive, include: q => q.Include(x => x.Category));
+          if (!string.IsNullOrWhiteSpace(searchTerm))
+          {
+              coursesQuery = coursesQuery.Where(c => c.Title.ToLower().Contains(searchTerm.ToLower()));
+          }
+          if (selectedCategories != null && selectedCategories.Length > 0)
+          {
+              coursesQuery = coursesQuery.Where(c => selectedCategories.Contains(c.Category_ID));
+          }
+          var coursesList = coursesQuery.ToList();
+          var courseDTOs = _mapper.Map<IEnumerable<CourseDTO>>(coursesList);
+          var categories = await _unitOfWork.Categories.FindAllAsync(c => c.IsActive);
+          ViewBag.Categories = categories.Select(c => new SelectListItem { Value = c.Category_ID.ToString(), Text = c.Category_Name });
+          ViewBag.SearchTerm = searchTerm;
+          ViewBag.SelectedCategories = selectedCategories;
+          return View(courseDTOs);
+      }
 
-            // Fetch courses based on selected category (or all active courses)
-            var coursesQuery = _unitOfWork.Courses.FindAllAsync(c => c.IsActive, q => q.Include(c => c.Category));
-            var courses = await coursesQuery;
 
-            if (categoryId.HasValue)
-            {
-                courses = courses.Where(c => c.Category_ID == categoryId.Value);
-            }
 
-            var courseDTOs = _mapper.Map<IEnumerable<CourseDTO>>(courses);
-            return View(courseDTOs);
-        }
 
 
         public async Task<IActionResult> Details(int id)

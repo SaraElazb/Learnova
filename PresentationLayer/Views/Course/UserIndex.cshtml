@@ -1,92 +1,114 @@
-﻿@model IEnumerable<BusinessLogicLayer.DTOs.CourseDtos.CourseDTO>
+﻿@using Microsoft.AspNetCore.Mvc.Rendering
+@model IEnumerable<BusinessLogicLayer.DTOs.CourseDtos.CourseDTO>
+
 @{
-    ViewBag.Title = "Courses";
     var categories = ViewBag.Categories as IEnumerable<SelectListItem>;
-}
-@{
-    Layout = null; // No layout used
+    var searchTerm = ViewBag.SearchTerm as string;
+    var selectedCategories = ViewBag.SelectedCategories as int[] ?? new int[0];
+
+    Layout = null; 
 }
 
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewBag.Title</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:ital,wght@0,100..900;1,100..900&display=swap" rel="stylesheet">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Courses - LearnNova</title>
     <link rel="stylesheet" href="~/css/userIndex.css" />
-    
 </head>
 <body>
-<div class="navbar">
-    <div class="logo">
-        <img src="~/assets/logonoslogan.png" alt="Logo" />
-    </div>
-    <div class="nav-links">
-        <a href="@Url.Action("UserIndex", "Course")">Home</a>
-        <a href="@Url.Action("UserIndex", "Course")">Courses</a>
-        <a href="#">About Us</a>
-        <a href="#">Contact</a>
-    </div>
-    <!-- Mobile toggle icon for nav-links -->
-    <button class="nav-toggle" onclick="toggleNavLinks(event)">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none"
-             viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
-             class="size-6">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25" />
-        </svg>
-    </button>
-
-</div>
-
-<div class="header">
-    <h1>Unlock Your Potential with LearnNova</h1>
-    <p>Access a diverse library of learning content thoughtfully created to accelerate your professional growth and career advancement.</p>
-    <div class="search-bar">
-        <input type="text" id="searchInput" placeholder="Search for courses..." oninput="filterCourses()" />
-    </div>
-</div>
-
-<!-- Button to toggle filters sidebar (remains unchanged) -->
-<button class="sidebar-toggle" onclick="toggleSidebar()">Show Filters</button>
-
-<div class="container">
-    <div class="sidebar" id="sidebar">
-        <div class="sidebar-header">
-            <h3>Categories</h3>
-            <hr />
-            <div class="close-btn" onclick="toggleSidebar()">&times;</div>
+    <!-- Navbar -->
+    <div class="navbar">
+        <div class="logo">
+            <img src="~/assets/logonoslogan.png" alt="Logo" />
         </div>
-        @if (categories != null)
-        {
-            foreach (var category in categories)
-            {
-                <label class="category-item">
-                    <input type="checkbox" value="@category.Text" onchange="filterCourses()" />
-                    <span class="custom-checkmark"></span>
-                    @category.Text
-                </label>
-            }
-        }
-        <button id="clearFilters" onclick="window.location='@Url.Action("UserIndex","Course")'">
-            Clear Filters
+        <div class="nav-links">
+            <a href="@Url.Action("UserIndex", "Course")">Home</a>
+            <a href="@Url.Action("UserIndex", "Course")">Courses</a>
+            <a href="#">About Us</a>
+            <a href="#">Contact</a>
+        </div>
+        <!-- Mobile toggle icon -->
+        <button class="nav-toggle" onclick="toggleNavLinks(event)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none"
+                 viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor"
+                 class="size-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                      d="M3.75 6.75h16.5M3.75 12h16.5M12 17.25h8.25" />
+            </svg>
         </button>
     </div>
 
-    <div class="course-list" id="course-list">
-    </div>
+    <form method="get" action="@Url.Action("UserIndex", "Course")" id="filtersForm">
+        <div class="header">
+            <h1>Unlock Your Potential with LearnNova</h1>
+            <p>Access a diverse library of learning content...</p>
+            <div class="search-bar">
+                <input type="text" name="searchTerm" placeholder="Search for courses..."
+                       value="@(searchTerm ?? "")"
+                       onkeypress="if(event.key === 'Enter'){ this.form.submit(); }" />
+            </div>
+        </div>
 
-    <div id="pagination" class="pagination"></div>
-</div>
+        <button type="button" class="sidebar-toggle" onclick="toggleSidebar()">
+            Show Filters
+        </button>
 
-<!-- Inject course data as a global JavaScript variable -->
-<script>
-    const coursesData = @Html.Raw(JsonSerializer.Serialize(Model));
-</script>
+        <div class="container">
+            <div class="sidebar" id="sidebar">
+                <div class="sidebar-header">
+                    <h3>Categories</h3>
+                    <hr />
+                    <div class="close-btn" onclick="toggleSidebar()">&times;</div>
+                </div>
 
-<script src="~/js/userIndex.js"></script>
+                @if (categories != null && categories.Any())
+                {
+                    foreach (var cat in categories)
+                    {
+                        int catId = int.Parse(cat.Value);
+                        bool isChecked = selectedCategories.Contains(catId);
+                        <label class="category-item">
+                            <input type="checkbox" name="selectedCategories" value="@catId"
+                                   @(isChecked ? "checked" : "")
+                                   onchange="this.form.submit();" />
+                            <span class="custom-checkmark"></span>
+                            @cat.Text
+                        </label>
+                    }
+                }
+
+                <button type="button" id="clearFilters" onclick="window.location='@Url.Action("UserIndex","Course")'">
+                    Clear Filters
+                </button>
+            </div>
+
+            <div class="course-list">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var course in Model)
+                    {
+                        <a class="course-item" href="@Url.Action("Details", "Course", new { id = course.Course_ID })">
+                            <img src="@course.ImagePath" alt="Course Image" />
+                            <div class="course-info">
+                                <h3 class="course-title">@course.Title</h3>
+                                <div class="instructor-price">
+                                    <p class="course-instructor">@course.CategoryName</p>
+                                    <div class="course-price">$@course.Price</div>
+                                </div>
+                            </div>
+                        </a>
+                    }
+                }
+                else
+                {
+                    <p>No courses found.</p>
+                }
+            </div>
+        </div>
+    </form>
+
+    <script src="~/js/userIndex.js"></script>
 </body>
 </html>
