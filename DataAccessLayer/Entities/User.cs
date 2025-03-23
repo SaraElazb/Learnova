@@ -32,4 +32,5 @@ public class User
     public ICollection<Enrollment> Enrollments { get; set; }
     public ICollection<Studies> Studies { get; set; } 
     public ICollection<Receive> Receives { get; set; }
+    public ICollection<Course> Courses { get; set; }
 }

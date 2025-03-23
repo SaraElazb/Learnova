@@ -9,7 +9,11 @@ public class Category
     [Required]
     public string Category_Name { get; set; }
 
-    public string Description { get; set; }
+    public string? Description { get; set; }
 
-    public ICollection<Course> Courses { get; set; }
+    public string? ImagePath { get; set; }
+
+    public bool IsActive { get; set; } = true;
+
+    public ICollection<Course> Courses { get; set; } = new List<Course>();
 }

@@ -1,12 +1,11 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using System;
 
-namespace Grad_Project.Models
-{
+
     public class ELearningDbContext : DbContext
     {
-        public ELearningDbContext(DbContextOptions<ELearningDbContext> options) : base(options)
-        {
+    public ELearningDbContext(DbContextOptions<ELearningDbContext> options) : base(options)
+    {
         }
         
         public DbSet<Answer> Answers { get; set; }
@@ -90,8 +89,14 @@ namespace Grad_Project.Models
                 .WithOne(l => l.Course)
                 .HasForeignKey(l => l.Course_ID)
                 .OnDelete(DeleteBehavior.NoAction);
-            
-            modelBuilder.Entity<User>()
+
+            modelBuilder.Entity<Course>()
+                .HasOne(c => c.Instructor)
+                .WithMany(u => u.Courses)
+                .HasForeignKey(c => c.Instructor_ID)
+                .OnDelete(DeleteBehavior.Restrict);
+
+        modelBuilder.Entity<User>()
                 .HasMany(u => u.Enrollments)
                 .WithOne(e => e.User)
                 .HasForeignKey(e => e.User_ID)
@@ -171,6 +176,14 @@ namespace Grad_Project.Models
                 .Property(c => c.Price)
                 .HasColumnType("decimal(18,2)");
 
+            modelBuilder.Entity<Course>()
+                .Property(c => c.IsActive)
+                .HasDefaultValue(true);
+
+            modelBuilder.Entity<Category>()
+                .Property(c => c.IsActive)
+                .HasDefaultValue(true);
+
             modelBuilder.Entity<Payment>()
                 .Property(p => p.Amount)
                 .HasColumnType("decimal(18,2)");
@@ -182,6 +195,10 @@ namespace Grad_Project.Models
             modelBuilder.Entity<Course>()
                 .Property(c => c.CreatedDate)
                 .HasDefaultValueSql("GETDATE()");
+            modelBuilder.Entity<Course>()
+                .Property(c => c.Rating)
+                .HasPrecision(18, 2);
+
 
             modelBuilder.Entity<Enrollment>()
                 .Property(e => e.Enrollment_date)
@@ -200,4 +217,3 @@ namespace Grad_Project.Models
                 .HasDefaultValueSql("GETDATE()");
         }
     }
-}

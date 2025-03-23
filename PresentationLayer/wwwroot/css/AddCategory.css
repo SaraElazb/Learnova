@@ -1,0 +1,88 @@
+﻿@keyframes bounce {
+    0% {
+        transform: translateY(0);
+    }
+
+    100% {
+        transform: translateY(8px);
+    }
+}
+.card {
+    max-width: 600px;
+    margin: auto;
+    box-shadow: 10px 50px 15px rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+}
+
+    
+.card:hover {
+  transform: scale(1.02);
+  box-shadow: 10px 8px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btns {
+    display: flex;
+    justify-content: space-between;
+    margin-top:20px;
+
+}
+
+.btn-success, .btn-secondary {
+    transition: transform 0.2s ease-in-out;
+    width: 200px;
+    background-color: #00b8a9;
+    border:none; 
+}
+.btn-secondary
+{
+    background-color:gray;
+}
+    .btn-success:hover, .btn-secondary:hover {
+        transform: scale(1.05);
+        background-color: #005e56;
+    }
+
+h2 {
+    font-size: 28px;
+    font-weight: bold;
+    color: #333; 
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    text-shadow: 2px 2px 5px rgba(0, 0, 0, 0.3);
+    animation: fadeInBounce 1.5s ease-in-out;
+/*    display: inline-block;*/
+    padding: 5px 20px;
+    margin-bottom:40px;
+ 
+}
+
+h2::after {
+     content: "";
+     position: absolute;
+     left: 50%;
+     bottom: -5px;
+     width: 30%;
+     height: 3px;
+     background-color: #007bff;
+     border-radius: 5px;
+   transform: translateX(-50%);
+ }
+
+@keyframes fadeInBounce {
+    0% {
+        transform: translateY(-10px);
+        opacity: 0;
+    }
+
+    50% {
+        transform: translateY(3px);
+        opacity: 0.7;
+    }
+
+    100% {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}

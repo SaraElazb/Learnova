@@ -1,0 +1,339 @@
+@using Microsoft.AspNetCore.Mvc.Rendering
+@model IEnumerable<BusinessLogicLayer.DTOs.CourseDtos.CourseDTO>
+@{
+    var categories = ViewBag.Categories as IEnumerable<SelectListItem>;
+    var searchTerm = ViewBag.SearchTerm as string;
+    var selectedCategories = ViewBag.SelectedCategories as int[] ?? new int[0];
+    var currentPage = ViewBag.CurrentPage ?? 1;
+    var totalPages = ViewBag.TotalPages ?? 1;
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Learnova</title>
+  <link rel="stylesheet" href="~/css/userIndex.css" />
+</head>
+<body>
+  <!-- Header -->
+  <header class="header">
+    <div class="container">
+      <div class="header-content">
+        <a href="/" class="logo">
+          <div class="logo-icon">
+            <img src="~/assets/logonoslogan.png" alt="LearnNova Logo" />
+          </div>
+        </a>
+        
+        <nav class="main-nav">
+          <a href="@Url.Action("UserIndex", "Course")" class="active">Browse</a>
+          <a href="/focus">Focus on LearnNova</a>
+          <a href="/about">About Us</a>
+        </nav>
+        
+        <div class="auth-buttons">
+          <a href="/signin" class="btn btn-secondary">Sign In</a>
+          <a href="/signup" class="btn btn-primary">Sign Up</a>
+        </div>
+        
+        <button class="mobile-menu-toggle" aria-label="Toggle menu">
+          <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <!-- Hero Section with Search Bar -->
+    <section class="hero-section grid-lines">
+      <div class="container">
+        <h1 class="hero-title">Find Your Path to Tech Mastery</h1>
+        <p class="hero-subtitle">Explore courses from industry experts and enhance your skills</p>
+        
+        <!-- Search Form (submits to the controller) -->
+        <form method="get" action="@Url.Action("UserIndex", "Course")" id="searchForm" class="search-container">
+          <div class="search-input-container">
+            <input type="text" name="searchTerm" placeholder="Enter course, event or author" class="search-input" id="searchInput" value="@searchTerm" />
+          </div>
+          <!-- You can add a dropdown or additional filters here if desired -->
+          <button type="submit" class="search-button">
+            <svg class="icon" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+            </svg>
+          </button>
+        </form>
+        
+        <!-- Popular tags (optional static content) -->
+        <div class="popular-tags" id="popularTags">
+          <span class="tags-label">Popular:</span>
+          <a href="#javascript" class="tag-link">JavaScript</a>
+          <a href="#react" class="tag-link">React</a>
+          <a href="#ux-design" class="tag-link">UX Design</a>
+          <a href="#python" class="tag-link">Python</a>
+          <a href="#machine-learning" class="tag-link">Machine Learning</a>
+          <a href="#data-science" class="tag-link">Data Science</a>
+        </div>
+      </div>
+    </section>
+
+    <!-- Courses Section -->
+    <section class="courses-section">
+      <div class="container">
+        <div class="courses-layout">
+          <!-- Filters Sidebar -->
+          <aside class="filters-sidebar" id="filtersSidebar">
+            <div class="filters-container">
+              <button class="mobile-filters-toggle" id="mobileFiltersToggle">
+                <span>Filters</span>
+                <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <polyline points="6 9 12 15 18 9"></polyline>
+                </svg>
+              </button>
+
+              <!-- Wrap the filters in a form so that checkboxes auto-submit on change -->
+              <form method="get" action="@Url.Action("UserIndex", "Course")" id="filtersForm">
+                <div class="filters-content" id="filtersContent">
+                  <!-- Categories Filter -->
+                  <div class="filter-section">
+                    <div class="filter-header" data-section="categories">
+                      <h3 class="filter-title">Categories</h3>
+                      <svg class="icon toggle-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                      </svg>
+                    </div>
+                    
+                    <div class="filter-options" id="categoriesOptions">
+                      @if (categories != null && categories.Any())
+                      {
+                        foreach (var cat in categories)
+                        {
+                          int catId = int.Parse(cat.Value);
+                          bool isChecked = selectedCategories.Contains(catId);
+                          <div class="filter-option">
+                            <input type="checkbox" name="selectedCategories" value="@cat.Value" id="cat_@cat.Value"
+                                   @(isChecked ? "checked" : "") onchange="this.form.submit();" />
+                            <label for="cat_@cat.Value">@cat.Text</label>
+                          </div>
+                        }
+                      }
+                    </div>
+                  </div>
+                  </div>
+
+  <!-- Reset Filters Button -->
+                <button type="button" class="reset-filter-button" id="resetFilters"
+                        onclick="window.location='@Url.Action("UserIndex", "Course")'">
+                  Reset Filter
+                </button>
+              </form>
+            </div>
+          </aside>
+
+          <!-- Courses Grid -->
+          <div class="courses-content">
+            <div class="courses-header">
+              <h2 class="courses-title">Featured Courses</h2>
+              <div class="courses-sort">
+                <label for="sortSelect">Sort by:</label>
+                <select id="sortSelect" class="sort-select" name="sort">
+                  <option value="popular">Most Popular</option>
+                  <option value="newest">Newest</option>
+                  <option value="price-low">Price: Low to High</option>
+                  <option value="price-high">Price: High to Low</option>
+                  <option value="rating">Highest Rated</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="courses-grid" id="coursesGrid">
+              @if (Model != null && Model.Any())
+              {
+                foreach (var course in Model)
+                {
+                  <div class="course-card fade-in">
+                    <div class="course-image">
+                      <img src="@course.ImagePath" alt="@course.Title">
+                      <div class="course-category">@course.CategoryName</div>
+                    </div>
+                    <div class="course-content">
+                      <h3 class="course-title">@course.Title</h3>
+                      <div class="course-meta">
+                        <div class="meta-item">
+                          <span>★ 4.8</span>
+                        </div>
+                        <div class="meta-item">
+                          <span>2345</span>
+                        </div>
+                        <div class="meta-item">
+                          <span>6 weeks</span>
+                        </div>
+                      </div>
+                      <div class="course-footer">
+                        <span class="course-price">$@course.Price</span>
+                        <a class="course-view-btn" href="/Course/Details/@course.Course_ID">
+                          View Course
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+                }
+              }
+              else
+              {
+                <p>No courses found.</p>
+              }
+            </div>
+            
+            <!-- Pagination (if applicable) -->
+            @if (totalPages > 1)
+            {
+              <div class="pagination" id="pagination">
+                @* Previous Button *@
+                @if (currentPage > 1)
+                {
+                  <a class="page-button" href="@Url.Action("UserIndex", "Course", new { searchTerm, selectedCategories, page = currentPage - 1 })" aria-label="Previous page">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                  </a>
+                }
+                else
+                {
+                  <span class="page-button disabled" aria-label="Previous page">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="15 18 9 12 15 6"></polyline>
+                    </svg>
+                  </span>
+                }
+                
+                @for (int i = 1; i <= totalPages; i++)
+                {
+                  if (i == currentPage)
+                  {
+                    <span class="page-button active">@i</span>
+                  }
+                  else
+                  {
+                    <a class="page-button" href="@Url.Action("UserIndex", "Course", new { searchTerm, selectedCategories, page = i })">@i</a>
+                  }
+                }
+                
+                @* Next Button *@
+                @if (currentPage < totalPages)
+                {
+                  <a class="page-button" href="@Url.Action("UserIndex", "Course", new { searchTerm, selectedCategories, page = currentPage + 1 })" aria-label="Next page">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </a>
+                }
+                else
+                {
+                  <span class="page-button disabled" aria-label="Next page">
+                    <svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <polyline points="9 18 15 12 9 6"></polyline>
+                    </svg>
+                  </span>
+                }
+              </div>
+            }
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="container">
+      <div class="footer-content">
+        <div class="footer-brand">
+          <a href="@Url.Action("UserIndex", "Course")" class="logo">
+            <div class="logo-icon">
+              <img src="~/assets/logonoslogan.png" alt="LearnNova Logo" />
+
+            </div>
+          </a>
+          <p class="footer-tagline">Where Learning Goes Supernova</p>
+        </div>
+        
+        <div class="footer-links">
+          <div class="footer-links-column">
+            <h3>Courses</h3>
+            <a href="#">Web Development</a>
+            <a href="#">Mobile Apps</a>
+            <a href="#">Data Science</a>
+            <a href="#">UI/UX Design</a>
+          </div>
+          
+          <div class="footer-links-column">
+            <h3>Company</h3>
+            <a href="#">About Us</a>
+            <a href="#">Careers</a>
+            <a href="#">Blog</a>
+            <a href="#">Contact</a>
+          </div>
+          
+          <div class="footer-links-column">
+            <h3>Resources</h3>
+            <a href="#">Help Center</a>
+            <a href="#">Terms of Service</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">FAQ</a>
+          </div>
+        </div>
+        
+        <div class="footer-newsletter">
+          <h3>Stay Updated</h3>
+          <p>Subscribe to our newsletter for the latest courses and offers</p>
+          <form class="newsletter-form">
+            <input type="email" placeholder="Your email address" required>
+            <button type="submit" class="btn btn-primary">Subscribe</button>
+          </form>
+        </div>
+      </div>
+      
+      <div class="footer-bottom">
+        <p>&copy; 2025 LearnNova. All rights reserved.</p>
+        <div class="social-links">
+          <a href="#" aria-label="Facebook">
+            <svg class="icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z"></path>
+            </svg>
+          </a>
+          <a href="#" aria-label="Twitter">
+            <svg class="icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M23 3a10.9 10.9 0 01-3.14 1.53 4.48 4.48 0 00-7.86 3v1A10.66 10.66 0 013 4s-4 9 5 13a11.64 11.64 0 01-7 2c9 5 20 0 20-11.5a4.5 4.5 0 00-.08-.83A7.72 7.72 0 0023 3z"></path>
+            </svg>
+          </a>
+          <a href="#" aria-label="Instagram">
+            <svg class="icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect>
+              <path d="M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37z"></path>
+              <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line>
+            </svg>
+          </a>
+          <a href="#" aria-label="LinkedIn">
+            <svg class="icon" fill="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+              <path d="M16 8a6 6 0 016 6v7h-4v-7a2 2 0 00-2-2 2 2 0 00-2 2v7h-4v-7a6 6 0 016-6z"></path>
+              <rect x="2" y="9" width="4" height="12"></rect>
+              <circle cx="4" cy="4" r="2"></circle>
+            </svg>
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+  <script src="~/js/userIndex.js"></script>
+</body>
+</html>
