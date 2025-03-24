@@ -1,27 +1,29 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.Helpers;
-using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using BusinessLogicLayer.DTOs.CategoryDtos;
+using BusinessLogicLayer.Manager.CategoryManager;
 
 namespace PresentationLayer.Controllers
 {
     public class CategoryController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ICategoryManager _categoryManager;
 
-        public CategoryController(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment webHostEnvironment)
+        public CategoryController(
+                                    IMapper mapper, IWebHostEnvironment webHostEnvironment,
+                                    ICategoryManager categoryManager)
         {
-            _unitOfWork = unitOfWork;
+           
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
+            _categoryManager = categoryManager;
         }
         public async Task<IActionResult> Index()
         {
-            var categories = await _unitOfWork.Categories.GetAllAsync();
-            var categoryDTOs = _mapper.Map<IEnumerable<CategoryDTO>>(categories);
+            var categoryDTOs = await _categoryManager.GetCategoriesAsync();
             return View(categoryDTOs);
         }
 
@@ -35,35 +37,23 @@ namespace PresentationLayer.Controllers
         {
             if (!ModelState.IsValid)
                 return View(request);
-            var existingCategory = (await _unitOfWork.Categories.GetAllAsync())
-               .FirstOrDefault(c => c.Category_Name.ToLower() == request.Category_Name.ToLower());
 
-            if (existingCategory != null)
+            bool isCreated = await _categoryManager.CreateCategoryAsync(request);
+            if (!isCreated)
             {
                 ModelState.AddModelError("Category_Name", "Category name already exists.");
-                return View(request); // Return the same view with the error message
+                return View(request);
             }
-
-            var category = _mapper.Map<Category>(request);
-
-            if (request.Image != null)
-            {
-                category.ImagePath = ImageHelper.SaveImage(request.Image, "categories", _webHostEnvironment);
-            }
-
-            await _unitOfWork.Categories.AddAsync(category);
-            await _unitOfWork.CompleteAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var category = await _unitOfWork.Categories.GetByIdAsync(id);
-            if (category == null)
+            var categoryRequest = await _categoryManager.GetCategoryForEditAsync(id);
+            if (categoryRequest == null)
                 return NotFound();
 
-            var categoryRequest = _mapper.Map<CategoryRequest>(category);
             return View(categoryRequest);
         }
 
@@ -73,34 +63,20 @@ namespace PresentationLayer.Controllers
             if (!ModelState.IsValid)
                 return View(request);
 
-            var category = await _unitOfWork.Categories.GetByIdAsync(id);
-            if (category == null)
+            bool isUpdated = await _categoryManager.UpdateCategoryAsync(id, request);
+            if (!isUpdated)
                 return NotFound();
-
-            _mapper.Map(request, category);
-
-            if (request.Image != null)
-            {
-                category.ImagePath = ImageHelper.SaveImage(request.Image, "categories", _webHostEnvironment);
-            }
-
-            _unitOfWork.Categories.Update(category);
-            await _unitOfWork.CompleteAsync();
 
             return RedirectToAction(nameof(Index));
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var category = await _unitOfWork.Categories.GetByIdAsync(id);
-            if (category == null)
+            bool isDeleted = await _categoryManager.DeleteCategoryAsync(id);
+            if (!isDeleted)
                 return NotFound();
 
-            _unitOfWork.Categories.SoftDelete(category);
-            await _unitOfWork.CompleteAsync();
-
             return RedirectToAction(nameof(Index));
-
         }
     }
 }
