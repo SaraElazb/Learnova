@@ -1,49 +1,486 @@
-﻿<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>@ViewData["Title"] - PresentationLayer</title>
-    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
-    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
-    <link rel="stylesheet" href="~/PresentationLayer.styles.css" asp-append-version="true" />
-</head>
-<body>
-    <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
-            <div class="container-fluid">
-                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PresentationLayer</a>
-                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
-                        aria-expanded="false" aria-label="Toggle navigation">
-                    <span class="navbar-toggler-icon"></span>
-                </button>
-                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
-                    <ul class="navbar-nav flex-grow-1">
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-                        </li>
-                    </ul>
-                </div>
-            </div>
-        </nav>
-    </header>
-    <div class="container">
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
-    </div>
+﻿@*  <!DOCTYPE html>
+ <html lang="en">
+ <head>
+     <meta charset="utf-8" />
+     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+     <title>@ViewData["Title"] - PresentationLayer</title>
+     <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+     <link rel="stylesheet" href="~/PresentationLayer.styles.css" asp-append-version="true" />
+ </head>
+ <body>
+     <header>
+         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+             <div class="container-fluid">
+                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PresentationLayer</a>
+                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                         aria-expanded="false" aria-label="Toggle navigation">
+                     <span class="navbar-toggler-icon"></span>
+                 </button>
+                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                     <ul class="navbar-nav flex-grow-1">
+                         <li class="nav-item">
+                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                         </li>
+                         <li class="nav-item">
+                             <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+                         </li>
+                     </ul>
+                 </div>
+             </div>
+         </nav>
+     </header>
+     <div class="container">
+         <main role="main" class="pb-3">
+             @RenderBody()
+         </main>
+     </div>
 
-    <footer class="border-top footer text-muted">
-        <div class="container">
-            &copy; 2025 - PresentationLayer - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
-    <script src="~/lib/jquery/dist/jquery.min.js"></script>
-    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    <script src="~/js/site.js" asp-append-version="true"></script>
-    @await RenderSectionAsync("Scripts", required: false)
-</body>
+     <footer class="border-top footer text-muted">
+         <div class="container">
+             &copy; 2025 - PresentationLayer - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+         </div>
+     </footer>
+     <script src="~/lib/jquery/dist/jquery.min.js"></script>
+     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+     <script src="~/js/site.js" asp-append-version="true"></script>
+     @await RenderSectionAsync("Scripts", required: false)
+ </body>
+ </html> *@
+
+<!DOCTYPE html>
+  <html lang="en">
+  <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>@ViewData["Title"] - PresentationLayer</title>
+      <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+      <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+      <link rel="stylesheet" href="~/PresentationLayer.styles.css" asp-append-version="true" />
+  </head>
+  <body>
+    <div class="navbar">
+     <div class="logo">
+         <img src="~/assets/logo.png" alt="Logo" />
+     </div>
+      <div class="nav-links">
+         <a href="@Url.Action("UserIndex", "Course")">Home</a>
+         <a href="@Url.Action("UserIndex", "Course")">Courses</a>
+         <a href="#">About Us</a>
+         <a href="#">Contact</a>
+      </div>
+    </div>
+    @RenderBody()
+  </body>
 </html>
+<style>
+    :root {
+        --main-color: #1c1c1e;
+        --accent-color: #4caf50;
+    }
+
+    html {
+        font-size: 62.5%;
+    }
+
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    body {
+        font-family: 'Roboto', sans-serif;
+        margin: 0;
+        padding: 0;
+        /* Reduced from 70px to 60px to account for a smaller navbar height */
+        padding-top: 60px;
+        background: #f5f5f5;
+        color: #333;
+    }
+
+    /* NAVBAR */
+    .navbar {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(90deg, #1c1c1e, #2c2c30);
+        /* Reduced padding from 10px 30px to 8px 20px */
+        padding: 8px 20px;
+        color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+        position: fixed;
+        width: 100%;
+        top: 0;
+        z-index: 1000;
+        /* border-bottom: 1px solid #515151; */
+    }
+
+    /* Smaller logo size */
+    .logo img {
+        /* Reduced from 90px to 60px */
+        width: 60px;
+    }
+
+    .navbar .logo {
+        font-size: 2.2rem;
+        /* Slightly smaller if you like */
+        font-weight: bold;
+    }
+
+    .navbar .nav-links {
+        display: flex;
+        gap: 20px;
+    }
+
+        .navbar .nav-links a {
+            color: white;
+            text-decoration: none;
+            font-size: 1.4rem;
+            padding: 10px;
+            position: relative;
+            transition: opacity 0.3s;
+        }
+
+            /* Hover underline animation */
+            .navbar .nav-links a::after {
+                content: "";
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                width: 0;
+                height: 2px;
+                background: var(--accent-color);
+                transition: width 0.3s;
+            }
+
+            .navbar .nav-links a:hover::after {
+                width: 100%;
+            }
+
+            .navbar .nav-links a:hover {
+                opacity: 0.8;
+            }
+
+    /* HEADER */
+    .header {
+        background: var(--main-color);
+        color: white;
+        /* Reduced padding from 40px 20px to 20px */
+        padding: 50px 20px;
+        text-align: center;
+        /* Adds a small gap beneath the navbar */
+        margin-top: 20px;
+    }
+
+        .header h1 {
+            margin: 0;
+            /* Slightly smaller font size if desired */
+            font-size: 2.5rem;
+        }
+
+        .header p {
+            margin-top: 1rem;
+            font-size: 1.6rem;
+        }
+
+    /* SEARCH BAR */
+    .search-bar {
+        margin-top: 2rem;
+    }
+
+        .search-bar input[type="text"] {
+            padding: 1.5rem;
+            /* Reduced width from 60% to 50% to make it narrower */
+            width: 50%;
+            border-radius: 2rem;
+            border: none;
+            font-size: 1.4rem;
+            transition: box-shadow 0.3s;
+        }
+
+            .search-bar input[type="text"]:focus {
+                outline: none;
+                box-shadow: 0 0 8px var(--accent-color);
+            }
+
+    /* SIDEBAR TOGGLE BUTTON (MOBILE) */
+    .sidebar-toggle {
+        display: none;
+        background-color: var(--accent-color);
+        color: #fff;
+        border: none;
+        padding: 1rem 2rem;
+        font-size: 1.6rem;
+        cursor: pointer;
+        margin: 1rem 0 0 1rem;
+        border-radius: 0.5rem;
+    }
+
+        .sidebar-toggle:hover {
+            opacity: 0.9;
+        }
+
+    /* MAIN CONTAINER */
+    .container {
+        display: flex;
+        flex-wrap: wrap;
+        padding: 45px;
+        max-width: 100%;
+        position: relative;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+        width: 15%;
+        min-width: 180px;
+        padding: 20px;
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        display: block;
+    }
+
+    .sidebar-header {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        position: relative;
+        margin-bottom: 1rem;
+    }
+
+        .sidebar-header h3 {
+            margin: 0;
+            font-size: 2rem;
+        }
+
+        .sidebar-header hr {
+            flex: 1;
+            border: none;
+            height: 1px;
+            background: #ccc;
+            margin: 0;
+        }
+
+    .close-btn {
+        display: none;
+        position: absolute;
+        right: 0;
+        font-size: 2rem;
+        line-height: 2rem;
+        cursor: pointer;
+        color: #999;
+        margin-right: 1rem;
+    }
+
+        .close-btn:hover {
+            color: #666;
+        }
+
+    .category-item {
+        display: flex;
+        align-items: center;
+        padding: 0.8rem;
+        margin-bottom: 0.5rem;
+        background: #f9f9f9;
+        border-radius: 8px;
+        font-size: 1.3rem;
+        cursor: pointer;
+        transition: background 0.3s ease;
+    }
+
+        .category-item:hover {
+            background: #e0e0e0;
+        }
+
+        .category-item input[type="checkbox"] {
+            position: absolute;
+            opacity: 0;
+            cursor: pointer;
+        }
+
+    .custom-checkmark {
+        width: 1.2rem;
+        height: 1.2rem;
+        border: 1px solid #ccc;
+        border-radius: 3px;
+        margin-right: 0.8rem;
+        transition: border-color 0.3s;
+    }
+
+    .category-item input[type="checkbox"]:checked + .custom-checkmark {
+        background-color: var(--accent-color);
+        border-color: var(--accent-color);
+        background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg viewBox='0 0 13 10' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 5l3.5 3L12 1' stroke='%23fff' stroke-width='2' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+        background-repeat: no-repeat;
+        background-position: center;
+        background-size: 70%;
+    }
+
+    /* CLEAR FILTERS BUTTON */
+    #clearFilters {
+        background: var(--accent-color);
+        border: none;
+        color: #fff;
+        padding: 0.8rem 1.2rem;
+        font-size: 1.4rem;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: 1rem;
+        transition: background 0.3s ease;
+    }
+
+        #clearFilters:hover {
+            background: #3fae5a;
+        }
+
+    /* COURSE LISTING */
+    .course-list {
+        width: 80%;
+        margin: 2rem auto;
+        display: grid;
+        grid-template-columns: repeat(auto-fit, 300px);
+        gap: 16px;
+        justify-content: center;
+    }
+
+    .course-item {
+        display: flex;
+        flex-direction: column;
+        background: white;
+        margin-bottom: 10px;
+        border-radius: 20px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        height: 20rem;
+        overflow: hidden;
+        text-decoration: none;
+        color: inherit;
+        cursor: pointer;
+        opacity: 0;
+        animation: fadeIn 0.5s forwards;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+        .course-item:hover {
+            transform: translateY(-10px) scale(1.03);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+        }
+
+        .course-item img {
+            width: 100%;
+            height: 50%;
+            object-fit: cover;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+
+        .course-item:hover img {
+            transform: scale(1.05);
+            opacity: 0.95;
+        }
+
+    .course-info {
+        flex: 1;
+        padding: 2rem;
+        border-top: 1px solid #f0f0f0;
+        background: #fff;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    .course-title {
+        font-size: 1.8rem;
+        font-weight: 500;
+        margin: 0.5rem 0;
+        color: #333;
+    }
+
+    .course-instructor {
+        font-size: 1.4rem;
+        color: #777;
+        margin-bottom: 0.5rem;
+    }
+
+    .instructor-price {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .course-price {
+        font-weight: 700;
+        font-size: 2.2rem;
+        color: var(--accent-color);
+    }
+
+
+        .sidebar.active {
+            display: block;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 280px;
+            height: 100vh;
+            z-index: 999;
+            overflow-y: auto;
+            background-color: #fff;
+        }
+
+    .close-btn {
+        display: block;
+    }
+
+    .container {
+        flex-direction: column;
+        padding: 20px;
+    }
+
+    .course-list {
+        width: 100%;
+        margin: 2rem auto;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    }
+
+    .sidebar-header hr,
+    .sidebar-header h3 {
+        display: none;
+    }
+
+    .course-item {
+        height: auto;
+        margin-bottom: 20px;
+    }
+
+    }
+    /* PAGINATION */
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin: 20px 0;
+    }
+
+        .pagination button {
+            border: none;
+            background: var(--main-color);
+            color: white;
+            margin: 0 5px;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+            .pagination button:hover {
+                background: var(--accent-color);
+            }
+
+            .pagination button.active {
+                background: var(--accent-color);
+            }
+</style>

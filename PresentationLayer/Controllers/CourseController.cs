@@ -41,7 +41,7 @@ namespace PresentationLayer.Controllers
 
         public async Task<IActionResult> UserIndex(int? categoryId)
         {
-            // Fetch all active categories
+            // Fetch active categories for filtering
             var categories = await _unitOfWork.Categories.FindAllAsync(c => c.IsActive);
             ViewBag.Categories = categories.Select(c => new SelectListItem
             {
@@ -49,10 +49,15 @@ namespace PresentationLayer.Controllers
                 Text = c.Category_Name
             });
 
-            // Fetch courses based on selected category (or all active courses)
-            var coursesQuery = _unitOfWork.Courses.FindAllAsync(c => c.IsActive, q => q.Include(c => c.Category));
+            // Retrieve only active courses & include Category name
+            var coursesQuery = _unitOfWork.Courses.FindAllAsync(
+                c => c.IsActive,
+                q => q.Include(c => c.Category)
+            );
+
             var courses = await coursesQuery;
 
+            // If a category is selected, filter by category ID
             if (categoryId.HasValue)
             {
                 courses = courses.Where(c => c.Category_ID == categoryId.Value);
@@ -61,6 +66,7 @@ namespace PresentationLayer.Controllers
             var courseDTOs = _mapper.Map<IEnumerable<CourseDTO>>(courses);
             return View(courseDTOs);
         }
+
 
 
         public async Task<IActionResult> Details(int id)

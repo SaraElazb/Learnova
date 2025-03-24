@@ -1,41 +1,114 @@
 ﻿@model IEnumerable<BusinessLogicLayer.DTOs.CourseDtos.CourseDTO>
 
 @{
-    ViewData["Title"] = "Available Courses";
+    ViewBag.Title = "Available Courses";
+    var categories = ViewBag.Categories as IEnumerable<SelectListItem>;
 }
 
-<h2 class="text-center">Available Courses</h2>
+<div class="header">
+    <h1>Browse in E-Learning</h1>
+    <p>Discover learning content designed to help you boost your career.</p>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search for courses..." oninput="filterCourses()" />
+    </div>
+</div>
+<button class="sidebar-toggle" onclick="toggleSidebar()">Show Filters</button>
 
-<!-- Category Filter Form -->
-<form method="get" class="mb-3">
-    <label>Filter by Category:</label>
-    <select name="categoryId" class="form-control" onchange="this.form.submit()">
-        <option value="">-- All Categories --</option>
-        @foreach (var category in ViewBag.Categories)
-        {
-            <option value="@category.Value" selected="@((ViewContext.HttpContext.Request.Query["categoryId"] == category.Value).ToString().ToLower())">
-                @category.Text
-            </option>
-        }
-    </select>
-</form>
+<div class="container">
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>Categories</h3>
+            <hr />
+            <div class="close-btn" onclick="toggleSidebar()">&times;</div>
+        </div>
+        <ul>
+            <li>
+                <a href="@Url.Action("UserIndex", "Course")">All Categories</a>
+            </li>
+            @if (categories != null)
+            {
+                @foreach (var category in categories)
+                {
+                    <li>
+                        <a href="@Url.Action("UserIndex", "Course", new { categoryId = category.Value })">
+                            @category.Text
+                        </a>
+                    </li>
+                }
+            }
+        </ul>
+        <button id="clearFilters" onclick="window.location='@Url.Action("UserIndex", "Course")'">
+            Clear Filters
+        </button>
+    </div>
+ </div>
 
+<!-- Course List -->
 <div class="row">
-    @foreach (var course in Model)
+    @if (Model != null && Model.Any())
     {
-        <div class="col-md-4">
-            <div class="card mb-3">
-                <img src="@course.ImagePath" class="card-img-top" alt="Course Image">
-                <div class="card-body">
-                    <h5 class="card-title">@course.Title</h5>
-                    <p class="card-text">@course.Description</p>
-                    <p><strong>Price:</strong> $@course.Price</p>
-                    <p><strong>Rating:</strong> @course.Rating / 5</p>
-                    <p><strong>Category:</strong> @course.CategoryName</p>
-                    <a class="btn btn-primary" asp-action="Details" asp-route-id="@course.Course_ID">View Details</a>
+        @foreach (var course in Model)
+        {
+            <div class="col-lg-3 col-md-4 col-sm-6 mb-4">
+                <div class="card">
+                    <img src="@course.ImagePath" class="course-image" alt="Course Image">
+                    <div class="card-body">
+                        <h5 class="card-title">@course.Title</h5>
+                        <p><strong>Price:</strong> $@course.Price</p>
+                        <p><strong>Category:</strong> @course.CategoryName</p>
+                        <a class="btn btn-primary btn-sm" asp-action="Details" asp-route-id="@course.Course_ID">View Details</a>
+                    </div>
                 </div>
             </div>
-        </div>
+        }
+    }
+    else
+    {
+        <p>No courses found for the selected category.</p>
     }
 </div>
+
+
+<style>
+
+    .course-image {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .card {
+        width: 100%; 
+        max-width: 280px;
+        margin: auto;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .card-body {
+        text-align: center;
+        padding: 15px;
+    }
+
+    .card-title {
+        font-size: 1.2rem;
+        font-weight: bold;
+    }
+
+    .btn-sm {
+        padding: 5px 10px;
+        font-size: 0.9rem;
+    }
+
+
+</style>
+
+
+
+
+
+
+
+
 
