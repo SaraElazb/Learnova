@@ -18,6 +18,7 @@ namespace PresentationLayer.Controllers
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
         }
+        [Route("/categories-list")]
         public async Task<IActionResult> Index()
         {
             var categories = await _unitOfWork.Categories.GetAllAsync();

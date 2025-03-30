@@ -1,0 +1,64 @@
+﻿@model IEnumerable<BusinessLogicLayer.DTOs.CategoryDtos.CategoryDTO>
+
+@{
+    ViewData["Title"] = "Categories";
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Courses - LearnNova</title>
+    <link rel="stylesheet" href="~/css/CategoryList.css" />
+</head>
+<body>
+
+<div class="container mt-4">
+    <h2 class="mb-3">📂 Category List</h2>
+    <a asp-action="Create" class="btn btn-primary mb-3">➕ Add New Category</a>
+
+    <table class="table table-striped table-hover">
+
+        <thead class="table-dark">
+            <tr>
+                <th>#</th>
+                <th>Category Name</th>
+                <th>Description</th>
+                <th>Image</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+
+            @foreach (var category in Model.Where(c => c.IsActive))
+            {
+                <tr>
+                    <td>@category.Category_ID</td>
+                    <td>@category.Category_Name</td>
+                    <td>@category.Description</td>
+                    <td>
+                        @if (!string.IsNullOrEmpty(category.ImagePath))
+                        {
+                            <img src="@category.ImagePath" alt="Category Image" width="50" height="50" class="rounded">
+                        }
+                        else
+                        {
+                            <span>🚫 No Image</span>
+                        }
+                    </td>
+                    <td>
+                        <a asp-action="Edit" asp-route-id="@category.Category_ID" class="btn btn-sm btn-warning">✏️ Edit</a>
+                        <a asp-action="Delete" asp-route-id="@category.Category_ID" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this category?')">🗑️ Delete</a>
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+    </table>
+</div>
+
+
+
+</body>
