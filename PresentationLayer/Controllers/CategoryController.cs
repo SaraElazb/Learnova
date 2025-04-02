@@ -21,6 +21,7 @@ namespace PresentationLayer.Controllers
             _webHostEnvironment = webHostEnvironment;
             _categoryManager = categoryManager;
         }
+        [Route("/categories-list")]
         public async Task<IActionResult> Index()
         {
             var categoryDTOs = await _categoryManager.GetCategoriesAsync();

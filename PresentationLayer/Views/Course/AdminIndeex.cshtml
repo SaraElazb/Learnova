@@ -1,0 +1,40 @@
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model IEnumerable<BusinessLogicLayer.DTOs.CourseDtos.CourseDTO>
+
+@{
+    ViewData["Title"] = "Manage Courses";
+}
+
+<h2 class="text-center">Manage Courses</h2>
+<a class="btn btn-success mb-3" asp-action="Create">Add New Course</a>
+
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Title</th>
+            <th>Category</th>
+            <th>Price</th>
+            <th>Rating</th>
+            <th>Status</th>
+            <th>Actions</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var course in Model)
+        {
+            <tr>
+                <td>@course.Title</td>
+                <td>@course.CategoryName</td>
+                <td>@course.Price $</td>
+                <td>@course.Rating / 5</td>
+                <td>@(course.IsActive ? "Active" : "Inactive")</td>
+                <td>
+                    <a class="btn btn-info btn-sm" asp-action="Details" asp-route-id="@course.Course_ID">View</a>
+                    <a class="btn btn-warning btn-sm" asp-action="Edit" asp-route-id="@course.Course_ID">Edit</a>
+                    <a asp-action="Delete" asp-route-id="@course.Course_ID" class="btn btn-sm btn-danger" onclick="return confirm('Are you sure you want to delete this course?')">Delete</a>
+
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
