@@ -6,6 +6,7 @@ using BusinessLogicLayer.Manager.CourseManager;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using System.Linq;
 
 namespace PresentationLayer.Controllers
 {

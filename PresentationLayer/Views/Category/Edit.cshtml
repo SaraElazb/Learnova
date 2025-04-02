@@ -3,33 +3,47 @@
 @{
     ViewData["Title"] = "Edit Category";
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Courses - LearnNova</title>
+    <link rel="stylesheet" href="~/css/AddCategory.css" />
+</head>
 
-<div class="container mt-4">
-    <h2>✏️ Edit Category</h2>
+<body>
 
-    <form asp-action="Edit" method="post" enctype="multipart/form-data" class="card p-4 shadow-sm">
-        <input type="hidden" asp-for="Category_Name" />
+    <div class="container mt-4">
+        <h2>✏️ Edit Category</h2>
 
-        <div class="mb-3">
-            <label asp-for="Category_Name" class="form-label">Category Name</label>
-            <input asp-for="Category_Name" class="form-control">
-            <span asp-validation-for="Category_Name" class="text-danger"></span>
-        </div>
+        <form asp-action="Edit" method="post" enctype="multipart/form-data" class="card p-4 shadow-sm">
+            <input type="hidden" asp-for="Category_Name" />
 
-        <div class="mb-3">
-            <label asp-for="Description" class="form-label">Description</label>
-            <textarea asp-for="Description" class="form-control"></textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
+            <div class="mb-3">
+                <label asp-for="Category_Name" class="form-label">Category Name</label>
+                <input asp-for="Category_Name" class="form-control">
+                <span asp-validation-for="Category_Name" class="text-danger"></span>
+            </div>
 
-        <div class="mb-3">
-            <label asp-for="Image" class="form-label">Upload New Image</label>
-            <input type="file" asp-for="Image" class="form-control">
-            <span asp-validation-for="Image" class="text-danger"></span>
-        </div>
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Description</label>
+                <textarea asp-for="Description" class="form-control"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
 
-        <button type="submit" class="btn btn-warning">💾 Save Changes</button>
-        <a asp-action="Index" class="btn btn-secondary">🔙 Back</a>
-    </form>
-</div>
+            <div class="mb-3">
+                <label asp-for="Image" class="form-label">Upload New Image</label>
+                <input type="file" asp-for="Image" class="form-control">
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+            <div class="btns">
 
+                <button type="submit" class="btn btn-primary">💾 Save Changes</button>
+                <a asp-action="Index" class="btn btn-secondary">🔙 Back</a>
+            </div>
+        </form>
+    </div>
+
+
+</body>

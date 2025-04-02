@@ -1,0 +1,103 @@
+﻿
+@model IEnumerable<BusinessLogicLayer.DTOs.CourseDtos.CourseDTO>
+@{
+    ViewBag.Title = "Courses";
+    var categories = ViewBag.Categories as IEnumerable<SelectListItem>;
+}
+@{
+    Layout = null; // No layout used
+}
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title</title>
+    <link rel="stylesheet" href="~/css/userindex.css" />
+</head>
+<body>
+<div class="navbar">
+    <div class="logo">
+        <img src="~/assets/logo.png" alt="Logo" />
+    </div>
+    <div class="nav-links">
+        <a href="@Url.Action("UserIndex", "Course")">Home</a>
+        <a href="@Url.Action("UserIndex", "Course")">Courses</a>
+        <a href="#">About Us</a>
+        <a href="#">Contact</a>
+    </div>
+</div>
+
+<div class="header">
+    <h1>Browse in E-Learning</h1>
+    <p>Discover learning content designed to help you boost your career.</p>
+    <div class="search-bar">
+        <input type="text" id="searchInput" placeholder="Search for courses..." oninput="filterCourses()" />
+    </div>
+</div>
+
+<button class="sidebar-toggle" onclick="toggleSidebar()">Show Filters</button>
+
+<div class="container">
+    <div class="sidebar" id="sidebar">
+        <div class="sidebar-header">
+            <h3>Categories</h3>
+            <hr />
+            <div class="close-btn" onclick="toggleSidebar()">&times;</div>
+        </div>
+        <ul>
+            <li>
+                <a href="@Url.Action("UserIndex", "Course")">All Categories</a>
+            </li>
+            @if (categories != null)
+            {
+                @foreach (var category in categories)
+                {
+                    <li>
+                        <a href="@Url.Action("UserIndex", "Course", new { categoryId = category.Value })">
+                            @category.Text
+                        </a>
+                    </li>
+                }
+            }
+        </ul>
+        <button id="clearFilters" onclick="window.location='@Url.Action("UserIndex", "Course")'">
+            Clear Filters
+        </button>
+    </div>
+
+    <div class="course-list" id="course-list">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var course in Model)
+            {
+                <a class="course-item" href="@Url.Action("Details", "Course", new { id = course.Course_ID })">
+                    <img src="@course.ImagePath" alt="Course Image" />
+                    <div class="course-info">
+                        <h3 class="course-title">@course.Title</h3>
+                        <div class="instructor-price">
+                            <p class="course-instructor">@course.</p>
+                            <div class="course-price">@course.Price</div>
+                        </div>
+                    </div>
+                </a>
+            }
+        }
+        else
+        {
+            <p>No courses found for the selected category.</p>
+        }
+    </div>
+
+    <div id="pagination" class="pagination"></div>
+</div>
+
+<!-- Inject course data as a global JavaScript variable -->
+<script>
+    const coursesData = @Html.Raw(JsonSerializer.Serialize(Model));
+</script>
+
+<script src="~/js/script.js"></script>
+</body>
+</html>
