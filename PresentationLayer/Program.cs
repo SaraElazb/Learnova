@@ -23,6 +23,8 @@ namespace PresentationLayer
             builder.Services.AddDbContext<ELearningDbContext>(options =>
                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            builder.Services.AddSession();
+
 
             var app = builder.Build();
 
@@ -40,6 +42,8 @@ namespace PresentationLayer
             app.UseRouting();
 
             app.UseAuthorization();
+
+            app.UseSession();
 
             app.MapControllerRoute(
                 name: "default",
