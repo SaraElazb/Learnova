@@ -2,10 +2,6 @@ using AutoMapper;
 using BusinessLogicLayer.DTOs.QuizDtos;
 using DataAccessLayer.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BusinessLogicLayer.Manager.QuizManager
 {

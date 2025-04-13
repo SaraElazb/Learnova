@@ -24,21 +24,20 @@ namespace BusinessLogicLayer.Helpers
             //////////////////
 
             CreateMap<Course, CourseDTO>()
-                .ForMember(dest => dest.CategoryName, opt => opt.MapFrom(src => src.Category.Category_Name));
+                .ReverseMap();
 
             CreateMap<CourseRequest, Course>()
-                .ForMember(dest => dest.ImagePath, opt => opt.Ignore())
-                .ForMember(dest => dest.Course_Name, opt => opt.MapFrom(src => src.Title));
+                .ReverseMap();
 
             CreateMap<Course, CourseRequest>()
                 .ForMember(dest => dest.Image, opt => opt.Ignore())
                 .ForMember(dest => dest.CategorySelectList, opt => opt.Ignore())
-                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Course_Name));
+                .ForMember(dest => dest.Title, opt => opt.MapFrom(src => src.Title));
 
             //////////////////
 
             CreateMap<Lesson, LessonDto>()
-                .ForMember(dest => dest.CourseName, opt => opt.MapFrom(src => src.Course.Course_Name));
+                .ForMember(dest => dest.CourseName, opt => opt.MapFrom(src => src.Course.Title));
             
             CreateMap<LessonDto, Lesson>();
             CreateMap<LessonDto, LessonRequest>().ReverseMap();

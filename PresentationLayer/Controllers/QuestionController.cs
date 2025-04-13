@@ -4,9 +4,6 @@ using BusinessLogicLayer.Manager.QuestionManager;
 using BusinessLogicLayer.Manager.QuizManager;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PresentationLayer.Controllers
 {
@@ -61,7 +58,7 @@ namespace PresentationLayer.Controllers
             var model = new QuestionRequest
             {
                 QuizID = quizId,
-                Answers = new List<string> { "", "", "", "" } // Initialize with 4 empty answers
+                Answers = new List<string> { "", "", "", "" }
             };
             
             ViewBag.Quizzes = await GetQuizzesAsync();
@@ -88,7 +85,6 @@ namespace PresentationLayer.Controllers
 
             var model = _mapper.Map<QuestionRequest>(question);
             
-            // Get the answers for this question
             var fullQuestion = await _questionManager.FindAsync(id);
             model.Answers = fullQuestion.Answers.Select(a => a.Answers).ToList();
             

@@ -2,10 +2,6 @@ using AutoMapper;
 using BusinessLogicLayer.DTOs.QuizDtos;
 using DataAccessLayer.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BusinessLogicLayer.Manager.QuestionManager
 {
@@ -66,7 +62,6 @@ namespace BusinessLogicLayer.Manager.QuestionManager
                 _unitOfWork.GetRepository<Question>().Create(question);
                 await _unitOfWork.SaveAsync();
 
-                // Create answers for the question
                 if (model.Answers != null && model.Answers.Any())
                 {
                     foreach (var answerText in model.Answers)
@@ -108,18 +103,15 @@ namespace BusinessLogicLayer.Manager.QuestionManager
 
                 _unitOfWork.GetRepository<Question>().Update(question);
 
-                // Update answers
                 var existingAnswers = await _unitOfWork.GetRepository<Answer>()
                     .FindByCondition(a => a.QuestionID == id)
                     .ToListAsync();
 
-                // Delete existing answers
                 foreach (var answer in existingAnswers)
                 {
                     _unitOfWork.GetRepository<Answer>().Delete(answer);
                 }
 
-                // Add new answers
                 if (model.Answers != null && model.Answers.Any())
                 {
                     foreach (var answerText in model.Answers)
@@ -155,7 +147,6 @@ namespace BusinessLogicLayer.Manager.QuestionManager
                 if (question == null)
                     return false;
 
-                // Delete associated answers first
                 var answers = await _unitOfWork.GetRepository<Answer>()
                     .FindByCondition(a => a.QuestionID == id)
                     .ToListAsync();
