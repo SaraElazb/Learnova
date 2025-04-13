@@ -1,7 +1,4 @@
 using BusinessLogicLayer.DTOs.LessonDtos;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 
 namespace BusinessLogicLayer.Manager.LessonManager
 {

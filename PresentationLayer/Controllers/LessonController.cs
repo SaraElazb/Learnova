@@ -4,8 +4,6 @@ using BusinessLogicLayer.Manager.CourseManager;
 using BusinessLogicLayer.Manager.LessonManager;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace PresentationLayer.Controllers
 {
@@ -31,7 +29,7 @@ namespace PresentationLayer.Controllers
             return courses.Select(c => new SelectListItem
             {
                 Value = c.Course_ID.ToString(),
-                Text = c.Course_Name
+                Text = c.Title
             });
         }
 
@@ -70,7 +68,6 @@ namespace PresentationLayer.Controllers
         {
             try
             {
-                // Log the incoming model
                 Console.WriteLine("======= LESSON CREATE DIAGNOSTICS =======");
                 Console.WriteLine($"Title: {model.Title}");
                 Console.WriteLine($"Description: {model.Description?.Substring(0, Math.Min(model.Description?.Length ?? 0, 50))}...");
@@ -79,7 +76,6 @@ namespace PresentationLayer.Controllers
                 Console.WriteLine($"LessonOrder: {model.LessonOrder}");
                 Console.WriteLine($"VideoUri: {model.VideoUri}");
                 
-                // Force ModelState to be valid regardless of validation errors
                 ModelState.Clear();
                 
                 Console.WriteLine($"Creating lesson: {model.Title}, Course ID: {model.Course_ID}");
@@ -97,17 +93,14 @@ namespace PresentationLayer.Controllers
                 Console.WriteLine("Lesson creation successful, redirecting to AdminIndex");
                 TempData["SuccessMessage"] = $"Lesson '{model.Title}' created successfully! You can now create a quiz for this lesson.";
                 
-                // Get the created lesson to get its ID
                 var lessons = await _lessonManager.FindAllAsync();
                 var createdLesson = lessons.FirstOrDefault(l => l.Title == model.Title && l.Course_ID == model.Course_ID);
                 
                 if (createdLesson != null)
                 {
-                    // Redirect to success page with lesson info
                     return RedirectToAction(nameof(SuccessCreated), new { lessonId = createdLesson.Lesson_ID, lessonTitle = createdLesson.Title });
                 }
                 
-                // Fallback if we can't find the created lesson
                 return RedirectToAction(nameof(AdminIndex));
             }
             catch (Exception ex)
@@ -162,7 +155,6 @@ namespace PresentationLayer.Controllers
             return RedirectToAction(nameof(AdminIndex));
         }
 
-        // Diagnostic endpoint to check lessons
         public async Task<IActionResult> CheckLessons()
         {
             var lessons = await _lessonManager.FindAllAsync();
@@ -172,12 +164,10 @@ namespace PresentationLayer.Controllers
             });
         }
 
-        // Diagnostic endpoint to create a test lesson
         public async Task<IActionResult> CreateTestLesson(int courseId = 1)
         {
             try
             {
-                // Create a simple test lesson
                 var lessonRequest = new LessonRequest
                 {
                     Title = "Test Lesson " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
@@ -205,7 +195,6 @@ namespace PresentationLayer.Controllers
             }
         }
 
-        // Diagnostic endpoint to check courses
         public async Task<IActionResult> CheckCourses()
         {
             try
@@ -215,7 +204,7 @@ namespace PresentationLayer.Controllers
                 
                 return Json(new { 
                     courseCount = courses.Count(),
-                    courses = courses.Select(c => new { c.Course_ID, c.Course_Name }),
+                    courses = courses.Select(c => new { c.Course_ID, c.Title }),
                     selectListCount = selectList.Count(),
                     selectList = selectList
                 });
@@ -230,20 +219,17 @@ namespace PresentationLayer.Controllers
             }
         }
         
-        // Diagnostic endpoint to create a simple test course if none exist
         public async Task<IActionResult> CreateTestCourse()
         {
             try
             {
-                // Create a course request object
                 var courseRequest = new BusinessLogicLayer.DTOs.CourseDtos.CourseRequest {
                     Title = "Test Course " + DateTime.Now.ToString("yyyy-MM-dd HH:mm:ss"),
                     Description = "This is a test course",
-                    Category_ID = 1,  // You may need to adjust this depending on your system
+                    Category_ID = 1,
                     Price = 0
                 };
                 
-                // Call the method without assigning its result to a variable
                 await _courseManager.CreateCourseAsync(courseRequest);
                 
                 return Json(new {

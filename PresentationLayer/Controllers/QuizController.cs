@@ -6,10 +6,6 @@ using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System;
 
 namespace PresentationLayer.Controllers
 {
@@ -90,7 +86,6 @@ namespace PresentationLayer.Controllers
             
             if (!lessonsList.Any())
             {
-                // No lessons available - show message to user
                 TempData["ErrorMessage"] = "No lessons are available. Please create a lesson first.";
                 return RedirectToAction("Create", "Lesson");
             }
@@ -100,7 +95,6 @@ namespace PresentationLayer.Controllers
                 LessonSelectList = lessonsList
             };
             
-            // If a lessonId was passed, pre-select it in the dropdown
             if (lessonId.HasValue)
             {
                 model.Lesson_ID = lessonId.Value;
@@ -115,21 +109,18 @@ namespace PresentationLayer.Controllers
         {
             try
             {
-                // Log the incoming model data
                 Console.WriteLine("======= QUIZ CREATE DIAGNOSTICS =======");
                 Console.WriteLine($"Title: {model.Title}");
                 Console.WriteLine($"Lesson ID: {model.Lesson_ID}");
                 Console.WriteLine($"Passing Score: {model.Passing_score}");
                 Console.WriteLine($"Instructions: {model.Instructions?.Substring(0, Math.Min(model.Instructions?.Length ?? 0, 50))}...");
                 
-                // Force ModelState to be valid regardless of validation errors
                 ModelState.Clear();
                 
                 Console.WriteLine($"Creating quiz: {model.Title}, Lesson ID: {model.Lesson_ID}");
                 
                 await _quizManager.CreateQuizAsync(model);
                 
-                // Show success message
                 TempData["SuccessMessage"] = $"Quiz '{model.Title}' created successfully!";
                 
                 return RedirectToAction(nameof(AdminIndex));
@@ -186,7 +177,6 @@ namespace PresentationLayer.Controllers
             return RedirectToAction(nameof(AdminIndex));
         }
 
-        // Diagnostic endpoint
         public async Task<IActionResult> CheckLessonsForQuiz()
         {
             var lessonItems = await GetLessonsAsync();
@@ -200,14 +190,12 @@ namespace PresentationLayer.Controllers
             });
         }
 
-        // Diagnostic endpoint
         public async Task<IActionResult> DiagnoseQuizLessonIssue()
         {
             try
             {
                 var diagnosticInfo = new Dictionary<string, object>();
                 
-                // Step 1: Check direct database access
                 var lessonRepo = _unitOfWork.GetRepository<Lesson>();
                 var lessonsFromDb = await lessonRepo.FindAll().ToListAsync();
                 diagnosticInfo.Add("1_DirectDbLessonCount", lessonsFromDb.Count);
@@ -215,19 +203,16 @@ namespace PresentationLayer.Controllers
                     l.Lesson_ID, l.Title, l.Course_ID
                 }));
                 
-                // Step 2: Check LessonManager.FindAllAsync method
                 var lessonsFromManager = await _lessonManager.FindAllAsync();
                 diagnosticInfo.Add("2_ManagerLessonCount", lessonsFromManager.Count());
                 diagnosticInfo.Add("2_ManagerLessons", lessonsFromManager.Select(l => new { 
                     l.Lesson_ID, l.Title, l.Course_ID
                 }));
                 
-                // Step 3: Check GetLessonsAsync method
                 var selectItems = await GetLessonsAsync();
                 diagnosticInfo.Add("3_SelectItemsCount", selectItems.Count());
                 diagnosticInfo.Add("3_SelectItems", selectItems);
                 
-                // Step 4: Check QuizRequest model creation
                 var model = new QuizRequest
                 {
                     LessonSelectList = selectItems,

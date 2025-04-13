@@ -2,10 +2,6 @@ using AutoMapper;
 using BusinessLogicLayer.DTOs.LessonDtos;
 using DataAccessLayer.Repositories;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace BusinessLogicLayer.Manager.LessonManager
 {
@@ -30,23 +26,19 @@ namespace BusinessLogicLayer.Manager.LessonManager
                     .Include(l => l.Quiz)
                     .ToListAsync();
 
-                // Add debugging information
                 Console.WriteLine($"Found {lessons.Count} lessons in database");
                 foreach (var lesson in lessons)
                 {
                     Console.WriteLine($"Lesson ID: {lesson.Lesson_ID}, Title: {lesson.Title}, Course ID: {lesson.Course_ID}");
                 }
 
-                // Return all lessons without filtering
                 return _mapper.Map<IEnumerable<LessonDto>>(lessons);
             }
             catch (Exception ex)
             {
-                // Log the exception
                 Console.WriteLine($"Error in FindAllAsync: {ex.Message}");
                 Console.WriteLine($"Stack trace: {ex.StackTrace}");
                 
-                // Return empty collection instead of throwing
                 return Enumerable.Empty<LessonDto>();
             }
         }
