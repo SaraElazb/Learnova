@@ -1,0 +1,43 @@
+@model IEnumerable<BusinessLogicLayer.DTOs.QuizDtos.QuizDto>
+
+@{
+    ViewData["Title"] = "Lesson Quizzes";
+}
+
+<div class="container mt-4">
+    <h1>Quizzes for Lesson</h1>
+    
+    <div class="row">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center my-5">
+                <h3>No quizzes available for this lesson yet.</h3>
+            </div>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-header bg-info text-white">
+                            <h5 class="card-title mb-0">@item.Title</h5>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Passing Score:</strong> @item.Passing_score</p>
+                            <p><strong>Questions:</strong> @(item.Questions != null ? item.Questions.Count : 0)</p>
+                            <p class="card-text">@item.Instructions</p>
+                        </div>
+                        <div class="card-footer bg-transparent">
+                            <a asp-action="Details" asp-route-id="@item.Quiz_ID" class="btn btn-primary w-100">Take Quiz</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    
+    <div class="mt-4">
+        <a asp-controller="Lesson" asp-action="Details" asp-route-id="@ViewBag.LessonId" class="btn btn-secondary">Back to Lesson</a>
+    </div>
+</div> 

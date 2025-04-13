@@ -11,7 +11,7 @@ public class Submission
     public int Quiz_ID { get; set; }
 
     [Required]
-    public int User_ID { get; set; }
+    public string User_ID { get; set; }
 
     public int Score { get; set; }
 

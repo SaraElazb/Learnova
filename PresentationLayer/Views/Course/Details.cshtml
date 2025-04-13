@@ -12,5 +12,9 @@
 <p><strong>Price:</strong> $@Model.Price</p>
 <p><strong>Rating:</strong> @Model.Rating / 5</p>
 <p><strong>Created On:</strong> @Model.CreatedDate.ToString("yyyy-MM-dd")</p>
+<form asp-controller="ShoppingCart" asp-action="AddToCart" method="post">
+    <input type="hidden" name="id" value="@Model.Course_ID" />
+    <button type="submit" class="btn btn-primary">Add to Cart</button>
+</form>
 
-<a class="btn btn-secondary" asp-action="UserIndex">Back to Courses</a>
+<a class="btn btn-secondary" asp-controller="Course" asp-action="UserIndex">Back to Courses</a>

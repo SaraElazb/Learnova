@@ -9,7 +9,7 @@ public class Review
     public int Review_ID { get; set; }
 
     [Required]
-    public int User_ID { get; set; }
+    public string User_ID { get; set; }
 
     [Required]
     public int Course_ID { get; set; }

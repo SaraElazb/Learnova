@@ -1,0 +1,85 @@
+@model BusinessLogicLayer.DTOs.QuizDtos.QuestionRequest
+
+@{
+    ViewData["Title"] = "Edit Question";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Edit Question</h2>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="QuestionID" />
+                        <input type="hidden" asp-for="QuizID" />
+                        
+                        <div class="mb-3">
+                            <label asp-for="QuestionText" class="form-label">Question Text</label>
+                            <textarea asp-for="QuestionText" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="QuestionText" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Score" class="form-label">Score</label>
+                            <input asp-for="Score" class="form-control" type="number" min="1" />
+                            <span asp-validation-for="Score" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-4">
+                            <label class="form-label">Answer Options</label>
+                            <div class="card">
+                                <div class="card-body">
+                                    @for (int i = 0; i < Model.Answers.Count; i++)
+                                    {
+                                        <div class="mb-3">
+                                            <div class="input-group">
+                                                <div class="input-group-text">
+                                                    <input type="radio" name="rightAnswerIndex" value="@i" class="form-check-input mt-0" 
+                                                           @(Model.Answers[i] == Model.RightAns ? "checked" : "") required>
+                                                </div>
+                                                <input asp-for="Answers[i]" class="form-control" placeholder="Answer option @(i+1)" required />
+                                            </div>
+                                        </div>
+                                    }
+                                    
+                                    <div class="alert alert-info small">
+                                        <i class="bi bi-info-circle"></i> Select the radio button next to the correct answer.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="Index" asp-route-quizId="@Model.QuizID" class="btn btn-secondary">Back to Questions</a>
+                            <button type="submit" class="btn btn-primary">Save</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        $(document).ready(function() {
+            $('form').submit(function(e) {
+                var selectedIndex = $('input[name="rightAnswerIndex"]:checked').val();
+                if (selectedIndex !== undefined) {
+                    var correctAnswer = $('input[name="Answers[' + selectedIndex + ']"]').val();
+                    $('<input>').attr({
+                        type: 'hidden',
+                        name: 'RightAns',
+                        value: correctAnswer
+                    }).appendTo('form');
+                }
+            });
+        });
+    </script>
+} 

@@ -23,6 +23,11 @@ namespace DataAccessLayer.Repositories
         );
         void HardDelete(T entity);
         void SoftDelete(T entity);
+        
+        // Added methods needed by our manager classes
+        IQueryable<T> FindAll();
+        IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression);
+        void Create(T entity);
+        void Delete(T entity);
     }
-
 }

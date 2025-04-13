@@ -66,9 +66,18 @@ namespace DataAccessLayer.Repositories
 
         public void Save()
         {
-            throw new NotImplementedException();
+            _context.SaveChanges();
         }
-       
+        
+        // Implementation for the missing methods
+        public IGenericRepository<T> GetRepository<T>() where T : class
+        {
+            return new GenericRepository<T>(_context);
+        }
+        
+        public async Task SaveAsync()
+        {
+            await _context.SaveChangesAsync();
+        }
     }
-
 }

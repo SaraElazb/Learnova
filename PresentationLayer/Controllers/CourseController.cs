@@ -1,28 +1,38 @@
 ﻿using AutoMapper;
 using BusinessLogicLayer.DTOs.CourseDtos;
 using BusinessLogicLayer.Helpers;
-using DataAccessLayer.Repositories;
+using BusinessLogicLayer.Manager.CategoryManager;
+using BusinessLogicLayer.Manager.CourseManager;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+
 namespace PresentationLayer.Controllers
 {
     public class CourseController : Controller
     {
-        private readonly IUnitOfWork _unitOfWork;
+        
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
+        private readonly ICourseManager _courseManager;
 
-        public CourseController(IUnitOfWork unitOfWork, IMapper mapper, IWebHostEnvironment webHostEnvironment)
+        private ICategoryManager _categoryManager { get; }
+
+        public CourseController( 
+                             IMapper mapper, IWebHostEnvironment webHostEnvironment  , 
+                             ICategoryManager categoryManager ,
+                             ICourseManager courseManager)
         {
-            _unitOfWork = unitOfWork;
+            
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
+            _categoryManager = categoryManager;
+             _courseManager = courseManager;
         }
         private async Task<IEnumerable<SelectListItem>> GetCategoriesAsync()
         {
-            var categories = await _unitOfWork.Categories.FindAllAsync(c => c.IsActive);
+            var categories = await _categoryManager.GetCategoriesAsync();
             return categories.Select(c => new SelectListItem
             {
                 Value = c.Category_ID.ToString(),
@@ -33,44 +43,29 @@ namespace PresentationLayer.Controllers
 
         public async Task<IActionResult> AdminIndex()
         {
-            var courses = await _unitOfWork.Courses.FindAllAsync(c => c.IsActive, include: q => q.Include(c => c.Category));
-            var activeCourses = courses.Where(c => c.IsActive);
-            var courseDTOs = _mapper.Map<IEnumerable<CourseDTO>>(activeCourses);
+            var courseDTOs = await _courseManager.FindAllAsync();
             return View(courseDTOs);
         }
 
-      [Route("/Courses")]
-      public async Task<IActionResult> UserIndex(string searchTerm, int[] selectedCategories)
-      {
-          var coursesQuery = await _unitOfWork.Courses.FindAllAsync(c => c.IsActive, include: q => q.Include(x => x.Category));
-          if (!string.IsNullOrWhiteSpace(searchTerm))
-          {
-              coursesQuery = coursesQuery.Where(c => c.Title.ToLower().Contains(searchTerm.ToLower()));
-          }
-          if (selectedCategories != null && selectedCategories.Length > 0)
-          {
-              coursesQuery = coursesQuery.Where(c => selectedCategories.Contains(c.Category_ID));
-          }
-          var coursesList = coursesQuery.ToList();
-          var courseDTOs = _mapper.Map<IEnumerable<CourseDTO>>(coursesList);
-          var categories = await _unitOfWork.Categories.FindAllAsync(c => c.IsActive);
-          ViewBag.Categories = categories.Select(c => new SelectListItem { Value = c.Category_ID.ToString(), Text = c.Category_Name });
-          ViewBag.SearchTerm = searchTerm;
-          ViewBag.SelectedCategories = selectedCategories;
-          return View(courseDTOs);
-      }
+        public async Task<IActionResult> UserIndex(int? categoryId)
+        {
+            var categories = await _categoryManager.GetCategoriesAsync();
+            ViewBag.Categories = categories.Select(c => new SelectListItem
+            {
+                Value = c.Category_ID.ToString(),
+                Text = c.Category_Name
+            });
 
-
-
-
+            var courseDTOs = await _courseManager.GetCoursesAsync(categoryId);
+            return View(courseDTOs);
+        }
 
         public async Task<IActionResult> Details(int id)
         {
-            var course = await _unitOfWork.Courses.FindAsync(c => c.Course_ID == id, include: q => q.Include(c => c.Category));
-            if (course == null) return NotFound();
+            var courseDTO = await _courseManager.FindAsync(id);
+            if (courseDTO == null) return NotFound();
 
-            var courseDTO = _mapper.Map<CourseDTO>(course);
-            return View(courseDTO);
+             return View(courseDTO);
         }
 
         public async Task<IActionResult> Create()
@@ -82,7 +77,7 @@ namespace PresentationLayer.Controllers
             return View(model);
         }
 
-        [HttpPost]
+         
         [HttpPost]
         public async Task<IActionResult> Create(CourseRequest model)
         {
@@ -92,22 +87,13 @@ namespace PresentationLayer.Controllers
                 return View(model);
             }
 
-            var course = _mapper.Map<Course>(model);
-
-            if (model.Image != null)
-            {
-                course.ImagePath = ImageHelper.SaveImage(model.Image, "CourseImages", _webHostEnvironment);
-            }
-
-            await _unitOfWork.Courses.AddAsync(course);
-            await _unitOfWork.CompleteAsync();
-
+            await _courseManager.CreateCourseAsync(model);
             return RedirectToAction(nameof(AdminIndex));
         }
 
         public async Task<IActionResult> Edit(int id)
         {
-            var course = await _unitOfWork.Courses.GetByIdAsync(id);
+            var course = await _courseManager.GetByIdAsync(id);
             if (course == null) return NotFound();
 
             var model = _mapper.Map<CourseRequest>(course);
@@ -124,29 +110,18 @@ namespace PresentationLayer.Controllers
                 return View(model);
             }
 
-            var course = await _unitOfWork.Courses.GetByIdAsync(id);
-            if (course == null) return NotFound();
-
-            _mapper.Map(model, course);
-
-            if (model.Image != null)
-            {
-                course.ImagePath = ImageHelper.SaveImage(model.Image, "CourseImages", _webHostEnvironment);
-            }
-
-            _unitOfWork.Courses.Update(course);
-            await _unitOfWork.CompleteAsync();
+            var success = await _courseManager.EditCourseAsync(id, model);
+            if (!success) return NotFound();
 
             return RedirectToAction(nameof(AdminIndex));
         }
 
         public async Task<IActionResult> Delete(int id)
         {
-            var course = await _unitOfWork.Courses.GetByIdAsync(id);
+            var course = await _courseManager.GetByIdAsync(id);
             if (course == null) return NotFound();
 
-            _unitOfWork.Courses.SoftDelete(course); 
-            await _unitOfWork.CompleteAsync();
+            await _courseManager.SoftDelete(course);
 
             return RedirectToAction(nameof(AdminIndex));
         }

@@ -1,0 +1,63 @@
+@model IEnumerable<BusinessLogicLayer.DTOs.QuizDtos.QuestionDto>
+
+@{
+    ViewData["Title"] = "Questions";
+}
+
+<div class="container mt-4">
+    <h1>Questions for @ViewBag.QuizTitle</h1>
+    
+    <p>
+        <a asp-action="Create" asp-route-quizId="@ViewBag.QuizId" class="btn btn-primary">Add New Question</a>
+        <a asp-controller="Quiz" asp-action="Edit" asp-route-id="@ViewBag.QuizId" class="btn btn-secondary">Back to Quiz</a>
+    </p>
+    
+    @if (!Model.Any())
+    {
+        <div class="alert alert-info">
+            <p>No questions have been added to this quiz yet. Click the button above to add a question.</p>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 mb-4">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <h5 class="mb-0">@item.QuestionText</h5>
+                            <span class="badge bg-primary">@item.Score points</span>
+                        </div>
+                        <div class="card-body">
+                            <p><strong>Correct Answer:</strong> @item.RightAns</p>
+                            
+                            @if (item.Answers != null && item.Answers.Any())
+                            {
+                                <h6>Answer Options:</h6>
+                                <ul class="list-group mb-3">
+                                    @foreach (var answer in item.Answers)
+                                    {
+                                        <li class="list-group-item @(answer.Answers == item.RightAns ? "list-group-item-success" : "")">
+                                            @answer.Answers
+                                        </li>
+                                    }
+                                </ul>
+                            }
+                            else
+                            {
+                                <p class="text-muted">No answer options available.</p>
+                            }
+                            
+                            <div class="d-flex justify-content-end">
+                                <a asp-action="Edit" asp-route-id="@item.QuestionID" class="btn btn-sm btn-outline-primary me-2">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@item.QuestionID" class="btn btn-sm btn-outline-danger"
+                                   onclick="return confirm('Are you sure you want to delete this question?');">Delete</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div> 

@@ -1,0 +1,32 @@
+﻿@model BusinessLogicLayer.DTOs.ShoppingCartDtos.ShoppingCartDto
+
+<h2>Your Cart</h2>
+
+<table>
+    <tr>
+        <th>Course</th>
+        <th>Image</th>
+        <th>Price</th>
+        <th>Action</th>
+    </tr>
+
+    @foreach (var item in Model.Items)
+    {
+        <tr>
+            <td>@item.Title</td>
+            <td>
+                <img src="@item.ImagePath" alt="@item.Title" width="50" height="50" />
+            </td>
+            <td>@item.Price.ToString("C", new System.Globalization.CultureInfo("en-US"))</td>
+            <td>
+                <a asp-action="RemoveFromCart" asp-route-id="@item.Course_ID">Remove</a>
+            </td>
+        </tr>
+    }
+</table>
+
+<h3>Total: @Model.Items.Sum(i => i.Price).ToString("C", new System.Globalization.CultureInfo("en-US"))</h3>
+
+<a asp-controller="Order" asp-action="Checkout">Proceed to Checkout</a>
+<a class="btn btn-secondary" asp-controller="Course" asp-action="UserIndex">Back to Courses</a>
+

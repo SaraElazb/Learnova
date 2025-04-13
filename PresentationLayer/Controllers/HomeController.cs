@@ -7,6 +7,8 @@ using System.Diagnostics;
 using AutoMapper;
 using BusinessLogicLayer.DTOs.CourseDtos;
 using BusinessLogicLayer.Helpers;
+using DataAccessLayer.Repositories;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 

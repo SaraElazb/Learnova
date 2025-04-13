@@ -1,0 +1,119 @@
+@model BusinessLogicLayer.DTOs.QuizDtos.QuizDto
+
+@{
+    ViewData["Title"] = "Quiz Details";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-info text-white">
+                    <h2 class="mb-0">@Model.Title</h2>
+                    <p class="mb-0">Lesson: @Model.LessonTitle</p>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h4>Instructions</h4>
+                        <p>@Model.Instructions</p>
+                    </div>
+                    
+                    <div class="mb-4">
+                        <h4>Quiz Information</h4>
+                        <ul class="list-group">
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Passing Score
+                                <span class="badge bg-primary rounded-pill">@Model.Passing_score</span>
+                            </li>
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                Total Questions
+                                <span class="badge bg-primary rounded-pill">@(Model.Questions != null ? Model.Questions.Count : 0)</span>
+                            </li>
+                        </ul>
+                    </div>
+                    
+                    @if (Model.Questions != null && Model.Questions.Any())
+                    {
+                        <div class="mb-4">
+                            <h4>Questions</h4>
+                            <form id="quizForm">
+                                @for (int i = 0; i < Model.Questions.Count; i++)
+                                {
+                                    var question = Model.Questions[i];
+                                    <div class="card mb-3">
+                                        <div class="card-header">
+                                            <h5>Question @(i+1): @question.QuestionText</h5>
+                                            <small class="text-muted">Score: @question.Score points</small>
+                                        </div>
+                                        <div class="card-body">
+                                            @if (question.Answers != null && question.Answers.Any())
+                                            {
+                                                <div class="list-group">
+                                                    @foreach (var answer in question.Answers)
+                                                    {
+                                                        <label class="list-group-item">
+                                                            <input type="radio" name="question_@question.QuestionID" value="@answer.Answers" class="me-2">
+                                                            @answer.Answers
+                                                        </label>
+                                                    }
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <p>No answers available for this question.</p>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                
+                                <div class="d-grid gap-2">
+                                    <button type="submit" class="btn btn-success">Submit Quiz</button>
+                                </div>
+                            </form>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="alert alert-warning">
+                            No questions have been added to this quiz yet.
+                        </div>
+                    }
+                    
+                    <div class="mt-4">
+                        <a asp-controller="Lesson" asp-action="Details" asp-route-id="@Model.Lesson_ID" class="btn btn-secondary">Back to Lesson</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $("#quizForm").submit(function(e) {
+                e.preventDefault();
+                
+                // Simple validation
+                var allAnswered = true;
+                $('input[type=radio]').each(function() {
+                    var name = $(this).attr('name');
+                    if ($('input[name="' + name + '"]:checked').length === 0) {
+                        allAnswered = false;
+                    }
+                });
+                
+                if (!allAnswered) {
+                    alert('Please answer all questions before submitting.');
+                    return;
+                }
+                
+                // In a real application, you would submit the answers and redirect to results
+                alert('Quiz submitted successfully!');
+                
+                // Redirect to lesson
+                window.location.href = '@Url.Action("Details", "Lesson", new { id = Model.Lesson_ID })';
+            });
+        });
+    </script>
+} 

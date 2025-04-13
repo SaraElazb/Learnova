@@ -64,8 +64,35 @@ namespace DataAccessLayer.Repositories
         public void SoftDelete(T entity)
         {
             var isActiveProp = entity.GetType().GetProperty("IsActive");
-            isActiveProp.SetValue(entity, false);
+            if (isActiveProp != null)
+            {
+                isActiveProp.SetValue(entity, false);
+            }
+            else
+            {
+                _dbSet.Remove(entity);
+            }
+        }
+        
+        // Implementation of the added methods
+        public IQueryable<T> FindAll()
+        {
+            return _dbSet.AsNoTracking();
+        }
+        
+        public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression)
+        {
+            return _dbSet.Where(expression).AsNoTracking();
+        }
+        
+        public void Create(T entity)
+        {
+            _dbSet.Add(entity);
+        }
+        
+        public void Delete(T entity)
+        {
+            _dbSet.Remove(entity);
         }
     }
-
 }

@@ -1,0 +1,35 @@
+@{
+    ViewData["Title"] = "Lesson Created Successfully";
+}
+
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow-lg border-success">
+                <div class="card-header bg-success text-white">
+                    <h2 class="mb-0"><i class="bi bi-check-circle-fill me-2"></i>Lesson Created Successfully!</h2>
+                </div>
+                <div class="card-body">
+                    <div class="alert alert-success mb-4">
+                        <h4 class="alert-heading">Great job!</h4>
+                        <p>Lesson "<strong>@ViewBag.LessonTitle</strong>" has been successfully created.</p>
+                        <hr>
+                        <p class="mb-0">What would you like to do next?</p>
+                    </div>
+
+                    <div class="d-grid gap-3">
+                        <a asp-controller="Quiz" asp-action="Create" asp-route-lessonId="@ViewBag.LessonId" class="btn btn-primary btn-lg">
+                            <i class="bi bi-plus-circle me-2"></i>Create Quiz for This Lesson
+                        </a>
+                        <a asp-action="Details" asp-route-id="@ViewBag.LessonId" class="btn btn-info btn-lg">
+                            <i class="bi bi-eye me-2"></i>View Lesson Details
+                        </a>
+                        <a asp-action="AdminIndex" class="btn btn-secondary btn-lg">
+                            <i class="bi bi-list me-2"></i>Go to Lessons List
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

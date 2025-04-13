@@ -1,0 +1,55 @@
+@model BusinessLogicLayer.DTOs.LessonDtos.LessonDto
+
+@{
+    ViewData["Title"] = "Lesson Details";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">@Model.Title</h2>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-12">
+                            <div class="ratio ratio-16x9">
+                                <iframe src="@Model.VideoUri" title="@Model.Title" allowfullscreen></iframe>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row mb-3">
+                        <div class="col-md-4">
+                            <p><strong>Course:</strong> @Model.CourseName</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Duration:</strong> @Model.Duration minutes</p>
+                        </div>
+                        <div class="col-md-4">
+                            <p><strong>Order:</strong> Lesson @Model.LessonOrder</p>
+                        </div>
+                    </div>
+
+                    <div class="row mb-4">
+                        <div class="col">
+                            <h4>Description</h4>
+                            <p>@Model.Description</p>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col d-flex justify-content-between">
+                            <a asp-controller="Course" asp-action="Details" asp-route-id="@Model.Course_ID" class="btn btn-secondary">Back to Course</a>
+                            @if (Model.Quiz_ID.HasValue)
+                            {
+                                <a asp-controller="Quiz" asp-action="Details" asp-route-id="@Model.Quiz_ID" class="btn btn-success">Take Quiz</a>
+                            }
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div> 

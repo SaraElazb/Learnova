@@ -11,7 +11,7 @@ public class Enrollment
 
     [Required] public int Course_ID { get; set; }
 
-    [Required] public int User_ID { get; set; }
+    [Required] public string User_ID { get; set; }
 
     [ForeignKey("Course_ID")] public Course Course { get; set; }
 
