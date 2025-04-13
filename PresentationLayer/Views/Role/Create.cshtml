@@ -1,0 +1,21 @@
+﻿@using PresentationLayer.ActionRequests.RoleActionRequest
+@model CreateRoleActionRequest
+
+@{
+    ViewData["Title"] = "Create Role";
+}
+
+<h2>Create New Role</h2>
+
+<form asp-action="Create" method="post">
+    <div class="form-group">
+        <label asp-for="RoleName" class="control-label"></label>
+        <input asp-for="RoleName" class="form-control" />
+        <span asp-validation-for="RoleName" class="text-danger"></span>
+    </div>
+    <button type="submit" class="btn btn-primary mt-2">Create</button>
+</form>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

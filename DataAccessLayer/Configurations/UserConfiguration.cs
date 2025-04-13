@@ -12,6 +12,7 @@ namespace DataAccessLayer.Configurations
     {
         public void Configure(EntityTypeBuilder<User> builder)
         {
+            builder.ToTable("Users");
             builder.HasMany(u => u.Enrollments)
                 .WithOne(e => e.User)
                 .HasForeignKey(e => e.User_ID)
@@ -33,13 +34,7 @@ namespace DataAccessLayer.Configurations
                 .OnDelete(DeleteBehavior.SetNull)
                 .IsRequired(false);
 
-            builder.Property(u => u.Email)
-                .IsRequired()
-                .HasMaxLength(100);
-
-            builder.HasIndex(u => u.Email)
-                .IsUnique();
-
+      
             builder.Property(u => u.Registration_date)
                 .HasDefaultValueSql("GETDATE()");
         }

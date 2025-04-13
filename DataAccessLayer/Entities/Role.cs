@@ -1,15 +1,9 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Identity;
+using System.ComponentModel.DataAnnotations;
 
 
 
-public class Role
+public class Role:IdentityRole
 {
-    [Key]
-    public int Id { get; set; }
-
-    [Required]
-    public string RoleName { get; set; }
-
-
-    public ICollection<User> Users { get; set; }
+   
 }
