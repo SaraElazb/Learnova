@@ -1,0 +1,49 @@
+@model IEnumerable<BusinessLogicLayer.DTOs.LessonDtos.LessonDto>
+
+@{
+    ViewData["Title"] = "Course Lessons";
+}
+
+<div class="container mt-4">
+    <h1>Course Lessons</h1>
+    
+    <div class="row">
+        @if (!Model.Any())
+        {
+            <div class="col-12 text-center my-5">
+                <h3>No lessons available for this course yet.</h3>
+            </div>
+        }
+        else
+        {
+            @foreach (var item in Model)
+            {
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card h-100 shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">@item.Title</h5>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span class="badge bg-info">Lesson @item.LessonOrder</span>
+                                <span class="badge bg-secondary">@item.Duration min</span>
+                            </div>
+                            <p class="card-text text-truncate">@item.Description</p>
+                        </div>
+                        <div class="card-footer bg-transparent border-top-0">
+                            <div class="d-flex justify-content-between">
+                                <a asp-action="Details" asp-route-id="@item.Lesson_ID" class="btn btn-outline-primary">View Details</a>
+                                @if (item.Quiz_ID.HasValue)
+                                {
+                                    <a asp-controller="Quiz" asp-action="UserIndex" asp-route-lessonId="@item.Lesson_ID" class="btn btn-outline-success">Take Quiz</a>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+    
+    <div class="mt-4">
+        <a asp-controller="Course" asp-action="Details" asp-route-id="@ViewBag.CourseId" class="btn btn-secondary">Back to Course</a>
+    </div>
+</div> 

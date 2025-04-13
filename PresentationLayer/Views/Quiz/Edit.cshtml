@@ -1,0 +1,60 @@
+@model BusinessLogicLayer.DTOs.QuizDtos.QuizRequest
+
+@{
+    ViewData["Title"] = "Edit Quiz";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 mx-auto">
+            <div class="card shadow">
+                <div class="card-header bg-primary text-white">
+                    <h2 class="mb-0">Edit Quiz</h2>
+                </div>
+                <div class="card-body">
+                    <form asp-action="Edit" method="post">
+                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                        <input type="hidden" asp-for="Quiz_ID" />
+                        
+                        <div class="mb-3">
+                            <label asp-for="Lesson_ID" class="form-label">Lesson</label>
+                            <select asp-for="Lesson_ID" class="form-select" asp-items="Model.LessonSelectList"></select>
+                            <span asp-validation-for="Lesson_ID" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Title" class="form-label">Title</label>
+                            <input asp-for="Title" class="form-control" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Passing_score" class="form-label">Passing Score</label>
+                            <input asp-for="Passing_score" class="form-control" type="number" min="1" max="100" />
+                            <span asp-validation-for="Passing_score" class="text-danger"></span>
+                            <small class="form-text text-muted">Enter a score between 1 and 100</small>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="Instructions" class="form-label">Instructions</label>
+                            <textarea asp-for="Instructions" class="form-control" rows="5"></textarea>
+                            <span asp-validation-for="Instructions" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a asp-action="AdminIndex" class="btn btn-secondary">Back to List</a>
+                            <div>
+                                <a asp-controller="Question" asp-action="Index" asp-route-quizId="@Model.Quiz_ID" class="btn btn-info">Manage Questions</a>
+                                <button type="submit" class="btn btn-primary">Save</button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+} 

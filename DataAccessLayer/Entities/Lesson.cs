@@ -8,7 +8,7 @@ public class Lesson
     [Key]
     public int Lesson_ID { get; set; }
 
-    public int Order { get; set; }
+    public int LessonOrder { get; set; }
 
     public string VideoUri { get; set; } // URL or file path
 

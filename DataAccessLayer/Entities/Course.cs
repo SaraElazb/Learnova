@@ -10,6 +10,9 @@ public class Course
 
     [Required]
     public string Title { get; set; }
+    
+    [Required]
+    public string Course_Name { get; set; }
 
     public string Description { get; set; }
 

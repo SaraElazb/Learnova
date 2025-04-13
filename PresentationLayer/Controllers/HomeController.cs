@@ -52,7 +52,7 @@ namespace PresentationLayer.Controllers
 
             return View(courseDTOs);
         }
-    
+
         public IActionResult Privacy()
         {
             return View();

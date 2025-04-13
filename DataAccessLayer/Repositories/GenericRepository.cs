@@ -27,21 +27,21 @@ namespace DataAccessLayer.Repositories
         public async Task<IEnumerable<T>> FindAllAsync(
             Expression<Func<T, bool>>? predicate = null,
             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null)
-                {
-                    IQueryable<T> query = _dbSet;
+        {
+            IQueryable<T> query = _dbSet;
 
-                    if (predicate != null)
-                    {
-                        query = query.Where(predicate);
-                    }
+            if (predicate != null)
+            {
+                query = query.Where(predicate);
+            }
 
-                    if (include != null)
-                    {
-                        query = include(query);
-                    }
+            if (include != null)
+            {
+                query = include(query);
+            }
 
-                    return await query.ToListAsync();
-                }
+            return await query.ToListAsync();
+        }
         public async Task<T?> FindAsync(
             Expression<Func<T, bool>> predicate,
             Func<IQueryable<T>, IIncludableQueryable<T, object>>? include = null)
@@ -64,8 +64,35 @@ namespace DataAccessLayer.Repositories
         public void SoftDelete(T entity)
         {
             var isActiveProp = entity.GetType().GetProperty("IsActive");
-            isActiveProp.SetValue(entity, false);
+            if (isActiveProp != null)
+            {
+                isActiveProp.SetValue(entity, false);
+            }
+            else
+            {
+                _dbSet.Remove(entity);
+            }
+        }
+        
+        // Implementation of the added methods
+        public IQueryable<T> FindAll()
+        {
+            return _dbSet.AsNoTracking();
+        }
+        
+        public IQueryable<T> FindByCondition(Expression<Func<T, bool>> expression)
+        {
+            return _dbSet.Where(expression).AsNoTracking();
+        }
+        
+        public void Create(T entity)
+        {
+            _dbSet.Add(entity);
+        }
+        
+        public void Delete(T entity)
+        {
+            _dbSet.Remove(entity);
         }
     }
-
 }

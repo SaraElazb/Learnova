@@ -1,6 +1,9 @@
 using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Manager.CategoryManager;
 using BusinessLogicLayer.Manager.CourseManager;
+using BusinessLogicLayer.Manager.LessonManager;
+using BusinessLogicLayer.Manager.QuestionManager;
+using BusinessLogicLayer.Manager.QuizManager;
 using BusinessLogicLayer.Services.AccountServices;
 using BusinessLogicLayer.Services.RoleServices;
 using BusinessLogicLayer.Services.UserRoleServices;
@@ -25,6 +28,11 @@ namespace PresentationLayer
             builder.Services.AddScoped<ICourseManager, CourseManager>();
             builder.Services.AddScoped<IAccountService, AccountService>();
             builder.Services.AddScoped<IUserRoleService, UserRoleService>();
+
+            // Add the new services
+            builder.Services.AddScoped<ILessonManager, LessonManager>();
+            builder.Services.AddScoped<IQuizManager, QuizManager>();
+            builder.Services.AddScoped<IQuestionManager, QuestionManager>();
 
             builder.Services.AddScoped<ICategoryManager, CategoryManager>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));

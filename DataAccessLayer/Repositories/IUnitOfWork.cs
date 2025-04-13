@@ -27,8 +27,9 @@ namespace DataAccessLayer.Repositories
 
         //IGenericRepository<Course> CourseRepository { get; }
         Task<int> CompleteAsync();
-
-       
+        
+        IGenericRepository<T> GetRepository<T>() where T : class;
+        Task SaveAsync();
     }
 
 
