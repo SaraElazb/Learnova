@@ -9,7 +9,7 @@ public class Quiz
     [Required]
     public int Lesson_ID { get; set; }
 
-    public int? User_ID { get; set; }
+    public string? User_ID { get; set; }
 
     public int Passing_score { get; set; }
 

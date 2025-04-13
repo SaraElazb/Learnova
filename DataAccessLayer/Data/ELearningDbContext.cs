@@ -1,8 +1,9 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using System;
 
 
-    public class ELearningDbContext : DbContext
+    public class ELearningDbContext : IdentityDbContext<User,Role,string>
     {
     public ELearningDbContext(DbContextOptions<ELearningDbContext> options) : base(options)
     {

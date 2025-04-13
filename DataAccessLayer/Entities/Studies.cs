@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 public class Studies
 {
     [Key, Column(Order = 0)]
-    public int User_ID { get; set; }
+    public string User_ID { get; set; }
 
     [Key, Column(Order = 1)]
     public int Lesson_ID { get; set; }
