@@ -18,12 +18,7 @@ namespace DataAccessLayer.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
 
-            migrationBuilder.AddColumn<bool>(
-                name: "IsActive",
-                table: "Courses",
-                type: "bit",
-                nullable: false,
-                defaultValue: true);
+            
 
             migrationBuilder.AlterColumn<string>(
                 name: "Description",
@@ -33,34 +28,19 @@ namespace DataAccessLayer.Migrations
                 oldClrType: typeof(string),
                 oldType: "nvarchar(max)");
 
-            migrationBuilder.AddColumn<string>(
-                name: "ImagePath",
-                table: "Categories",
-                type: "nvarchar(max)",
-                nullable: true);
+            
 
-            migrationBuilder.AddColumn<bool>(
-                name: "IsActive",
-                table: "Categories",
-                type: "bit",
-                nullable: false,
-                defaultValue: true);
+            
         }
 
         /// <inheritdoc />
         protected override void Down(MigrationBuilder migrationBuilder)
         {
-            migrationBuilder.DropColumn(
-                name: "IsActive",
-                table: "Courses");
+            
 
-            migrationBuilder.DropColumn(
-                name: "ImagePath",
-                table: "Categories");
+            
 
-            migrationBuilder.DropColumn(
-                name: "IsActive",
-                table: "Categories");
+            
 
             migrationBuilder.AlterColumn<string>(
                 name: "ImagePath",

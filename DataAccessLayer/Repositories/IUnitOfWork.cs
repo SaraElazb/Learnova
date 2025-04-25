@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Stripe.Climate;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -24,6 +25,9 @@ namespace DataAccessLayer.Repositories
         IGenericRepository<Role> Roles { get; }
         IGenericRepository<Studies> Studies { get; }
         IGenericRepository<Submission> Submissions { get; }
+        IGenericRepository<Order> Orders { get; }
+
+
 
         //IGenericRepository<Course> CourseRepository { get; }
         Task<int> CompleteAsync();

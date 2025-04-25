@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
 
 namespace DataAccessLayer.Repositories
@@ -27,6 +28,10 @@ namespace DataAccessLayer.Repositories
         public IGenericRepository<Role> Roles { get; private set; }
         public IGenericRepository<Studies> Studies { get; private set; }
         public IGenericRepository<Submission> Submissions { get; private set; }
+        public IGenericRepository<Order> Orders { get; private set; }
+
+        IGenericRepository<Stripe.Climate.Order> IUnitOfWork.Orders => throw new NotImplementedException();
+
 
         //public object CourseRepository => throw new NotImplementedException();
 
@@ -51,6 +56,7 @@ namespace DataAccessLayer.Repositories
             Roles = new GenericRepository<Role>(_context);
             Studies = new GenericRepository<Studies>(_context);
             Submissions = new GenericRepository<Submission>(_context);
+            Orders = new GenericRepository<Order>(_context);
         }
 
 

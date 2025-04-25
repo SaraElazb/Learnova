@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DataAccessLayer.Migrations
 {
     [DbContext(typeof(ELearningDbContext))]
-    [Migration("20250412181545_initial")]
-    partial class initial
+    [Migration("20250424192547_AddedNewEntities")]
+    partial class AddedNewEntities
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -186,7 +186,7 @@ namespace DataAccessLayer.Migrations
                     b.Property<int>("Duration")
                         .HasColumnType("int");
 
-                    b.Property<int>("Order")
+                    b.Property<int>("LessonOrder")
                         .HasColumnType("int");
 
                     b.Property<int?>("Quiz_ID")
