@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Category Creator</title>
+    <link rel="stylesheet" href="category-creator.css" />
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  </head>
+
+  <body>
+    <div class="app-container">
+      <header class="header">
+        <button class="back-button">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10.5 12.5L5.5 7.5L10.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+              stroke-linejoin="round" />
+          </svg>
+          Back to Dashboard
+        </button>
+        <button class="save-button">Save</button>
+      </header>
+
+      <main class="main-content">
+        <section class="category-header">
+          <h1>Create New Category</h1>
+          <p>Create a new category to organize your courses effectively.</p>
+        </section>
+
+        <section class="category-form-section">
+          <div class="category-form">
+            <h2>Category Information</h2>
+            <p class="section-description">Enter basic information about your category.</p>
+
+            <div class="form-group">
+              <label for="categoryName">Category Name</label>
+              <input type="text" id="categoryName" class="form-control" placeholder="Enter category name"
+                data-max-length="50">
+              <div class="char-count">0/50</div>
+            </div>
+
+            <div class="form-group">
+              <label for="categoryDescription">Category Description</label>
+              <textarea id="categoryDescription" class="form-control" rows="4" placeholder="Enter category description"
+                data-max-length="300"></textarea>
+              <div class="char-count">0/300</div>
+            </div>
+
+            <div class="form-group">
+              <label for="categoryIcon">Category Icon</label>
+              <div class="file-upload-area">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 15V3M12 3L7 8M12 3L17 8" stroke="#10B981" stroke-width="1.5" stroke-linecap="round"
+                    stroke-linejoin="round" />
+                  <path d="M3 15V16C3 18.2091 4.79086 20 7 20H17C19.2091 20 21 18.2091 21 16V15" stroke="#10B981"
+                    stroke-width="1.5" stroke-linecap="round" />
+                </svg>
+                <p class="upload-text">Click here or drag and drop to upload icon</p>
+                <p class="upload-hint">Files: SVG, PNG or JPG (Max. 2MB)</p>
+                <input type="file" id="categoryIcon" class="file-input" accept="image/svg+xml,image/png,image/jpeg">
+              </div>
+            </div>
+
+            <div class="action-buttons">
+              <button class="cancel-button">Cancel</button>
+              <button class="save-button">Save Category</button>
+            </div>
+        </section>
+      </main>
+    </div>
+
+    <div class="delete-modal">
+      <div class="delete-modal-content">
+        <div class="delete-modal-header">
+          <h3 class="delete-modal-title">Delete Subcategory</h3>
+        </div>
+        <div class="delete-modal-body">
+          <p>Are you sure you want to delete "<span class="subcategory-to-delete"></span>"? This action cannot be
+            undone.</p>
+        </div>
+        <div class="delete-modal-actions">
+          <button class="delete-cancel-button">Cancel</button>
+          <button class="delete-confirm-button">Delete</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="category-creator.js"></script>
+  </body>
+
+</html>

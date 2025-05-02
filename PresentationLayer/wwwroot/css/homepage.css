@@ -39,7 +39,7 @@ body {
     overflow-x: hidden;
 }
 
-/* Typography */
+Typography
 h1,
 h2,
 h3,
@@ -66,7 +66,7 @@ a {
     width: 85px;
 }
 
-/* Utility classes */
+Utility classes
 .glass-card {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -95,7 +95,7 @@ a {
     transform: translateY(0);
 }
 
-/* Background gradients */
+Background gradients
 .bg-gradient {
     position: fixed;
     border-radius: 50%;
@@ -119,7 +119,7 @@ a {
     background-color: rgba(0, 184, 169, 0.1);
 }
 
-/* Buttons */
+Buttons
 .btn {
     display: inline-flex;
     align-items: center;
@@ -178,7 +178,7 @@ a {
     background-color: rgba(255, 0, 102, 0.9);
 }
 
-/* Navbar */
+Navbar
 .navbar {
     position: fixed;
     top: 0;
@@ -275,7 +275,7 @@ a {
     color: var(--text-gray-400);
 }
 
-/* Hero Section */
+Hero Section
 .hero {
     padding-top: 6rem;
     padding-bottom: 3rem;
@@ -399,7 +399,7 @@ a {
     margin-right: -0.5rem;
 }
 
-/* Partners Section */
+Partners Section
 .partners {
     padding: 3rem 0;
     background-color: rgba(241, 241, 241, 0.3);
@@ -446,7 +446,7 @@ a {
     color: var(--text-gray-600);
 }
 
-/* Courses Section */
+Courses Section
 .courses {
     padding: 4rem 0;
 }
@@ -620,7 +620,7 @@ a {
     text-align: center;
 }
 
-/* CTA Section */
+CTA Section
 .cta-section {
     padding: 4rem 0;
     text-align: center;
@@ -639,7 +639,7 @@ a {
     margin: 0 auto 2rem;
 }
 
-/* Footer */
+Footer
 .footer {
     background-color: #1C1C1C;
     color: white;
@@ -679,9 +679,9 @@ a {
     color: var(--text-gray-400);
 }
 
-/* Media Queries */
+Media Queries
 @media (min-width: 768px) {
-    .main-nav {
+    .main-nav{
         display: flex;
         margin-left: 2rem;
     }

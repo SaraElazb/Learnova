@@ -4,13 +4,105 @@
 @{
     ViewData["Title"] = "Course Details";
 }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Courses - LearnNova</title>
+    <link rel="stylesheet" href="~/css/CourseDetails.css">
+</head>
+<body>
 
-<h2>@Model.Title</h2>
-<img src="@Model.ImagePath" class="img-fluid" alt="Course Image">
-<p><strong>Category:</strong> @Model.CategoryName</p>
-<p><strong>Description:</strong> @Model.Description</p>
-<p><strong>Price:</strong> $@Model.Price</p>
-<p><strong>Rating:</strong> @Model.Rating / 5</p>
-<p><strong>Created On:</strong> @Model.CreatedDate.ToString("yyyy-MM-dd")</p>
 
-<a class="btn btn-secondary" asp-action="UserIndex">Back to Courses</a>
+    <div class="site-wrapper">
+        <header class="navbar">
+            <div class="container">
+                <div class="navbar-left">
+                    <a href="/" class="logo">
+                        <img src="~/assets/logonoslogan.png" alt="logo" class="logo-img">
+                    </a>
+                    <nav class="main-nav">
+                        <a href="/Courses" class="nav-link">Courses</a>
+                        <a href="#" class="nav-link">How it works</a>
+                        <a href="#" class="nav-link">About Us</a>
+                    </nav>
+                </div>
+                <div class="navbar-right">
+                    <button class="btn btn-ghost">Log in</button>
+                    <button class="btn btn-primary">Sign up</button>
+                </div>
+            </div>
+        </header>
+
+        <main>
+            <section class="hero">
+                <div class="container">
+                    <div class="hero-grid">
+                        <div class="hero-content fade-in">
+                            <h1 class="hero-title">
+                                @Model.Title
+                            </h1>
+                            <p class="hero-subtitle">
+                                We provide you with curated tech courses from the top institutions, allowing you to learn hundreds of
+                                practical business and design skills.
+                            </p>
+
+                        </div>
+
+                    </div>
+                </div>
+            </section>
+
+
+        </main>
+
+    </div>
+    <div class="course-container">
+
+        <img class="CourseImg" src="@Model.ImagePath" width="50px" />
+        <h2 class="coursePrice">@Model.Price</h2>
+        <button class="btn2">Buy Course Now</button>
+        <div class="btns">
+            <button>Add to Chart</button>
+            <svg class="heart-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="30px">
+                <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
+            </svg>
+        </div>
+        <h6>Course Description</h6>
+        <p>
+            @Model.Description
+        </p>
+
+        <h6>Course Details</h6>
+
+        <div class="details">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px" fill="#007bff">
+                <path d="M4 4h16v2H4V4zm6 4h4v12h-2v-5h-2v5h-2V8z" />
+            </svg>
+            <p>@Model.Title</p>
+        </div>
+
+        <div class="details">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px" fill="#007bff">
+                <path d="M3 3h8v8H3V3zm0 10h8v8H3v-8zm10-10h8v8h-8V3zm0 10h8v8h-8v-8z" />
+            </svg>
+            <p>@Model.CategoryName</p>
+        </div>
+        <div class="details">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px" fill="#007bff">
+                <path d="M9 16.2l-3.5-3.5 1.4-1.4L9 13.4l7.1-7.1 1.4 1.4L9 16.2z" />
+            </svg>
+            <p>@Model.IsActive</p>
+        </div>
+
+        <div class="details">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24px" height="24px" fill="#007bff">
+                <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+            </svg>
+            <p>@Model.Rating</p>
+        </div>
+    </div>
+
+</body>
+</html>

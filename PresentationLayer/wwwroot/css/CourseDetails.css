@@ -1,0 +1,275 @@
+﻿
+:root {
+    --brand-pink: #ff0066;
+    --brand-pink-light: rgba(255, 0, 102, 0.1);
+    --brand-teal: #00b8a9;
+    --brand-teal-light: rgba(0, 184, 169, 0.1);
+    --dark-bg: #1A1F2C;
+    --darker-bg: #2A303C;
+    --light-gray: #f1f1f1;
+    --text-white: #ffffff;
+    --text-gray-300: #d1d5db;
+    --text-gray-400: #9ca3af;
+    --text-gray-600: #4b5563;
+    --border-color: #e5e7eb;
+    --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+    --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    --radius: 0.5rem;
+    --radius-full: 9999px;
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.5;
+    color: var(--dark-bg);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow-x: hidden;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+    font-weight: 700;
+    line-height: 1.2;
+    color: black;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 1rem;
+}
+
+.logo-img {
+    width: 85px;
+}
+
+.site-wrapper {
+    position: fixed;
+    width: 100%;
+    left: 0;
+    z-index: 0;
+}
+
+.navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 50;
+    background-color: #1C1C1C;
+    color: var(--text-white);
+}
+
+    .navbar .container {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding-top: 1rem;
+        padding-bottom: 1rem;
+    }
+
+.navbar-left,
+.navbar-right {
+    display: flex;
+    align-items: center;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.logo-circle {
+    height: 2rem;
+    width: 2rem;
+    border-radius: 50%;
+    background-color: var(--brand-teal);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: 700;
+}
+
+.logo-text {
+    font-weight: 700;
+    font-size: 1.125rem;
+}
+
+main {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+.main-nav {
+    display: none;
+}
+
+.nav-link {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--text-gray-300);
+    transition: var(--transition);
+    margin-left: 1.5rem;
+}
+
+    .nav-link:hover {
+        color: var(--brand-teal);
+    }
+
+.coursePrice {
+    padding: 1rem 0 0 0;
+}
+
+button, .btn2 {
+    border: 2px solid var(--brand-teal);
+    border-radius: var(--radius-full);
+    padding: 0.5rem 1rem;
+    margin: .5rem;
+}
+
+.btn2, .btns {
+    width: 90%;
+}
+
+.btn-ghost {
+    background-color: var(--dark-bg);
+    color: White;
+    border-radius: var(--radius-full);
+}
+
+.btn-primary {
+    border-radius: var(--radius-full);
+    background-color: rgb(2, 168, 154);
+}
+
+
+
+.hero {
+    padding-top: 6rem;
+    padding-bottom: 3rem;
+    background-color: #1C1C1C;
+}
+
+button:hover {
+    background-color: var(--brand-teal);
+    color: white;
+}
+
+.hero-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 3rem;
+}
+
+.hero-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.hero-title {
+    font-size: 1.875rem;
+    font-weight: 700;
+    line-height: 1.2;
+    color: #F5F5F5;
+}
+
+.hero-subtitle {
+    max-width: 24rem;
+    color: #F5F5F5;
+}
+
+.course-container {
+    padding: 1rem;
+    background-color: white;
+    width: 250px;
+    border-radius: 10px;
+    z-index: 1;
+    position: relative; 
+    left: 65%;
+    top: 8rem;
+    box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+}
+
+.CourseImg {
+    width: 100%;
+    max-height: 7rem;
+}
+
+
+.section-tag {
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--brand-teal);
+    margin-bottom: 0.25rem;
+}
+
+.section-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+}
+
+@media (min-width: 768px) {
+    .main-nav {
+        display: flex;
+        margin-left: 2rem;
+    }
+
+    .search-box {
+        display: flex;
+    }
+
+    .hero-grid {
+        grid-template-columns: 1fr 1fr;
+        align-items: center;
+    }
+
+    .hero-title {
+        font-size: 2.5rem;
+    }
+}
+
+.details {
+    display: flex;
+}
+
+    .details p {
+        padding: 0 0 0 0.5rem;
+    }
+
+@media (min-width: 1024px) {
+    .hero {
+        padding-top: 8rem;
+    }
+
+    .courses-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
