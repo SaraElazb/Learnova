@@ -29,6 +29,10 @@
                     <a asp-controller="Course" asp-action="UserIndex" class="nav-link">Courses</a>
                     <a href="#" class="nav-link">How it works</a>
                     <a href="#" class="nav-link">About Us</a>
+                    @if (User.Identity!.IsAuthenticated && User.IsInRole("Admin"))
+                    {
+                        <a asp-controller="Admin" asp-action="Dashboard" class="nav-link">Dashboard</a>
+                    }
                 </nav>
             </div>
             <div class="navbar-right">
@@ -43,8 +47,17 @@
                         </svg>
                     </button>
                 </form>
-                <button class="btn btn-ghost">Log in</button>
-                <button class="btn btn-primary">Sign up</button>
+                @if (User.Identity.IsAuthenticated)
+                {
+                        <form asp-controller="Account" asp-action="LogOut" method="post" style="display: inline;">
+                            <button type="submit" class="btn btn-ghost">Log out</button>
+                        </form>
+                }
+                else
+                {
+                        <a class="btn btn-ghost" asp-controller="Account" asp-action="LogIn">Log in</a>
+                        <a class="btn btn-primary" asp-controller="Account" asp-action="RegisterStudent">Sign up</a>
+                }
             </div>
         </div>
     </header>

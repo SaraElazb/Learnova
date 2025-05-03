@@ -12,18 +12,18 @@ namespace PresentationLayer.Controllers
     {
         private readonly IUserRoleService _userRoleService;
         private readonly IRoleService _roleService;
-       
-        public AdminController(IUserRoleService userRoleService , IRoleService roleService)
+
+        public AdminController(IUserRoleService userRoleService, IRoleService roleService)
         {
             _userRoleService = userRoleService;
-             _roleService = roleService;
+            _roleService = roleService;
         }
         [Authorize(Roles = "Admin")]
         public async Task<IActionResult> ViewUserRoles(string searchTerm, int page = 1, int pageSize = 3)
         {
-            var (userRoles, totalUsers) = 
+            var (userRoles, totalUsers) =
                 await _userRoleService.GetUsersWithRolesAsync(searchTerm, page, pageSize);
-            IEnumerable<UserRoleVm>?  userRolesVMs = userRoles.Select(ur => ur.ToVm()).ToList();
+            IEnumerable<UserRoleVm>? userRolesVMs = userRoles.Select(ur => ur.ToVm()).ToList();
             var allRoles = await _roleService.GetAllRolesAsync();
             ViewBag.SearchTerm = searchTerm;
             ViewBag.CurrentPage = page;
@@ -45,6 +45,11 @@ namespace PresentationLayer.Controllers
 
             TempData["Success"] = "User roles updated successfully.";
             return RedirectToAction(nameof(ViewUserRoles));
+        }
+        [Authorize(Roles = "Admin")]
+        public IActionResult Dashboard()
+        {
+            return View();
         }
     }
 }

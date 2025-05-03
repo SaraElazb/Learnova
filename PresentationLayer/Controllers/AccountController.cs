@@ -94,7 +94,12 @@ namespace PresentationLayer.Controllers
             return View(request);
         }
 
-
+        [HttpPost]
+        public async Task<IActionResult> LogOut()
+        {
+            await _accountService.LogOutAsync();
+            return RedirectToAction("Index", "Home");
+        }
 
     }
 }

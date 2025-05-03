@@ -1,0 +1,80 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LearnNova</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
+    <link rel="stylesheet" href="~/css/homepage.css">
+</head>
+<body>
+    <div class="site-wrapper">
+        <header class="navbar">
+            <div class="container">
+                <div class="navbar-left">
+                    <a href="/" class="logo">
+                        <img src="~/assets/logonoslogan.png" alt="logo" class="logo-img">
+                    </a>
+                    <nav class="main-nav">
+                        <a asp-controller="Course" asp-action="UserIndex" class="nav-link">Courses</a>
+                        <a href="#" class="nav-link">How it works</a>
+                        <a href="#" class="nav-link">About Us</a>
+                        @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
+                        {
+                            <a asp-controller="Admin" asp-action="Dashboard" class="nav-link">Dashboard</a>
+                        }
+                    </nav>
+                </div>
+                <div class="navbar-right">
+                    <form method="get" action="/Courses" class="search-box">
+                        <input type="text" name="searchTerm" placeholder="Search courses...">
+                        <button type="submit" class="search-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"
+                                 viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                 stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                        </button>
+                    </form>
+                    @if (User.Identity.IsAuthenticated)
+                    {
+                        <a class="btn btn-ghost" asp-controller="Account" asp-action="LogOut">Log out</a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-ghost" asp-controller="Account" asp-action="LogIn">Log in</a>
+                        <a class="btn btn-primary" asp-controller="Account" asp-action="RegisterStudent">Sign up</a>
+                    }
+                </div>
+            </div>
+        </header>
+
+        <main>
+            @RenderBody()
+        </main>
+
+        <footer class="footer">
+            <div class="container">
+                <div class="footer-content">
+                    <div class="footer-logo Flowers">
+                        <img src="~/assets/logonoslogan.png" class="logo-img" alt="logo">
+                    </div>
+                    <div class="footer-links">
+                        <a href="#" class="footer-link">Terms</a>
+                        <a href="#" class="footer-link">Privacy</a>
+                        <a href="#" class="footer-link">Contact</a>
+                    </div>
+                    <div class="footer-copyright">
+                        ©2025 LearnNova. All rights reserved.
+                    </div>
+                </div>
+            </div>
+        </footer>
+        <div class="bg-gradient bg-gradient-1"></div>
+        <div class="bg-gradient bg-gradient-2"></div>
+    </div>
+    <script src="~/js/homepage.js"></script>
+    @RenderSection("Scripts", required: false)
+</body>
+</html>
