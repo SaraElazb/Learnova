@@ -5,15 +5,16 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>LearnNova</title>
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap">
-    <link rel="stylesheet" href="~/css/homepage.css">
+    <link rel="stylesheet" href="~/css/MainLayout.css">
+    @RenderSection("CustomHeadContent", required: false)
 </head>
 <body>
     <div class="site-wrapper">
         <header class="navbar">
-            <div class="container">
+            <div class="layout-container">
                 <div class="navbar-left">
-                    <a href="/" class="logo">
-                        <img src="~/assets/logonoslogan.png" alt="logo" class="logo-img">
+                    <a href="/" class="layout-logo">
+                        <img src="~/assets/logonoslogan.png" alt="logo" class="layout-logo-img">
                     </a>
                     <nav class="main-nav">
                         <a asp-controller="Course" asp-action="UserIndex" class="nav-link">Courses</a>
@@ -39,12 +40,12 @@
                     </form>
                     @if (User.Identity.IsAuthenticated)
                     {
-                        <a class="btn btn-ghost" asp-controller="Account" asp-action="LogOut">Log out</a>
+                        <a class="layout-btn layout-btn-ghost" asp-controller="Account" asp-action="LogOut">Log out</a>
                     }
                     else
                     {
-                        <a class="btn btn-ghost" asp-controller="Account" asp-action="LogIn">Log in</a>
-                        <a class="btn btn-primary" asp-controller="Account" asp-action="RegisterStudent">Sign up</a>
+                        <a class="layout-btn layout-btn-ghost" asp-controller="Account" asp-action="LogIn">Log in</a>
+                        <a class="layout-btn layout-btn-primary" asp-controller="Account" asp-action="RegisterStudent">Sign up</a>
                     }
                 </div>
             </div>
@@ -55,10 +56,10 @@
         </main>
 
         <footer class="footer">
-            <div class="container">
+            <div class="layout-container">
                 <div class="footer-content">
                     <div class="footer-logo Flowers">
-                        <img src="~/assets/logonoslogan.png" class="logo-img" alt="logo">
+                        <img src="~/assets/logonoslogan.png" class="layout-logo-img" alt="logo">
                     </div>
                     <div class="footer-links">
                         <a href="#" class="footer-link">Terms</a>
@@ -74,7 +75,8 @@
         <div class="bg-gradient bg-gradient-1"></div>
         <div class="bg-gradient bg-gradient-2"></div>
     </div>
-    <script src="~/js/homepage.js"></script>
+  
+    @RenderSection("CustomScripts", required: false)
     @RenderSection("Scripts", required: false)
 </body>
 </html>

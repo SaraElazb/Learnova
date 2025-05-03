@@ -4,68 +4,206 @@
 @{
     ViewData["Title"] = "Student Register";
 }
+@using PresentationLayer.ActionRequests.AccountActionRequest
 
-<h2 class="text-center mt-4">Student Registration</h2>
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <form asp-action="RegisterStudent" method="post">
-            <div asp-validation-summary="All" class="text-danger mb-3"></div>
-            <div class="form-group mb-3">
-                <label asp-for="Username" class="form-label"></label>
-                <input asp-for="Username" class="form-control" />
-                <span asp-validation-for="Username" class="text-danger"></span>
+@{
+    ViewData["Title"] = "Login";
+    Layout = "_Layout2";
+}
+@section CustomHeadContent {
+    <link rel="stylesheet" href="~/css/login-register.css" />
+}
+<div class="container">
+    <div class="form-container">
+        <div class="logo-container">
+            <img src="~/assets/logonoslogan.png" alt="LearnNova Logo" class="logo">
+   
+        </div>
+        <h2>Create an Account</h2>
+        <p class="subtitle">Join thousands of students and start learning today!</p>
+
+        <form id="registerForm" novalidate>
+            <div class="form-group">
+                <label for="fullName">Full name</label>
+                <div class="input-container">
+                    <input type="text" id="fullName" name="fullName" required>
+                    <div class="error-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                </div>
+                <span class="error-message"></span>
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="FirstName" class="form-label"></label>
-                <input asp-for="FirstName" class="form-control" />
-                <span asp-validation-for="FirstName" class="text-danger"></span>
+            <div class="form-group">
+                <label for="registerEmail">Email address</label>
+                <div class="input-container">
+                    <input type="email" id="registerEmail" name="email" required>
+                    <div class="error-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                </div>
+                <span class="error-message"></span>
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="LastName" class="form-label"></label>
-                <input asp-for="LastName" class="form-control" />
-                <span asp-validation-for="LastName" class="text-danger"></span>
+            <div class="form-group role-selection">
+                <label>I want to join as</label>
+                <div class="radio-group">
+                    <div class="radio-option">
+                        <input type="radio" id="roleStudent" name="role" value="student" checked>
+                        <label for="roleStudent">Student</label>
+                    </div>
+                    <div class="radio-option">
+                        <input type="radio" id="roleInstructor" name="role" value="instructor">
+                        <label for="roleInstructor">Instructor</label>
+                    </div>
+                </div>
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="Email" class="form-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+            <!-- Student-specific fields (visible by default since student is checked by default) -->
+            <div class="role-specific-fields student-fields">
+                <div class="form-group">
+                    <label for="nationalId">National ID</label>
+                    <div class="input-container">
+                        <input type="text" id="nationalId" name="nationalId">
+                        <div class="error-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="grade">Grade/Year</label>
+                    <div class="input-container">
+                        <input type="text" id="grade" name="grade">
+                        <div class="error-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="error-message"></span>
+                </div>
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="Password" class="form-label"></label>
-                <input asp-for="Password" class="form-control" type="password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="ConfirmedPassword" class="form-label"></label>
-                <input asp-for="ConfirmedPassword" class="form-control" type="password" />
-                <span asp-validation-for="ConfirmedPassword" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="NationalId" class="form-label"></label>
-                <input asp-for="NationalId" class="form-control" />
-                <span asp-validation-for="NationalId" class="text-danger"></span>
+            <!-- Instructor-specific fields (hidden by default) -->
+            <div class="role-specific-fields instructor-fields hidden">
+                <div class="form-group">
+                    <label for="specialization">Specialization</label>
+                    <div class="input-container">
+                        <input type="text" id="specialization" name="specialization">
+                        <div class="error-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="error-message"></span>
+                </div>
+
+                <div class="form-group">
+                    <label for="experience">Years of Experience</label>
+                    <div class="input-container">
+                        <input type="number" id="experience" name="experience" min="0">
+                        <div class="error-icon">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="error-message"></span>
+                </div>
             </div>
 
-            <div class="form-group mb-3">
-                <label asp-for="Grade" class="form-label"></label>
-                <input asp-for="Grade" class="form-control" />
-                <span asp-validation-for="Grade" class="text-danger"></span>
+            <div class="form-group">
+                <label for="registerPassword">Password</label>
+                <div class="input-container">
+                    <input type="password" id="registerPassword" name="password" required>
+                    <button type="button" class="toggle-password" aria-label="Toggle password visibility">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-off hidden">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </button>
+                    <div class="error-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                </div>
+                <span class="error-message"></span>
             </div>
 
-           
+            <div class="form-group">
+                <label for="confirmPassword">Confirm password</label>
+                <div class="input-container">
+                    <input type="password" id="confirmPassword" name="confirmPassword" required>
+                    <button type="button" class="toggle-password" aria-label="Toggle password visibility">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye">
+                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                            <circle cx="12" cy="12" r="3"></circle>
+                        </svg>
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="eye-off hidden">
+                            <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                            <line x1="1" y1="1" x2="23" y2="23"></line>
+                        </svg>
+                    </button>
+                    <div class="error-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                    </div>
+                </div>
+                <span class="error-message"></span>
+            </div>
 
-            <button type="submit" class="btn btn-primary w-100">Register</button>
+            <button type="submit" class="btn btn-primary">
+                <span class="btn-text">Sign Up</span>
+                <span class="spinner hidden"></span>
+            </button>
         </form>
+
+        <div class="alt-action">
+            <p>Already have an account? <a href="index.html">Log in</a></p>
+        </div>
     </div>
 </div>
+
 
 @section Scripts {
     @{
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 }
+@section CustomScripts {
+    <script src="~/js/login-register.js"></script>
+}
+
+

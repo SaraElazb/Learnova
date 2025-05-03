@@ -176,7 +176,7 @@ svg {
     flex: 1;
     margin-left: 260px;
     width: calc(100% - 260px);
-    background-color: var(--layout-color-content-bg);
+   
 }
 
 .top-header {

@@ -1,0 +1,639 @@
+:root {
+  --color-primary: #10B981;
+  --color-primary-hover: #0EA271;
+  --color-text: #1F2937;
+  --color-text-light: #6B7280;
+  --color-border: #E5E7EB;
+  --color-bg: #FFFFFF;
+  --color-bg-light: #F9FAFB;
+  --color-bg-upload: #F0FDFA;
+  --color-error: #EF4444;
+  --border-radius-sm: 6px;
+  --border-radius-md: 8px;
+  --border-radius-lg: 12px;
+  --transition-speed: 300ms;
+  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  color: var(--color-text);
+  background-color: var(--color-bg-light) !important;
+  line-height: 1.5;
+}
+
+.app-container {
+    max-width: 1200px;
+    margin: 0 auto;
+  
+    background-color: var(--layout-color-text) !important;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 0;
+  margin-bottom: 24px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+button {
+  cursor: pointer;
+  font-family: inherit;
+  border: none;
+  background: none;
+  font-size: 14px;
+  font-weight: 500;
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-speed) ease;
+}
+
+.back-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text);
+  padding: 8px 12px;
+  background-color: transparent;
+}
+
+.back-button:hover {
+  background-color: rgba(0, 0, 0, 0.05);
+}
+
+.save-button,
+.save-lecture-button,
+.publish-button {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 8px 16px;
+  border-radius: var(--border-radius-sm);
+}
+
+.save-button:hover,
+.save-lecture-button:hover,
+.publish-button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.publish-button {
+  font-weight: 600;
+}
+
+.page-main-content {
+  padding: 0;
+}
+
+.course-header {
+  text-align: center;
+  margin-bottom: 40px;
+}
+
+.course-header h1 {
+  font-size: 28px;
+  font-weight: 700;
+  margin-bottom: 12px;
+}
+
+.course-header p {
+  color: var(--color-text-light);
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.progress-section {
+  margin-bottom: 40px;
+}
+
+.progress-steps {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+}
+
+.step {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  position: relative;
+  cursor: pointer;
+  padding: 8px;
+  border-radius: var(--border-radius-md);
+  transition: all var(--transition-speed) ease;
+}
+
+.step:hover {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.step-circle {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background-color: var(--color-bg);
+  border: 2px solid var(--color-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  font-size: 14px;
+  color: var(--color-text-light);
+  transition: all var(--transition-speed) ease;
+}
+
+.step.active .step-circle {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+}
+
+.step.completed .step-circle {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: white;
+}
+
+.step-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-text-light);
+}
+
+.step.active .step-text {
+  color: var(--color-text);
+}
+
+.progress-line {
+  height: 2px;
+  background-color: var(--color-border);
+  flex: 1;
+  max-width: 80px;
+}
+
+.curriculum-section,
+.course-name-section {
+  background-color: var(--color-bg);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
+  box-shadow: var(--shadow-sm);
+}
+
+h2 {
+  font-size: 18px;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.section-description {
+  color: var(--color-text-light);
+  font-size: 14px;
+  margin-bottom: 24px;
+}
+
+.curriculum-container {
+  margin-bottom: 20px;
+}
+
+.curriculum-item {
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-md);
+  margin-bottom: 16px;
+  overflow: hidden;
+  transition: all var(--transition-speed) ease;
+}
+
+.curriculum-item:hover {
+  box-shadow: var(--shadow-sm);
+}
+
+.curriculum-header {
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background-color: var(--color-bg);
+  cursor: pointer;
+}
+
+.drag-handle {
+  cursor: grab;
+  color: var(--color-text-light);
+}
+
+.lecture-number {
+  color: var(--color-text-light);
+  font-size: 14px;
+  width: 30px;
+}
+
+.lecture-title {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.spacer {
+  flex: 1;
+}
+
+.delete-lecture-button {
+  opacity: 0.6;
+  transition: all var(--transition-speed) ease;
+  padding: 6px;
+  border-radius: 50%;
+}
+
+.delete-lecture-button:hover {
+  opacity: 1;
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+.curriculum-item:hover .delete-lecture-button {
+  opacity: 0.8;
+}
+
+.expand-collapse {
+  color: var(--color-text-light);
+}
+
+.curriculum-content {
+  padding: 16px;
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-bg-light);
+  display: none;
+  /* Hidden by default */
+}
+
+.curriculum-item.expanded .curriculum-content {
+  display: block;
+}
+
+.video-preview {
+  position: relative;
+  width: 100%;
+  border-radius: var(--border-radius-md);
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+
+.video-thumbnail {
+  width: 100%;
+  display: block;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  background: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.form-group {
+  margin-bottom: 20px;
+  position: relative;
+}
+
+label {
+  display: block;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.form-control {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius-sm);
+  transition: all var(--transition-speed) ease;
+}
+
+.form-control:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+}
+
+.char-count {
+  position: absolute;
+  right: 12px;
+  top: 34px;
+  font-size: 12px;
+  color: var(--color-text-light);
+}
+
+.file-upload-area {
+  border: 2px dashed var(--color-border);
+  border-radius: var(--border-radius-md);
+  padding: 32px;
+  text-align: center;
+  background-color: var(--color-bg-upload);
+  cursor: pointer;
+  transition: all var(--transition-speed) ease;
+}
+
+.file-upload-area:hover {
+  border-color: var(--color-primary);
+}
+
+.upload-text {
+  margin-top: 16px;
+  font-weight: 500;
+}
+
+.upload-hint {
+  margin-top: 8px;
+  font-size: 12px;
+  color: var(--color-text-light);
+}
+
+.file-input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.action-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.cancel-button {
+  color: var(--color-text);
+  padding: 8px 16px;
+  border: 1px solid var(--color-border);
+  background-color: white;
+}
+
+.cancel-button:hover {
+  background-color: var(--color-bg-light);
+}
+
+.add-lecture-button {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-primary);
+  font-weight: 500;
+  padding: 8px 12px;
+}
+
+.add-lecture-button:hover {
+  background-color: rgba(16, 185, 129, 0.1);
+  border-radius: var(--border-radius-md);
+}
+
+.bottom-actions {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 40px;
+}
+
+.nav-buttons {
+  display: flex;
+  gap: 12px;
+}
+
+.next-button {
+  background-color: var(--color-primary);
+  color: white;
+  padding: 8px 16px;
+  border-radius: var(--border-radius-sm);
+}
+
+.next-button:hover {
+  background-color: var(--color-primary-hover);
+}
+
+.add-section-button {
+  color: var(--color-primary);
+  font-weight: 500;
+  margin-right: 12px;
+}
+
+.add-section-button:hover {
+  text-decoration: underline;
+}
+
+.section-container {
+  display: none;
+  animation: fadeIn 0.5s ease-out;
+}
+
+.section-container.active {
+  display: block;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .header {
+    padding: 12px 0;
+  }
+
+  .course-header h1 {
+    font-size: 24px;
+  }
+
+  .curriculum-section,
+  .course-name-section {
+    padding: 16px;
+  }
+
+  .bottom-actions {
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .nav-buttons {
+    order: 1;
+  }
+
+  .add-section-button {
+    order: 0;
+    margin-right: 0;
+  }
+
+  .publish-button {
+    order: 2;
+    width: 100%;
+  }
+}
+
+@media (max-width: 480px) {
+  .app-container {
+    padding: 0 12px;
+  }
+
+  .progress-steps {
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .progress-line {
+    height: 40px;
+    width: 2px;
+    max-width: none;
+  }
+
+  .curriculum-header {
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+
+  .lecture-number {
+    width: auto;
+  }
+
+  .file-upload-area {
+    padding: 24px 16px;
+  }
+
+  .action-buttons {
+    flex-direction: column;
+  }
+
+  .cancel-button,
+  .save-lecture-button,
+  .save-button {
+    width: 100%;
+  }
+}
+
+textarea.form-control {
+  resize: vertical;
+  min-height: 100px;
+}
+
+select.form-control {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg width='12' height='8' viewBox='0 0 12 8' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%236B7280' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 36px;
+}
+
+/* Delete Confirmation Modal */
+.delete-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+}
+
+.delete-modal.active {
+  opacity: 1;
+  visibility: visible;
+}
+
+.delete-modal-content {
+  background-color: var(--color-bg);
+  border-radius: var(--border-radius-lg);
+  padding: 24px;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: var(--shadow-md);
+  transform: translateY(20px);
+  transition: all 0.3s ease;
+}
+
+.delete-modal.active .delete-modal-content {
+  transform: translateY(0);
+}
+
+.delete-modal-header {
+  margin-bottom: 16px;
+}
+
+.delete-modal-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.delete-modal-body {
+  margin-bottom: 24px;
+  color: var(--color-text-light);
+}
+
+.delete-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 12px;
+}
+
+.delete-cancel-button {
+  color: var(--color-text);
+  padding: 8px 16px;
+  border: 1px solid var(--color-border);
+  background-color: white;
+  border-radius: var(--border-radius-sm);
+}
+
+.delete-cancel-button:hover {
+  background-color: var(--color-bg-light);
+}
+
+.delete-confirm-button {
+  background-color: var(--color-error);
+  color: white;
+  padding: 8px 16px;
+  border-radius: var(--border-radius-sm);
+}
+
+.delete-confirm-button:hover {
+  background-color: #dc2626;
+}
+
+@media (max-width: 480px) {
+  .delete-modal-actions {
+    flex-direction: column;
+  }
+
+  .delete-cancel-button,
+  .delete-confirm-button {
+    width: 100%;
+  }
+}

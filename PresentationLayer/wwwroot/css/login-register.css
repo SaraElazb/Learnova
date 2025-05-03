@@ -1,0 +1,367 @@
+/* Base Styles */
+:root {
+    --navy: #0F172A;
+    --white: #FFFFFF;
+    --charcoal: #0F172A;
+    --soft-gray: #6B7280;
+    --green: #10B981;
+    --light-gray: #F3F4F6;
+    --error-red: #EF4444;
+    --green-hover: #0D9669;
+    --box-shadow: 0px 4px 16px rgba(15, 23, 42, 0.08);
+    --transition: all 0.3s ease;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Inter', sans-serif;
+    background-color: var(--light-gray);
+    color: var(--charcoal);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 2rem;
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin-top: 100px;
+}
+
+.form-container {
+    background: var(--white);
+    border-radius: 12px;
+    box-shadow: var(--box-shadow);
+    padding: 2.5rem;
+    width: 100%;
+    max-width: 480px;
+}
+
+.logo-container {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 1.5rem;
+}
+
+.logo {
+    height: 40px;
+    margin-right: 12px;
+}
+
+h1 {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--navy);
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--charcoal);
+    margin-bottom: 0.5rem;
+    text-align: center;
+}
+
+.subtitle {
+    text-align: center;
+    color: var(--soft-gray);
+    margin-bottom: 2rem;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 1.5rem;
+}
+
+label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--charcoal);
+}
+
+.input-container {
+    position: relative;
+}
+
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"] {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    color: var(--charcoal);
+    background-color: var(--light-gray);
+    border: 1px solid var(--light-gray);
+    border-radius: 8px;
+    transition: var(--transition);
+}
+
+input:focus {
+    outline: none;
+    border-color: var(--green);
+    box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.15);
+}
+
+input.error {
+    border-color: var(--error-red);
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.error-icon {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--error-red);
+    display: none;
+}
+
+input.error + .error-icon {
+    display: block;
+}
+
+.error-message {
+    display: none;
+    color: var(--error-red);
+    font-size: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+input.error ~ .error-message {
+    display: block;
+}
+
+.toggle-password {
+    position: absolute;
+    right: 1rem;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--soft-gray);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+    .toggle-password:focus {
+        outline: none;
+    }
+
+.hidden {
+    display: none;
+}
+
+.role-selection {
+    margin-bottom: 1.5rem;
+}
+
+.radio-group {
+    display: flex;
+    gap: 1.5rem;
+    margin-top: 0.5rem;
+}
+
+.radio-option {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+}
+
+    .radio-option input[type="radio"] {
+        margin-right: 0.5rem;
+        cursor: pointer;
+        accent-color: var(--green);
+    }
+
+    .radio-option label {
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+
+/* Role-specific fields */
+.role-specific-fields {
+    transition: all 0.3s ease;
+}
+
+.hidden {
+    display: none;
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.5rem;
+}
+
+.remember-me {
+    display: flex;
+    align-items: center;
+}
+
+    .remember-me input[type="checkbox"] {
+        margin-right: 0.5rem;
+        accent-color: var(--green);
+        cursor: pointer;
+    }
+
+    .remember-me label {
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+
+.forgot-password {
+    color: var(--green);
+    text-decoration: none;
+    font-size: 0.875rem;
+    transition: var(--transition);
+}
+
+    .forgot-password:hover {
+        text-decoration: underline;
+    }
+
+.btn {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    font-size: 1rem;
+    font-weight: 500;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background-color: var(--green);
+    color: var(--white);
+}
+
+    .btn-primary:hover {
+        background-color: var(--green-hover);
+    }
+
+    .btn-primary:disabled {
+        cursor: not-allowed;
+        opacity: 0.7;
+    }
+
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    border-top-color: var(--white);
+    animation: spin 1s ease-in-out infinite;
+    margin-left: 0.5rem;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.alt-action {
+    text-align: center;
+    margin-top: 1.5rem;
+    color: var(--soft-gray);
+    font-size: 0.875rem;
+}
+
+    .alt-action a {
+        color: var(--green);
+        text-decoration: none;
+        font-weight: 500;
+        transition: var(--transition);
+    }
+
+        .alt-action a:hover {
+            text-decoration: underline;
+        }
+
+/* Responsive Design */
+@media (min-width: 768px) {
+    .container {
+        padding: 4rem;
+    }
+
+    .form-container {
+        padding: 3rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        padding: 1rem;
+    }
+
+    .form-container {
+        padding: 1.5rem;
+        box-shadow: none;
+        border-radius: 0;
+        max-width: 100%;
+    }
+
+    .form-options {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    /* Make role selection responsive for mobile */
+    .radio-group {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+}
+
+/* For screens smaller than 320px */
+@media (max-width: 320px) {
+    .form-container {
+        padding: 1rem;
+    }
+
+    h1 {
+        font-size: 1.25rem;
+    }
+
+    h2 {
+        font-size: 1.25rem;
+    }
+}
+
+/* CSS*/
+.logo {
+    width: 185px;
+    height: 45px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.25rem;
+}
