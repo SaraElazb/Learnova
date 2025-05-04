@@ -2,82 +2,195 @@
 
 @{
     ViewData["Title"] = "Add Question";
+    Layout = "_Layout2";
 }
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">Add New Question</h2>
+@section CustomHeadContent {
+    <link rel="stylesheet" href="~/css/quiz.css">
+}
+
+<div class="quiz-container">
+    <div class="quiz-breadcrumb animate-fade-in">
+        <a asp-controller="Quiz" asp-action="AdminIndex">Quizzes</a>
+        <span class="quiz-breadcrumb-separator">•</span>
+        <a asp-action="Index" asp-route-quizId="@Model.QuizID">Questions</a>
+        <span class="quiz-breadcrumb-separator">•</span>
+        <span>Add Question</span>
+    </div>
+
+    <div class="quiz-header">
+        <h1 class="quiz-title animate-fade-in">Add New Question</h1>
+    </div>
+    
+    <div class="quiz-content animate-fade-in animate-delay-100">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="quiz-alert quiz-alert-error">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <p>@TempData["ErrorMessage"]</p>
+            </div>
+        }
+        
+        <div class="quiz-main">
+            <form asp-action="Create" method="post" class="quiz-form" id="createQuestionForm">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <!-- Essential hidden fields -->
+                <input type="hidden" asp-for="QuizID" id="QuizID" value="@Model.QuizID" />
+                <input type="hidden" asp-for="RightAns" id="RightAns" />
+                
+                <div class="form-group">
+                    <label asp-for="QuestionText" class="form-label">Question Text</label>
+                    <textarea asp-for="QuestionText" class="form-textarea" rows="3" required></textarea>
+                    <span asp-validation-for="QuestionText" class="text-danger"></span>
                 </div>
-                <div class="card-body">
-                    <form asp-action="Create" method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <input type="hidden" asp-for="QuizID" />
-                        
-                        <div class="mb-3">
-                            <label asp-for="QuestionText" class="form-label">Question Text</label>
-                            <textarea asp-for="QuestionText" class="form-control" rows="3"></textarea>
-                            <span asp-validation-for="QuestionText" class="text-danger"></span>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label asp-for="Score" class="form-label">Score</label>
-                            <input asp-for="Score" class="form-control" type="number" min="1" />
-                            <span asp-validation-for="Score" class="text-danger"></span>
-                        </div>
-                        
-                        <div class="mb-4">
-                            <label class="form-label">Answer Options</label>
-                            <div class="card">
-                                <div class="card-body">
-                                    @for (int i = 0; i < Model.Answers.Count; i++)
-                                    {
-                                        <div class="mb-3">
-                                            <div class="input-group">
-                                                <div class="input-group-text">
-                                                    <input type="radio" name="rightAnswerIndex" value="@i" class="form-check-input mt-0" required>
-                                                </div>
-                                                <input asp-for="Answers[i]" class="form-control" placeholder="Answer option @(i+1)" required />
-                                            </div>
-                                        </div>
-                                    }
-                                    
-                                    <div class="alert alert-info small">
-                                        <i class="bi bi-info-circle"></i> Select the radio button next to the correct answer.
+                
+                <div class="form-group">
+                    <label asp-for="Score" class="form-label">Score</label>
+                    <input asp-for="Score" class="form-input" type="number" min="1" value="10" required />
+                    <span asp-validation-for="Score" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label">Answer Options</label>
+                    <div class="answer-options-container" style="background-color: var(--brand-teal-light); padding: 1.5rem; border-radius: var(--border-radius);">
+                        <div id="answer-options">
+                            @for (int i = 0; i < 4; i++)
+                            {
+                                <div class="answer-option" style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem;">
+                                    <div class="answer-radio" style="flex-shrink: 0;">
+                                        <input type="radio" id="rightAnswer_@i" name="rightAnswerRadio" value="@i" required 
+                                               style="width: 1.25rem; height: 1.25rem; cursor: pointer;">
+                                    </div>
+                                    <div style="flex-grow: 1;">
+                                        <label for="rightAnswer_@i" style="width: 100%;">
+                                            <input name="Answers[@i]" id="Answers_@i" class="form-input answer-input" 
+                                                   placeholder="Answer option @(i+1)" value="" />
+                                        </label>
                                     </div>
                                 </div>
-                            </div>
+                            }
                         </div>
                         
-                        <div class="d-flex justify-content-between">
-                            <a asp-action="Index" asp-route-quizId="@Model.QuizID" class="btn btn-secondary">Back to Questions</a>
-                            <button type="submit" class="btn btn-primary">Create</button>
+                        <div class="quiz-alert quiz-alert-info" style="margin-bottom: 0;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            <p>Select the radio button next to the correct answer.</p>
                         </div>
-                    </form>
+                    </div>
                 </div>
-            </div>
+                
+                <div class="quiz-actions">
+                    <a asp-action="Index" asp-route-quizId="@Model.QuizID" class="quiz-btn quiz-btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Back to Questions
+                    </a>
+                    <button type="submit" class="quiz-btn quiz-btn-primary">
+                        Create Question
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-@section Scripts {
-    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
-    
+@section CustomScripts {
     <script>
         $(document).ready(function() {
-            $('form').submit(function(e) {
-                var selectedIndex = $('input[name="rightAnswerIndex"]:checked').val();
-                if (selectedIndex !== undefined) {
-                    var correctAnswer = $('input[name="Answers[' + selectedIndex + ']"]').val();
-                    $('<input>').attr({
-                        type: 'hidden',
-                        name: 'RightAns',
-                        value: correctAnswer
-                    }).appendTo('form');
+            // Animations
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            fadeElements.forEach(function(element) {
+                element.classList.add('visible');
+            });
+            
+            // Track selected answer
+            $('input[name="rightAnswerRadio"]').change(function() {
+                const selectedIndex = $(this).val();
+                const answerText = $(`#Answers_${selectedIndex}`).val().trim();
+                $('#RightAns').val(answerText);
+            });
+            
+            // Update RightAns when answer text changes
+            $('.answer-input').on('input', function() {
+                const inputId = $(this).attr('id');
+                const index = inputId.split('_')[1];
+                
+                if ($(`#rightAnswer_${index}`).is(':checked')) {
+                    $('#RightAns').val($(this).val().trim());
                 }
+            });
+            
+            // Form submission
+            $('#createQuestionForm').submit(function(e) {
+                // Make sure question text is provided
+                if (!$('#QuestionText').val().trim()) {
+                    alert('Please enter question text');
+                    $('#QuestionText').focus();
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Make sure score is valid
+                const score = $('#Score').val();
+                if (!score || parseInt(score) < 1) {
+                    alert('Please enter a valid score (minimum 1)');
+                    $('#Score').focus();
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Check if any answers are provided
+                let hasAnswer = false;
+                $('.answer-input').each(function() {
+                    if ($(this).val().trim()) {
+                        hasAnswer = true;
+                    }
+                });
+                
+                if (!hasAnswer) {
+                    alert('Please provide at least one answer option');
+                    $('.answer-input:first').focus();
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Make sure a correct answer is selected
+                const selectedRadio = $('input[name="rightAnswerRadio"]:checked');
+                if (selectedRadio.length === 0) {
+                    alert('Please select a correct answer');
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Get the selected answer text and make sure it's not empty
+                const selectedIndex = selectedRadio.val();
+                const selectedAnswerText = $(`#Answers_${selectedIndex}`).val().trim();
+                
+                if (!selectedAnswerText) {
+                    alert('The selected correct answer cannot be empty');
+                    $(`#Answers_${selectedIndex}`).focus();
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // Set the RightAns value to the selected answer text
+                $('#RightAns').val(selectedAnswerText);
+                
+                // Continue with form submission
+                return true;
             });
         });
     </script>
-} 
+    
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

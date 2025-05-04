@@ -2,45 +2,222 @@
 
 @{
     ViewData["Title"] = "Lessons Management";
+    Layout = "_Layout2";
 }
 
-<div class="container mt-4">
-    <h1>Lessons Management</h1>
-    
-    <p>
-        <a asp-action="Create" class="btn btn-primary">Create New Lesson</a>
-    </p>
-    
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-            <thead class="table-light">
-                <tr>
-                    <th>Title</th>
-                    <th>Course</th>
-                    <th>Order</th>
-                    <th>Duration</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.Title</td>
-                        <td>@item.CourseName</td>
-                        <td>@item.LessonOrder</td>
-                        <td>@item.Duration min</td>
-                        <td>
-                            <div class="btn-group">
-                                <a asp-action="Edit" asp-route-id="@item.Lesson_ID" class="btn btn-sm btn-outline-primary">Edit</a>
-                                <a asp-action="Details" asp-route-id="@item.Lesson_ID" class="btn btn-sm btn-outline-info">Details</a>
-                                <a asp-action="Delete" asp-route-id="@item.Lesson_ID" class="btn btn-sm btn-outline-danger" 
-                                   onclick="return confirm('Are you sure you want to delete this lesson?');">Delete</a>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+@section CustomHeadContent {
+    <link rel="stylesheet" href="~/css/lesson.css">
+    <style>
+        .action-icon {
+            transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease;
+        }
+        .action-icon:hover {
+            transform: translateY(-2px);
+        }
+        .edit-icon:hover {
+            background-color: #e5e7eb !important;
+            color: #374151 !important;
+        }
+        .info-icon:hover {
+            background-color: rgba(59, 130, 246, 0.2) !important;
+            color: #2563eb !important;
+        }
+        .delete-icon:hover {
+            background-color: rgba(239, 68, 68, 0.2) !important;
+            color: #dc2626 !important;
+        }
+        
+        .table-row {
+            transition: background-color 0.2s ease;
+        }
+        .table-row:hover {
+            background-color: rgba(16, 185, 129, 0.05);
+        }
+        
+        .lesson-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        .lesson-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        .lesson-btn:hover::after {
+            animation: ripple 0.6s ease-out;
+        }
+        @@keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+    </style>
+}
+
+<div class="lesson-container">
+    <div class="lesson-breadcrumb animate-fade-in">
+        <a asp-controller="Course" asp-action="AdminIndex" class="breadcrumb-link">Courses</a>
+        <span class="lesson-breadcrumb-separator">•</span>
+        <span>Lessons</span>
     </div>
-</div> 
+
+    <div class="lesson-header">
+        <h1 class="lesson-title animate-fade-in">Lessons Management</h1>
+    </div>
+    
+    <div class="lesson-content animate-fade-in animate-delay-100">
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="lesson-alert lesson-alert-success animate-fade-in animate-delay-200">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <p>@TempData["SuccessMessage"]</p>
+            </div>
+        }
+        
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="lesson-alert lesson-alert-error animate-fade-in animate-delay-200">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <p>@TempData["ErrorMessage"]</p>
+            </div>
+        }
+        
+        <div class="lesson-main animate-fade-in animate-delay-200" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+            <div class="lesson-actions" style="padding: 1.5rem; border-bottom: 1px solid var(--layout-border-color);">
+                <div></div> <!-- Empty div for flex spacing -->
+                <a asp-action="Create" class="lesson-btn lesson-btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Create New Lesson
+                </a>
+            </div>
+            
+            <div style="overflow-x: auto;">
+                <table style="width: 100%; border-collapse: collapse; min-width: 600px;">
+                    <thead>
+                        <tr style="border-bottom: 1px solid var(--layout-border-color); background-color: var(--light-gray);">
+                            <th style="padding: 1rem; text-align: left; font-weight: 600;">Title</th>
+                            <th style="padding: 1rem; text-align: left; font-weight: 600;">Course</th>
+                            <th style="padding: 1rem; text-align: center; font-weight: 600;">Order</th>
+                            <th style="padding: 1rem; text-align: center; font-weight: 600;">Duration</th>
+                            <th style="padding: 1rem; text-align: center; font-weight: 600;">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @if (!Model.Any())
+                        {
+                            <tr>
+                                <td colspan="5" style="padding: 2rem; text-align: center; color: var(--text-gray-600);">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 1rem; opacity: 0.5; display: inline-block;">
+                                        <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                                        <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                                    </svg>
+                                    <p>No lessons available. Click "Create New Lesson" to add one.</p>
+                                </td>
+                            </tr>
+                        }
+                        else
+                        {
+                            @foreach (var item in Model)
+                            {
+                                <tr class="table-row" style="border-bottom: 1px solid var(--layout-border-color);">
+                                    <td style="padding: 1rem;">
+                                        <div style="font-weight: 500;">@item.Title</div>
+                                    </td>
+                                    <td style="padding: 1rem;">@item.CourseName</td>
+                                    <td style="padding: 1rem; text-align: center;">
+                                        <span style="display: inline-block; background-color: var(--brand-teal-light); color: var(--brand-teal); padding: 0.25rem 0.75rem; border-radius: 9999px; font-weight: 500;">@item.LessonOrder</span>
+                                    </td>
+                                    <td style="padding: 1rem; text-align: center;">
+                                        <span style="display: inline-flex; align-items: center; justify-content: center; gap: 0.25rem;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <polyline points="12 6 12 12 16 14"></polyline>
+                                            </svg>
+                                            @item.Duration min
+                                        </span>
+                                    </td>
+                                    <td style="padding: 1rem; text-align: center;">
+                                        <div style="display: flex; gap: 0.5rem; justify-content: center;">
+                                            <a asp-action="Edit" asp-route-id="@item.Lesson_ID" class="action-icon edit-icon" style="padding: 0.5rem; border-radius: var(--border-radius); background-color: var(--light-gray); color: var(--text-gray-600);" title="Edit">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                                    <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                                </svg>
+                                            </a>
+                                            <a asp-action="Details" asp-route-id="@item.Lesson_ID" class="action-icon info-icon" style="padding: 0.5rem; border-radius: var(--border-radius); background-color: var(--info-light); color: var(--info-color);" title="Details">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <circle cx="12" cy="12" r="10"></circle>
+                                                    <line x1="12" y1="16" x2="12" y2="12"></line>
+                                                    <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                                </svg>
+                                            </a>
+                                            <a asp-action="Delete" asp-route-id="@item.Lesson_ID" onclick="return confirm('Are you sure you want to delete this lesson?');" class="action-icon delete-icon" style="padding: 0.5rem; border-radius: var(--border-radius); background-color: var(--error-light); color: var(--error-color);" title="Delete">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M3 6h18"></path>
+                                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                                    <line x1="10" y1="11" x2="10" y2="17"></line>
+                                                    <line x1="14" y1="11" x2="14" y2="17"></line>
+                                                </svg>
+                                            </a>
+                                        </div>
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div class="lesson-actions" style="margin-top: 1.5rem; justify-content: flex-start;">
+            <a asp-controller="Course" asp-action="AdminIndex" class="lesson-btn lesson-btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back to Courses
+            </a>
+        </div>
+    </div>
+</div>
+
+@section CustomScripts {
+    <script>
+        $(document).ready(function() {
+            // Enhanced animations with staggered timing
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            fadeElements.forEach(function(element, index) {
+                setTimeout(() => {
+                    element.classList.add('visible');
+                }, 50 * index);
+            });
+        });
+    </script>
+} 

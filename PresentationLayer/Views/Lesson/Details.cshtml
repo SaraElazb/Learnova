@@ -1,55 +1,102 @@
 @model BusinessLogicLayer.DTOs.LessonDtos.LessonDto
 
 @{
-    ViewData["Title"] = "Lesson Details";
+    ViewData["Title"] = Model.Title;
+    Layout = "_Layout2";
 }
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">@Model.Title</h2>
+@section CustomHeadContent {
+    <link rel="stylesheet" href="~/css/lesson.css">
+}
+
+<div class="lesson-container">
+    <div class="lesson-breadcrumb animate-fade-in">
+        <a asp-controller="Course" asp-action="Details" asp-route-id="@Model.Course_ID">@Model.CourseName</a>
+        <span class="lesson-breadcrumb-separator">•</span>
+        <span>Lesson @Model.LessonOrder</span>
+    </div>
+
+    <div class="lesson-header">
+        <h1 class="lesson-title animate-fade-in">@Model.Title</h1>
+    </div>
+
+    <div class="lesson-content">
+        <div class="lesson-main animate-fade-in animate-delay-100">
+            <div class="video-container">
+                <iframe src="@Model.VideoUri" title="@Model.Title" allowfullscreen></iframe>
+            </div>
+            <div class="lesson-details">
+                <div class="lesson-meta">
+                    <div class="meta-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        <div>
+                            <span class="meta-label">Duration</span>
+                            <div>@Model.Duration minutes</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path>
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path>
+                        </svg>
+                        <div>
+                            <span class="meta-label">Lesson</span>
+                            <div>@Model.LessonOrder of Course</div>
+                        </div>
+                    </div>
+                    <div class="meta-item">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                            <circle cx="9" cy="7" r="4"></circle>
+                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                        </svg>
+                        <div>
+                            <span class="meta-label">Course</span>
+                            <div>@Model.CourseName</div>
+                        </div>
+                    </div>
                 </div>
-                <div class="card-body">
-                    <div class="row mb-4">
-                        <div class="col-md-12">
-                            <div class="ratio ratio-16x9">
-                                <iframe src="@Model.VideoUri" title="@Model.Title" allowfullscreen></iframe>
-                            </div>
-                        </div>
-                    </div>
 
-                    <div class="row mb-3">
-                        <div class="col-md-4">
-                            <p><strong>Course:</strong> @Model.CourseName</p>
-                        </div>
-                        <div class="col-md-4">
-                            <p><strong>Duration:</strong> @Model.Duration minutes</p>
-                        </div>
-                        <div class="col-md-4">
-                            <p><strong>Order:</strong> Lesson @Model.LessonOrder</p>
-                        </div>
-                    </div>
+                <div class="lesson-description">
+                    <h3>Description</h3>
+                    <p>@Model.Description</p>
+                </div>
 
-                    <div class="row mb-4">
-                        <div class="col">
-                            <h4>Description</h4>
-                            <p>@Model.Description</p>
-                        </div>
-                    </div>
-
-                    <div class="row">
-                        <div class="col d-flex justify-content-between">
-                            <a asp-controller="Course" asp-action="Details" asp-route-id="@Model.Course_ID" class="btn btn-secondary">Back to Course</a>
-                            @if (Model.Quiz_ID.HasValue)
-                            {
-                                <a asp-controller="Quiz" asp-action="Details" asp-route-id="@Model.Quiz_ID" class="btn btn-success">Take Quiz</a>
-                            }
-                        </div>
-                    </div>
+                <div class="lesson-actions">
+                    <a asp-controller="Course" asp-action="Details" asp-route-id="@Model.Course_ID" class="lesson-btn lesson-btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Back to Course
+                    </a>
+                    @if (Model.Quiz_ID.HasValue)
+                    {
+                        <a asp-controller="Quiz" asp-action="Details" asp-route-id="@Model.Quiz_ID" class="lesson-btn lesson-btn-primary">
+                            Take Quiz
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <polyline points="9 18 15 12 9 6"></polyline>
+                            </svg>
+                        </a>
+                    }
                 </div>
             </div>
         </div>
     </div>
-</div> 
+</div>
+
+@section CustomScripts {
+    <script>
+        // Make all elements with fade-in class visible when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            fadeElements.forEach(function(element) {
+                element.classList.add('visible');
+            });
+        });
+    </script>
+} 

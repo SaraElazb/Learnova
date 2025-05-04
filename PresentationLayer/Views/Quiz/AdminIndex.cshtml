@@ -2,56 +2,244 @@
 
 @{
     ViewData["Title"] = "Quizzes Management";
+    Layout = "_Layout2";
 }
 
-<div class="container mt-4">
-    <h1>Quizzes Management</h1>
-    
-    <p>
-        <a asp-action="Create" class="btn btn-primary">Create New Quiz</a>
-    </p>
-    
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover">
-            <thead class="table-light">
-                <tr>
-                    <th>Title</th>
-                    <th>Lesson</th>
-                    <th>Passing Score</th>
-                    <th>Questions</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var item in Model)
-                {
-                    <tr>
-                        <td>@item.Title</td>
-                        <td>@item.LessonTitle</td>
-                        <td>@item.Passing_score</td>
-                        <td>
-                            @if (item.Questions != null)
-                            {
-                                @item.Questions.Count
-                                <a asp-controller="Question" asp-action="Index" asp-route-quizId="@item.Quiz_ID" class="btn btn-sm btn-outline-secondary">Manage</a>
-                            }
-                            else
-                            {
-                                <span>0</span>
-                                <a asp-controller="Question" asp-action="Create" asp-route-quizId="@item.Quiz_ID" class="btn btn-sm btn-outline-secondary">Add</a>
-                            }
-                        </td>
-                        <td>
-                            <div class="btn-group">
-                                <a asp-action="Edit" asp-route-id="@item.Quiz_ID" class="btn btn-sm btn-outline-primary">Edit</a>
-                                <a asp-action="Details" asp-route-id="@item.Quiz_ID" class="btn btn-sm btn-outline-info">Details</a>
-                                <a asp-action="Delete" asp-route-id="@item.Quiz_ID" class="btn btn-sm btn-outline-danger" 
-                                   onclick="return confirm('Are you sure you want to delete this quiz?');">Delete</a>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+@section CustomHeadContent {
+    <link rel="stylesheet" href="~/css/quiz.css">
+    <style>
+        .quiz-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+        }
+        
+        .quiz-table th {
+            background-color: var(--brand-teal-light);
+            color: var(--dark-bg);
+            font-weight: 600;
+            text-align: left;
+            padding: 1rem;
+        }
+        
+        .quiz-table td {
+            padding: 1rem;
+            border-bottom: 1px solid var(--layout-border-color);
+        }
+        
+        .quiz-table tr:last-child td {
+            border-bottom: none;
+        }
+        
+        .quiz-table tr:hover {
+            background-color: var(--light-gray);
+        }
+        
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 0.35rem 0.75rem;
+            border-radius: 9999px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .badge-primary {
+            background-color: var(--brand-teal);
+            color: white;
+        }
+        
+        .action-btn-group {
+            display: flex;
+            gap: 0.5rem;
+        }
+        
+        .quiz-card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .quiz-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .quiz-card-header {
+            padding: 1.25rem;
+            background-color: var(--brand-teal-light);
+            border-bottom: 1px solid var(--layout-border-color);
+        }
+        
+        .quiz-card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 0;
+            color: var(--dark-bg);
+        }
+        
+        .quiz-card-subtitle {
+            font-size: 0.875rem;
+            color: var(--text-gray-600);
+            margin-top: 0.25rem;
+        }
+        
+        .quiz-card-body {
+            padding: 1.25rem;
+            flex-grow: 1;
+        }
+        
+        .quiz-card-actions {
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            border-top: 1px solid var(--layout-border-color);
+        }
+        
+        .quiz-meta-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+        }
+        
+        .quiz-meta-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 0.75rem 0;
+            border-bottom: 1px solid var(--layout-border-color);
+        }
+        
+        .quiz-meta-item:last-child {
+            border-bottom: none;
+        }
+        
+        .quiz-meta-label {
+            font-weight: 500;
+            color: var(--text-gray-600);
+        }
+        
+        .quiz-meta-value {
+            font-weight: 600;
+            color: var(--dark-bg);
+        }
+    </style>
+}
+
+<div class="quiz-container">
+    <div class="quiz-breadcrumb animate-fade-in">
+        <a asp-controller="Admin" asp-action="Index">Admin Dashboard</a>
+        <span class="quiz-breadcrumb-separator">•</span>
+        <span>Quizzes Management</span>
     </div>
-</div> 
+
+    <div class="quiz-header">
+        <h1 class="quiz-title animate-fade-in">Quizzes Management</h1>
+    </div>
+    
+    <div class="quiz-content animate-fade-in animate-delay-100" style="max-width: 100%">
+        <div class="quiz-main">
+            <div class="quiz-actions" style="margin-top: 0; padding-top: 0; border-top: none; margin-bottom: 2rem;">
+                <a asp-action="Create" class="quiz-btn quiz-btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Create New Quiz
+                </a>
+            </div>
+            
+            @if (!Model.Any())
+            {
+                <div class="quiz-alert quiz-alert-info">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <p>No quizzes have been created yet. Click the button above to create a new quiz.</p>
+                </div>
+            }
+            else
+            {
+                <div class="quiz-card-grid">
+                    @foreach (var item in Model)
+                    {
+                        <div class="quiz-card animate-fade-in animate-delay-200">
+                            <div class="quiz-card-header">
+                                <h5 class="quiz-card-title">@item.Title</h5>
+                                <div class="quiz-card-subtitle">@item.LessonTitle</div>
+                            </div>
+                            <div class="quiz-card-body">
+                                <ul class="quiz-meta-list">
+                                    <li class="quiz-meta-item">
+                                        <span class="quiz-meta-label">Passing Score</span>
+                                        <span class="quiz-meta-value">
+                                            <span class="badge badge-primary">@item.Passing_score%</span>
+                                        </span>
+                                    </li>
+                                    <li class="quiz-meta-item">
+                                        <span class="quiz-meta-label">Questions</span>
+                                        <span class="quiz-meta-value">
+                                            @if (item.Questions != null)
+                                            {
+                                                @item.Questions.Count
+                                            }
+                                            else
+                                            {
+                                                <span>0</span>
+                                            }
+                                        </span>
+                                    </li>
+                                </ul>
+                                
+                                @if (item.Questions == null || item.Questions.Count == 0)
+                                {
+                                    <div class="quiz-alert quiz-alert-info" style="margin-top: 1rem; margin-bottom: 0;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="10"></circle>
+                                            <line x1="12" y1="16" x2="12" y2="12"></line>
+                                            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                                        </svg>
+                                        <p>No questions added yet</p>
+                                    </div>
+                                }
+                            </div>
+                            <div class="quiz-card-actions">
+                                <a asp-controller="Question" asp-action="Index" asp-route-quizId="@item.Quiz_ID" class="quiz-btn quiz-btn-secondary">
+                                    Manage Questions
+                                </a>
+                                <a asp-action="Edit" asp-route-id="@item.Quiz_ID" class="quiz-btn quiz-btn-secondary">
+                                    Edit
+                                </a>
+                                <a asp-action="Delete" asp-route-id="@item.Quiz_ID" class="quiz-btn quiz-btn-secondary" style="color: var(--error-color);"
+                                   onclick="return confirm('Are you sure you want to delete this quiz?');">
+                                    Delete
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section CustomScripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            fadeElements.forEach(function(element) {
+                element.classList.add('visible');
+            });
+        });
+    </script>
+} 

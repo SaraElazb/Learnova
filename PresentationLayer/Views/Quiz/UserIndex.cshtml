@@ -2,42 +2,109 @@
 
 @{
     ViewData["Title"] = "Lesson Quizzes";
+    Layout = "_Layout2";
 }
 
-<div class="container mt-4">
-    <h1>Quizzes for Lesson</h1>
+@section CustomHeadContent {
+    <link rel="stylesheet" href="~/css/quiz.css">
+}
+
+<div class="quiz-container">
+    <div class="quiz-breadcrumb animate-fade-in">
+        <a asp-controller="Lesson" asp-action="Details" asp-route-id="@ViewBag.LessonId">Lesson</a>
+        <span class="quiz-breadcrumb-separator">•</span>
+        <span>Quizzes</span>
+    </div>
+
+    <div class="quiz-header">
+        <h1 class="quiz-title animate-fade-in">Quizzes for Lesson</h1>
+    </div>
     
-    <div class="row">
-        @if (!Model.Any())
-        {
-            <div class="col-12 text-center my-5">
-                <h3>No quizzes available for this lesson yet.</h3>
-            </div>
-        }
-        else
-        {
-            @foreach (var item in Model)
+    <div class="quiz-content animate-fade-in animate-delay-100" style="max-width: 100%">
+        <div class="quiz-main">
+            @if (!Model.Any())
             {
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-header bg-info text-white">
-                            <h5 class="card-title mb-0">@item.Title</h5>
-                        </div>
-                        <div class="card-body">
-                            <p><strong>Passing Score:</strong> @item.Passing_score</p>
-                            <p><strong>Questions:</strong> @(item.Questions != null ? item.Questions.Count : 0)</p>
-                            <p class="card-text">@item.Instructions</p>
-                        </div>
-                        <div class="card-footer bg-transparent">
-                            <a asp-action="Details" asp-route-id="@item.Quiz_ID" class="btn btn-primary w-100">Take Quiz</a>
-                        </div>
-                    </div>
+                <div class="quiz-alert quiz-alert-info">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <p>No quizzes are available for this lesson yet.</p>
+                </div>
+                
+                <div class="quiz-actions">
+                    <a asp-controller="Lesson" asp-action="Details" asp-route-id="@ViewBag.LessonId" class="quiz-btn quiz-btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Back to Lesson
+                    </a>
                 </div>
             }
-        }
+            else
+            {
+                <div class="quiz-card-grid">
+                    @foreach (var item in Model)
+                    {
+                        <div class="quiz-card animate-fade-in animate-delay-200">
+                            <div class="quiz-card-header">
+                                <h5 class="quiz-card-title">@item.Title</h5>
+                            </div>
+                            <div class="quiz-card-body">
+                                <ul class="quiz-meta-list">
+                                    <li class="quiz-meta-item">
+                                        <span class="quiz-meta-label">Passing Score</span>
+                                        <span class="quiz-meta-value">
+                                            <span class="badge badge-primary">@item.Passing_score%</span>
+                                        </span>
+                                    </li>
+                                    <li class="quiz-meta-item">
+                                        <span class="quiz-meta-label">Questions</span>
+                                        <span class="quiz-meta-value">
+                                            @(item.Questions != null ? item.Questions.Count : 0)
+                                        </span>
+                                    </li>
+                                </ul>
+                                
+                                @if (!string.IsNullOrEmpty(item.Instructions))
+                                {
+                                    <div class="quiz-instructions" style="margin-top: 1rem;">
+                                        <p>@item.Instructions</p>
+                                    </div>
+                                }
+                            </div>
+                            <div class="quiz-card-actions">
+                                <a asp-action="Details" asp-route-id="@item.Quiz_ID" class="quiz-btn quiz-btn-primary">
+                                    Take Quiz
+                                </a>
+                            </div>
+                        </div>
+                    }
+                </div>
+                
+                <div class="quiz-actions" style="margin-top: 2rem;">
+                    <a asp-controller="Lesson" asp-action="Details" asp-route-id="@ViewBag.LessonId" class="quiz-btn quiz-btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Back to Lesson
+                    </a>
+                </div>
+            }
+        </div>
     </div>
-    
-    <div class="mt-4">
-        <a asp-controller="Lesson" asp-action="Details" asp-route-id="@ViewBag.LessonId" class="btn btn-secondary">Back to Lesson</a>
-    </div>
-</div> 
+</div>
+
+@section CustomScripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            fadeElements.forEach(function(element) {
+                element.classList.add('visible');
+            });
+        });
+    </script>
+} 

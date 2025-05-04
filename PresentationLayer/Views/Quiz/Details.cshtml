@@ -1,119 +1,221 @@
 @model BusinessLogicLayer.DTOs.QuizDtos.QuizDto
 
 @{
-    ViewData["Title"] = "Quiz Details";
+    ViewData["Title"] = Model.Title;
+    Layout = "_Layout2";
 }
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="card shadow">
-                <div class="card-header bg-info text-white">
-                    <h2 class="mb-0">@Model.Title</h2>
-                    <p class="mb-0">Lesson: @Model.LessonTitle</p>
+@section CustomHeadContent {
+    <link rel="stylesheet" href="~/css/quiz.css">
+}
+
+<div class="quiz-container">
+    <div class="quiz-breadcrumb animate-fade-in">
+        <a asp-controller="Lesson" asp-action="Details" asp-route-id="@Model.Lesson_ID">@Model.LessonTitle</a>
+        <span class="quiz-breadcrumb-separator">•</span>
+        <span>Quiz</span>
+    </div>
+
+    <div class="quiz-header">
+        <h1 class="quiz-title animate-fade-in">@Model.Title</h1>
+    </div>
+
+    <div class="quiz-content animate-fade-in animate-delay-100">
+        <div class="quiz-info">
+            <div class="quiz-info-header">
+                <h2 class="quiz-info-title">Quiz Information</h2>
+                <div class="quiz-badge">Passing Score: @Model.Passing_score%</div>
+            </div>
+            
+            <div class="quiz-meta">
+                <div class="quiz-meta-item">
+                    <span class="quiz-meta-label">Total Questions:</span>
+                    <span class="quiz-meta-value">@(Model.Questions?.Count ?? 0)</span>
                 </div>
-                <div class="card-body">
-                    <div class="mb-4">
-                        <h4>Instructions</h4>
-                        <p>@Model.Instructions</p>
-                    </div>
-                    
-                    <div class="mb-4">
-                        <h4>Quiz Information</h4>
-                        <ul class="list-group">
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Passing Score
-                                <span class="badge bg-primary rounded-pill">@Model.Passing_score</span>
-                            </li>
-                            <li class="list-group-item d-flex justify-content-between align-items-center">
-                                Total Questions
-                                <span class="badge bg-primary rounded-pill">@(Model.Questions != null ? Model.Questions.Count : 0)</span>
-                            </li>
-                        </ul>
-                    </div>
-                    
-                    @if (Model.Questions != null && Model.Questions.Any())
-                    {
-                        <div class="mb-4">
-                            <h4>Questions</h4>
-                            <form id="quizForm">
-                                @for (int i = 0; i < Model.Questions.Count; i++)
-                                {
-                                    var question = Model.Questions[i];
-                                    <div class="card mb-3">
-                                        <div class="card-header">
-                                            <h5>Question @(i+1): @question.QuestionText</h5>
-                                            <small class="text-muted">Score: @question.Score points</small>
-                                        </div>
-                                        <div class="card-body">
-                                            @if (question.Answers != null && question.Answers.Any())
-                                            {
-                                                <div class="list-group">
-                                                    @foreach (var answer in question.Answers)
-                                                    {
-                                                        <label class="list-group-item">
-                                                            <input type="radio" name="question_@question.QuestionID" value="@answer.Answers" class="me-2">
-                                                            @answer.Answers
-                                                        </label>
-                                                    }
-                                                </div>
-                                            }
-                                            else
-                                            {
-                                                <p>No answers available for this question.</p>
-                                            }
-                                        </div>
-                                    </div>
-                                }
-                                
-                                <div class="d-grid gap-2">
-                                    <button type="submit" class="btn btn-success">Submit Quiz</button>
-                                </div>
-                            </form>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="alert alert-warning">
-                            No questions have been added to this quiz yet.
-                        </div>
-                    }
-                    
-                    <div class="mt-4">
-                        <a asp-controller="Lesson" asp-action="Details" asp-route-id="@Model.Lesson_ID" class="btn btn-secondary">Back to Lesson</a>
-                    </div>
+                <div class="quiz-meta-item">
+                    <span class="quiz-meta-label">Time Limit:</span>
+                    <span class="quiz-meta-value">No time limit</span>
                 </div>
             </div>
+            
+            <div class="quiz-instructions">
+                <p>@Model.Instructions</p>
+            </div>
+        </div>
+        
+        <div class="quiz-main">
+            @if (Model.Questions != null && Model.Questions.Any())
+            {
+                <form id="quizForm">
+                    <div class="quiz-progress">
+                        <div class="progress-bar-container">
+                            <div class="progress-bar" style="width: 0%"></div>
+                        </div>
+                        <div class="progress-text">
+                            <span>Question <span id="currentQuestion">1</span> of @Model.Questions.Count</span>
+                            <span id="progress-percentage">0%</span>
+                        </div>
+                    </div>
+                    
+                    @for (int i = 0; i < Model.Questions.Count; i++)
+                    {
+                        var question = Model.Questions[i];
+                        var isActive = i == 0 ? "active" : "";
+                        
+                        <div class="question-container" id="question-@i" data-question-id="@question.QuestionID" style="display: @(i == 0 ? "block" : "none")">
+                            <div class="question-number">Question @(i+1) of @Model.Questions.Count</div>
+                            <h3 class="question-text">@question.QuestionText</h3>
+                            
+                            @if (question.Answers != null && question.Answers.Any())
+                            {
+                                <div class="answers-list">
+                                    @foreach (var answer in question.Answers)
+                                    {
+                                        <div class="answer-item">
+                                            <input type="radio" id="answer_@answer.AnswerID" name="question_@question.QuestionID" value="@answer.Answers">
+                                            <label for="answer_@answer.AnswerID">
+                                                <div class="answer-checkbox"></div>
+                                                <div class="answer-text">@answer.Answers</div>
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+                            }
+                            else
+                            {
+                                <p>No answers available for this question.</p>
+                            }
+                        </div>
+                    }
+                    
+                    <div class="quiz-actions">
+                        <button type="button" id="prevBtn" class="quiz-btn quiz-btn-secondary" disabled>Previous</button>
+                        <button type="button" id="nextBtn" class="quiz-btn quiz-btn-primary">Next Question</button>
+                        <button type="submit" id="submitBtn" class="quiz-btn quiz-btn-primary" style="display: none;">Submit Quiz</button>
+                    </div>
+                </form>
+            }
+            else
+            {
+                <div class="no-questions">
+                    <p>No questions have been added to this quiz yet.</p>
+                    <a asp-controller="Lesson" asp-action="Details" asp-route-id="@Model.Lesson_ID" class="quiz-btn quiz-btn-secondary">Back to Lesson</a>
+                </div>
+            }
         </div>
     </div>
 </div>
 
-@section Scripts {
+@section CustomScripts {
     <script>
-        $(document).ready(function() {
-            $("#quizForm").submit(function(e) {
+        // Make all elements with fade-in class visible when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            fadeElements.forEach(function(element) {
+                element.classList.add('visible');
+            });
+            
+            // Initialize quiz functionality if questions exist
+            if (document.getElementById('quizForm')) {
+                initQuiz();
+            }
+        });
+        
+        function initQuiz() {
+            const questions = document.querySelectorAll('.question-container');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const submitBtn = document.getElementById('submitBtn');
+            const progressBar = document.querySelector('.progress-bar');
+            const currentQuestionSpan = document.getElementById('currentQuestion');
+            const progressPercentage = document.getElementById('progress-percentage');
+            let currentQuestionIndex = 0;
+            
+            // Add event listeners for selected answers
+            document.querySelectorAll('.answer-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const radio = this.querySelector('input[type="radio"]');
+                    if (radio) {
+                        radio.checked = true;
+                        document.querySelectorAll(`.answer-item input[name="${radio.name}"]`).forEach(input => {
+                            input.parentElement.classList.remove('selected');
+                        });
+                        this.classList.add('selected');
+                    }
+                });
+            });
+            
+            // Update progress
+            function updateProgress() {
+                const progress = ((currentQuestionIndex + 1) / questions.length) * 100;
+                progressBar.style.width = `${progress}%`;
+                currentQuestionSpan.textContent = currentQuestionIndex + 1;
+                progressPercentage.textContent = `${Math.round(progress)}%`;
+                
+                // Update button states
+                prevBtn.disabled = currentQuestionIndex === 0;
+                
+                if (currentQuestionIndex === questions.length - 1) {
+                    nextBtn.style.display = 'none';
+                    submitBtn.style.display = 'inline-flex';
+                } else {
+                    nextBtn.style.display = 'inline-flex';
+                    submitBtn.style.display = 'none';
+                }
+            }
+            
+            // Show a specific question
+            function showQuestion(index) {
+                questions.forEach((q, i) => {
+                    q.style.display = i === index ? 'block' : 'none';
+                });
+                currentQuestionIndex = index;
+                updateProgress();
+            }
+            
+            // Event listeners for navigation
+            prevBtn.addEventListener('click', () => {
+                if (currentQuestionIndex > 0) {
+                    showQuestion(currentQuestionIndex - 1);
+                }
+            });
+            
+            nextBtn.addEventListener('click', () => {
+                if (currentQuestionIndex < questions.length - 1) {
+                    showQuestion(currentQuestionIndex + 1);
+                }
+            });
+            
+            // Form submission
+            document.getElementById('quizForm').addEventListener('submit', function(e) {
                 e.preventDefault();
                 
-                // Simple validation
-                var allAnswered = true;
-                $('input[type=radio]').each(function() {
-                    var name = $(this).attr('name');
-                    if ($('input[name="' + name + '"]:checked').length === 0) {
-                        allAnswered = false;
+                // Check if all questions are answered
+                const totalQuestions = questions.length;
+                let answeredQuestions = 0;
+                
+                // Get question IDs from the data attributes we added to the question containers
+                questions.forEach((questionContainer) => {
+                    const questionId = questionContainer.getAttribute('data-question-id');
+                    const radioName = `question_${questionId}`;
+                    if (document.querySelector(`input[name="${radioName}"]:checked`)) {
+                        answeredQuestions++;
                     }
                 });
                 
-                if (!allAnswered) {
+                if (answeredQuestions < totalQuestions) {
                     alert('Please answer all questions before submitting.');
                     return;
                 }
                 
-                // In a real application, you would submit the answers and redirect to results
                 alert('Quiz submitted successfully!');
                 
                 // Redirect to lesson
                 window.location.href = '@Url.Action("Details", "Lesson", new { id = Model.Lesson_ID })';
             });
-        });
+            
+            // Initialize
+            updateProgress();
+        }
     </script>
 } 

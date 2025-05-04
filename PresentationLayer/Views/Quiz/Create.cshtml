@@ -2,85 +2,137 @@
 
 @{
     ViewData["Title"] = "Create Quiz";
+    Layout = "_Layout2";
 }
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            @if (TempData["ErrorMessage"] != null)
-            {
-                <div class="alert alert-danger alert-dismissible fade show mb-4" role="alert">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
+@section CustomHeadContent {
+    <link rel="stylesheet" href="~/css/quiz.css">
+}
 
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show mb-4" role="alert">
-                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-            
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">Create New Quiz</h2>
-                </div>
-                <div class="card-body">
-                    @if (ViewBag.SelectedLessonName != null)
-                    {
-                        <div class="alert alert-info mb-4">
-                            <i class="bi bi-info-circle-fill me-2"></i>
-                            Creating a quiz for lesson: <strong>@ViewBag.SelectedLessonName</strong>
-                        </div>
-                    }
-                    
-                    <form asp-action="Create" method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        
-                        <div class="mb-3">
-                            <label asp-for="Lesson_ID" class="form-label">Lesson</label>
-                            <select asp-for="Lesson_ID" class="form-select" asp-items="Model.LessonSelectList">
-                                <option value="">-- Select Lesson --</option>
-                            </select>
-                            <span asp-validation-for="Lesson_ID" class="text-danger"></span>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label asp-for="Title" class="form-label">Title</label>
-                            <input asp-for="Title" class="form-control" />
-                            <span asp-validation-for="Title" class="text-danger"></span>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label asp-for="Passing_score" class="form-label">Passing Score</label>
-                            <input asp-for="Passing_score" class="form-control" type="number" min="1" max="100" />
-                            <span asp-validation-for="Passing_score" class="text-danger"></span>
-                            <small class="form-text text-muted">Enter a score between 1 and 100</small>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label asp-for="Instructions" class="form-label">Instructions</label>
-                            <textarea asp-for="Instructions" class="form-control" rows="5"></textarea>
-                            <span asp-validation-for="Instructions" class="text-danger"></span>
-                        </div>
-                        
-                        <div class="alert alert-info">
-                            <i class="bi bi-info-circle"></i> After creating the quiz, you will be able to add questions.
-                        </div>
-                        
-                        <div class="d-flex justify-content-between">
-                            <a asp-action="AdminIndex" class="btn btn-secondary">Back to List</a>
-                            <button type="submit" class="btn btn-primary">Create</button>
-                        </div>
-                    </form>
-                </div>
+<div class="quiz-container">
+    <div class="quiz-breadcrumb animate-fade-in">
+        <a asp-controller="Quiz" asp-action="AdminIndex">Quizzes</a>
+        <span class="quiz-breadcrumb-separator">•</span>
+        <span>Create Quiz</span>
+    </div>
+
+    <div class="quiz-header">
+        <h1 class="quiz-title animate-fade-in">Create New Quiz</h1>
+        @if (ViewBag.SelectedLessonName != null)
+        {
+            <p class="quiz-subtitle animate-fade-in">Creating a quiz for lesson: <strong>@ViewBag.SelectedLessonName</strong></p>
+        }
+    </div>
+
+    <div class="quiz-content animate-fade-in animate-delay-100">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="quiz-alert quiz-alert-error">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <p>@TempData["ErrorMessage"]</p>
             </div>
+        }
+
+        @if (TempData["SuccessMessage"] != null)
+        {
+            <div class="quiz-alert quiz-alert-success">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                <p>@TempData["SuccessMessage"]</p>
+            </div>
+        }
+
+        <div class="quiz-main">
+            <form asp-action="Create" method="post" class="quiz-form">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="form-group">
+                    <label asp-for="Lesson_ID" class="form-label">Lesson</label>
+                    <select asp-for="Lesson_ID" class="form-select" asp-items="Model.LessonSelectList">
+                        <option value="">-- Select Lesson --</option>
+                    </select>
+                    <span asp-validation-for="Lesson_ID" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="Title" class="form-label">Title</label>
+                    <input asp-for="Title" class="form-input" />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="Passing_score" class="form-label">Passing Score</label>
+                    <input asp-for="Passing_score" class="form-input" type="number" min="1" max="100" />
+                    <span asp-validation-for="Passing_score" class="text-danger"></span>
+                    <small class="form-help-text">Enter a score between 1 and 100</small>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="Instructions" class="form-label">Instructions</label>
+                    <textarea asp-for="Instructions" class="form-textarea" rows="5"></textarea>
+                    <span asp-validation-for="Instructions" class="text-danger"></span>
+                </div>
+                
+                <div class="quiz-alert quiz-alert-info">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <p>After creating the quiz, you will be able to add questions.</p>
+                </div>
+                
+                <div class="quiz-actions">
+                    <a asp-action="AdminIndex" class="quiz-btn quiz-btn-secondary">Back to List</a>
+                    <button type="submit" class="quiz-btn quiz-btn-primary">Create Quiz</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-@section Scripts {
+@section CustomScripts {
+    <script>
+        $(document).ready(function() {
+            // Animations
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            fadeElements.forEach(function(element) {
+                element.classList.add('visible');
+            });
+            
+            // Form validation and submission
+            const form = $('form');
+            
+            // Enable client-side validation
+            form.validate({
+                errorClass: "field-validation-error",
+                errorElement: "span",
+                highlight: function (element) {
+                    $(element).addClass("input-validation-error");
+                },
+                unhighlight: function (element) {
+                    $(element).removeClass("input-validation-error");
+                }
+            });
+            
+            // Handle form submission
+            form.on('submit', function(e) {
+                if (!form.valid()) {
+                    e.preventDefault();
+                    return false;
+                }
+                
+                // If valid, allow form to submit normally
+                return true;
+            });
+        });
+    </script>
+    
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 } 

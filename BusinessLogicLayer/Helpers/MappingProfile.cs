@@ -51,7 +51,7 @@ namespace BusinessLogicLayer.Helpers
             CreateMap<Quiz, QuizRequest>().ReverseMap();
 
             CreateMap<Question, QuestionDto>()
-                .ForMember(dest => dest.QuestionText, opt => opt.MapFrom(src => src.RightAns));
+                .ForMember(dest => dest.QuestionText, opt => opt.MapFrom(src => src.QuestionText));
             
             CreateMap<QuestionDto, Question>();
             CreateMap<QuestionDto, QuestionRequest>().ReverseMap();

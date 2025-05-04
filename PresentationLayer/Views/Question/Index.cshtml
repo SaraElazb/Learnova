@@ -2,62 +2,181 @@
 
 @{
     ViewData["Title"] = "Questions";
+    Layout = "_Layout2";
 }
 
-<div class="container mt-4">
-    <h1>Questions for @ViewBag.QuizTitle</h1>
+@section CustomHeadContent {
+    <link rel="stylesheet" href="~/css/quiz.css">
+    <style>
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .question-card {
+            background-color: white;
+            border-radius: var(--border-radius);
+            overflow: hidden;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .question-card-header {
+            padding: 1.25rem;
+            background-color: var(--brand-teal-light);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--layout-border-color);
+        }
+        
+        .question-card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin: 0;
+        }
+        
+        .question-score {
+            padding: 0.25rem 0.75rem;
+            border-radius: 9999px;
+            background-color: var(--brand-teal);
+            color: white;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .question-card-body {
+            padding: 1.25rem;
+            flex-grow: 1;
+        }
+        
+        .answer-list {
+            margin: 1rem 0;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+        
+        .answer-item {
+            padding: 0.75rem 1rem;
+            border-radius: var(--border-radius);
+            border: 1px solid var(--layout-border-color);
+        }
+        
+        .answer-item.correct {
+            background-color: var(--success-light);
+            color: var(--success-color);
+            border-color: var(--success-color);
+        }
+        
+        .question-card-actions {
+            padding: 1rem 1.25rem;
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+            border-top: 1px solid var(--layout-border-color);
+        }
+    </style>
+}
+
+<div class="quiz-container">
+    <div class="quiz-breadcrumb animate-fade-in">
+        <a asp-controller="Quiz" asp-action="AdminIndex">Quizzes</a>
+        <span class="quiz-breadcrumb-separator">•</span>
+        <span>Questions</span>
+    </div>
+
+    <div class="quiz-header">
+        <h1 class="quiz-title animate-fade-in">Questions for @ViewBag.QuizTitle</h1>
+    </div>
     
-    <p>
-        <a asp-action="Create" asp-route-quizId="@ViewBag.QuizId" class="btn btn-primary">Add New Question</a>
-        <a asp-controller="Quiz" asp-action="Edit" asp-route-id="@ViewBag.QuizId" class="btn btn-secondary">Back to Quiz</a>
-    </p>
-    
-    @if (!Model.Any())
-    {
-        <div class="alert alert-info">
-            <p>No questions have been added to this quiz yet. Click the button above to add a question.</p>
-        </div>
-    }
-    else
-    {
-        <div class="row">
-            @foreach (var item in Model)
+    <div class="quiz-content animate-fade-in animate-delay-100" style="max-width: 100%">
+        <div class="quiz-main">
+            <div class="quiz-actions" style="margin-top: 0; padding-top: 0; border-top: none; margin-bottom: 2rem;">
+                <a asp-controller="Quiz" asp-action="Edit" asp-route-id="@ViewBag.QuizId" class="quiz-btn quiz-btn-secondary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="19" y1="12" x2="5" y2="12"></line>
+                        <polyline points="12 19 5 12 12 5"></polyline>
+                    </svg>
+                    Back to Quiz
+                </a>
+                <a asp-action="Create" asp-route-quizId="@ViewBag.QuizId" class="quiz-btn quiz-btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add New Question
+                </a>
+            </div>
+            
+            @if (!Model.Any())
             {
-                <div class="col-md-6 mb-4">
-                    <div class="card shadow-sm h-100">
-                        <div class="card-header d-flex justify-content-between align-items-center">
-                            <h5 class="mb-0">@item.QuestionText</h5>
-                            <span class="badge bg-primary">@item.Score points</span>
-                        </div>
-                        <div class="card-body">
-                            <p><strong>Correct Answer:</strong> @item.RightAns</p>
-                            
-                            @if (item.Answers != null && item.Answers.Any())
-                            {
-                                <h6>Answer Options:</h6>
-                                <ul class="list-group mb-3">
-                                    @foreach (var answer in item.Answers)
-                                    {
-                                        <li class="list-group-item @(answer.Answers == item.RightAns ? "list-group-item-success" : "")">
-                                            @answer.Answers
-                                        </li>
-                                    }
-                                </ul>
-                            }
-                            else
-                            {
-                                <p class="text-muted">No answer options available.</p>
-                            }
-                            
-                            <div class="d-flex justify-content-end">
-                                <a asp-action="Edit" asp-route-id="@item.QuestionID" class="btn btn-sm btn-outline-primary me-2">Edit</a>
-                                <a asp-action="Delete" asp-route-id="@item.QuestionID" class="btn btn-sm btn-outline-danger"
+                <div class="quiz-alert quiz-alert-info">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <line x1="12" y1="16" x2="12" y2="12"></line>
+                        <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                    </svg>
+                    <p>No questions have been added to this quiz yet. Click the button above to add a question.</p>
+                </div>
+            }
+            else
+            {
+                <div class="question-grid">
+                    @foreach (var item in Model)
+                    {
+                        <div class="question-card animate-fade-in animate-delay-200">
+                            <div class="question-card-header">
+                                <h5 class="question-card-title">@item.QuestionText</h5>
+                                <span class="question-score">@item.Score points</span>
+                            </div>
+                            <div class="question-card-body">
+                                <div>
+                                    <span style="font-weight: 600;">Correct Answer:</span> @item.RightAns
+                                </div>
+                                
+                                @if (item.Answers != null && item.Answers.Any())
+                                {
+                                    <div style="margin-top: 1rem;">
+                                        <span style="font-weight: 600;">Answer Options:</span>
+                                        <div class="answer-list">
+                                            @foreach (var answer in item.Answers)
+                                            {
+                                                <div class="answer-item @(answer.Answers == item.RightAns ? "correct" : "")">
+                                                    @answer.Answers
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <p style="color: var(--text-gray-400); margin-top: 1rem;">No answer options available.</p>
+                                }
+                            </div>
+                            <div class="question-card-actions">
+                                <a asp-action="Edit" asp-route-id="@item.QuestionID" class="quiz-btn quiz-btn-secondary">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@item.QuestionID" class="quiz-btn quiz-btn-secondary" style="color: var(--error-color);"
                                    onclick="return confirm('Are you sure you want to delete this question?');">Delete</a>
                             </div>
                         </div>
-                    </div>
+                    }
                 </div>
             }
         </div>
-    }
-</div> 
+    </div>
+</div>
+
+@section CustomScripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            fadeElements.forEach(function(element) {
+                element.classList.add('visible');
+            });
+        });
+    </script>
+} 

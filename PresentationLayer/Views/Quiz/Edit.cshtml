@@ -2,59 +2,109 @@
 
 @{
     ViewData["Title"] = "Edit Quiz";
+    Layout = "_Layout2";
 }
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">Edit Quiz</h2>
-                </div>
-                <div class="card-body">
-                    <form asp-action="Edit" method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <input type="hidden" asp-for="Quiz_ID" />
-                        
-                        <div class="mb-3">
-                            <label asp-for="Lesson_ID" class="form-label">Lesson</label>
-                            <select asp-for="Lesson_ID" class="form-select" asp-items="Model.LessonSelectList"></select>
-                            <span asp-validation-for="Lesson_ID" class="text-danger"></span>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label asp-for="Title" class="form-label">Title</label>
-                            <input asp-for="Title" class="form-control" />
-                            <span asp-validation-for="Title" class="text-danger"></span>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label asp-for="Passing_score" class="form-label">Passing Score</label>
-                            <input asp-for="Passing_score" class="form-control" type="number" min="1" max="100" />
-                            <span asp-validation-for="Passing_score" class="text-danger"></span>
-                            <small class="form-text text-muted">Enter a score between 1 and 100</small>
-                        </div>
-                        
-                        <div class="mb-3">
-                            <label asp-for="Instructions" class="form-label">Instructions</label>
-                            <textarea asp-for="Instructions" class="form-control" rows="5"></textarea>
-                            <span asp-validation-for="Instructions" class="text-danger"></span>
-                        </div>
-                        
-                        <div class="d-flex justify-content-between">
-                            <a asp-action="AdminIndex" class="btn btn-secondary">Back to List</a>
-                            <div>
-                                <a asp-controller="Question" asp-action="Index" asp-route-quizId="@Model.Quiz_ID" class="btn btn-info">Manage Questions</a>
-                                <button type="submit" class="btn btn-primary">Save</button>
-                            </div>
-                        </div>
-                    </form>
-                </div>
+@section CustomHeadContent {
+    <link rel="stylesheet" href="~/css/quiz.css">
+}
+
+<div class="quiz-container">
+    <div class="quiz-breadcrumb animate-fade-in">
+        <a asp-controller="Quiz" asp-action="AdminIndex">Quizzes</a>
+        <span class="quiz-breadcrumb-separator">•</span>
+        <span>Edit Quiz</span>
+    </div>
+
+    <div class="quiz-header">
+        <h1 class="quiz-title animate-fade-in">Edit Quiz</h1>
+    </div>
+    
+    <div class="quiz-content animate-fade-in animate-delay-100">
+        @if (TempData["ErrorMessage"] != null)
+        {
+            <div class="quiz-alert quiz-alert-error">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="12" y1="8" x2="12" y2="12"></line>
+                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                </svg>
+                <p>@TempData["ErrorMessage"]</p>
             </div>
+        }
+
+        <div class="quiz-main">
+            <form asp-action="Edit" method="post" class="quiz-form" id="quizEditForm">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Quiz_ID" />
+                
+                <div class="form-group">
+                    <label asp-for="Lesson_ID" class="form-label">Lesson</label>
+                    <select asp-for="Lesson_ID" class="form-select" asp-items="Model.LessonSelectList" required></select>
+                    <span asp-validation-for="Lesson_ID" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="Title" class="form-label">Title</label>
+                    <input asp-for="Title" class="form-input" required />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="Passing_score" class="form-label">Passing Score</label>
+                    <input asp-for="Passing_score" class="form-input" type="number" min="1" max="100" required />
+                    <span asp-validation-for="Passing_score" class="text-danger"></span>
+                    <div class="form-help-text">Enter a score between 1 and 100</div>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="Instructions" class="form-label">Instructions</label>
+                    <textarea asp-for="Instructions" class="form-input" rows="5"></textarea>
+                    <span asp-validation-for="Instructions" class="text-danger"></span>
+                </div>
+                
+                <div class="quiz-actions">
+                    <a asp-action="AdminIndex" class="quiz-btn quiz-btn-secondary">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <line x1="19" y1="12" x2="5" y2="12"></line>
+                            <polyline points="12 19 5 12 12 5"></polyline>
+                        </svg>
+                        Back to List
+                    </a>
+                    <div style="display: flex; gap: 0.5rem;">
+                        <a asp-controller="Question" asp-action="Index" asp-route-quizId="@Model.Quiz_ID" class="quiz-btn quiz-btn-secondary">
+                            Manage Questions
+                        </a>
+                        <button type="submit" class="quiz-btn quiz-btn-primary">
+                            Save Changes
+                        </button>
+                    </div>
+                </div>
+            </form>
         </div>
     </div>
 </div>
 
-@section Scripts {
+@section CustomScripts {
+    <script>
+        $(document).ready(function() {
+            // Animations
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            fadeElements.forEach(function(element) {
+                element.classList.add('visible');
+            });
+            
+            // Form validation
+            $.validator.unobtrusive.parse($('#quizEditForm'));
+            
+            // Debug info
+            console.log('Form values:');
+            console.log('Quiz ID:', $('input[name="Quiz_ID"]').val());
+            console.log('Lesson ID:', $('#Lesson_ID').val());
+            console.log('Title:', $('#Title').val());
+            console.log('Passing Score:', $('#Passing_score').val());
+        });
+    </script>
+    
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 } 

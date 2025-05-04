@@ -7,6 +7,9 @@ public class Question
 
     [Required] public int QuizID { get; set; }
 
+    [Required]
+    public string QuestionText { get; set; } = string.Empty;
+
     public int Score { get; set; }
 
     public string RightAns { get; set; } = string.Empty;

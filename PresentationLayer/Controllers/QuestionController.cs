@@ -4,6 +4,7 @@ using BusinessLogicLayer.Manager.QuestionManager;
 using BusinessLogicLayer.Manager.QuizManager;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
 
 namespace PresentationLayer.Controllers
 {

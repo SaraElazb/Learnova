@@ -56,7 +56,8 @@ namespace BusinessLogicLayer.Manager.QuestionManager
                 {
                     QuizID = model.QuizID,
                     Score = model.Score,
-                    RightAns = model.RightAns
+                    RightAns = model.RightAns,
+                    QuestionText = model.QuestionText
                 };
 
                 _unitOfWork.GetRepository<Question>().Create(question);
@@ -100,6 +101,7 @@ namespace BusinessLogicLayer.Manager.QuestionManager
                 question.Score = model.Score;
                 question.RightAns = model.RightAns;
                 question.QuizID = model.QuizID;
+                question.QuestionText = model.QuestionText;
 
                 _unitOfWork.GetRepository<Question>().Update(question);
 
@@ -175,6 +177,11 @@ namespace BusinessLogicLayer.Manager.QuestionManager
                 .ToListAsync();
 
             return _mapper.Map<IEnumerable<QuestionDto>>(questions);
+        }
+
+        public IUnitOfWork GetUnitOfWork()
+        {
+            return _unitOfWork;
         }
     }
 } 

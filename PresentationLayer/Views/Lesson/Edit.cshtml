@@ -2,69 +2,220 @@
 
 @{
     ViewData["Title"] = "Edit Lesson";
+    Layout = "_Layout2";
 }
 
-<div class="container mt-4">
-    <div class="row">
-        <div class="col-md-8 mx-auto">
-            <div class="card shadow">
-                <div class="card-header bg-primary text-white">
-                    <h2 class="mb-0">Edit Lesson</h2>
-                </div>
-                <div class="card-body">
-                    <form asp-action="Edit" method="post">
-                        <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-                        <input type="hidden" asp-for="Lesson_ID" />
-                        
-                        <div class="mb-3">
-                            <label asp-for="Course_ID" class="form-label">Course</label>
-                            <select asp-for="Course_ID" class="form-select" asp-items="Model.CourseSelectList"></select>
-                            <span asp-validation-for="Course_ID" class="text-danger"></span>
-                        </div>
-                        
-                        <div class="mb-3">
+@section CustomHeadContent {
+    <link rel="stylesheet" href="~/css/lesson.css">
+    <style>
+        .form-group {
+            margin-bottom: 1.5rem;
+            transition: transform 0.2s ease;
+        }
+        
+        .form-control:focus {
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+            border-color: var(--brand-teal);
+        }
+        
+        .form-textarea {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            border: 1px solid var(--layout-border-color);
+            border-radius: var(--border-radius);
+            background-color: white;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease;
+            min-height: 200px;
+            resize: vertical;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+        
+        .form-textarea:focus {
+            outline: none;
+            border-color: var(--brand-teal);
+            box-shadow: 0 0 0 3px rgba(16, 185, 129, 0.2);
+        }
+        
+        .lesson-btn {
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .lesson-btn::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .lesson-btn:hover::after {
+            animation: ripple 0.6s ease-out;
+        }
+        
+        @@keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(255, 255, 255, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .loading-overlay.visible {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid rgba(16, 185, 129, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--brand-teal);
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @@keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+    </style>
+}
+
+<div class="loading-overlay" id="loadingOverlay">
+    <div class="loading-spinner"></div>
+</div>
+
+<div class="lesson-container">
+    <div class="lesson-breadcrumb animate-fade-in">
+        <a asp-controller="Course" asp-action="AdminIndex" class="breadcrumb-link">Courses</a>
+        <span class="lesson-breadcrumb-separator">•</span>
+        <a asp-action="AdminIndex" class="breadcrumb-link">Lessons</a>
+        <span class="lesson-breadcrumb-separator">•</span>
+        <span>Edit</span>
+    </div>
+
+    <div class="lesson-header">
+        <h1 class="lesson-title animate-fade-in">Edit Lesson</h1>
+    </div>
+    
+    <div class="lesson-content animate-fade-in animate-delay-100">
+        <div class="lesson-main animate-fade-in animate-delay-200" style="box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);">
+            <form asp-action="Edit" id="lessonForm" method="post">
+                <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+                <input type="hidden" asp-for="Lesson_ID" />
+                
+                <div class="form-container" style="padding: 2rem;">
+                    <div class="form-row">
+                        <div class="form-group">
                             <label asp-for="Title" class="form-label">Title</label>
                             <input asp-for="Title" class="form-control" />
-                            <span asp-validation-for="Title" class="text-danger"></span>
+                            <span asp-validation-for="Title" class="validation-error"></span>
                         </div>
-                        
-                        <div class="row mb-3">
-                            <div class="col-md-6">
-                                <label asp-for="LessonOrder" class="form-label">Order</label>
-                                <input asp-for="LessonOrder" class="form-control" type="number" min="1" />
-                                <span asp-validation-for="LessonOrder" class="text-danger"></span>
-                            </div>
-                            <div class="col-md-6">
-                                <label asp-for="Duration" class="form-label">Duration (minutes)</label>
-                                <input asp-for="Duration" class="form-control" type="number" min="1" />
-                                <span asp-validation-for="Duration" class="text-danger"></span>
-                            </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="Course_ID" class="form-label">Course</label>
+                            <select asp-for="Course_ID" class="form-control" asp-items="ViewBag.Course_ID"></select>
+                            <span asp-validation-for="Course_ID" class="validation-error"></span>
                         </div>
-                        
-                        <div class="mb-3">
-                            <label asp-for="VideoUri" class="form-label">Video URL</label>
-                            <input asp-for="VideoUri" class="form-control" />
-                            <span asp-validation-for="VideoUri" class="text-danger"></span>
-                            <small class="form-text text-muted">Enter a YouTube or other video platform URL</small>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="LessonOrder" class="form-label">Order</label>
+                            <input asp-for="LessonOrder" class="form-control" type="number" min="1" />
+                            <span asp-validation-for="LessonOrder" class="validation-error"></span>
                         </div>
-                        
-                        <div class="mb-3">
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label asp-for="Duration" class="form-label">Duration (minutes)</label>
+                            <input asp-for="Duration" class="form-control" type="number" min="1" />
+                            <span asp-validation-for="Duration" class="validation-error"></span>
+                        </div>
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
                             <label asp-for="Description" class="form-label">Description</label>
-                            <textarea asp-for="Description" class="form-control" rows="5"></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
+                            <textarea asp-for="Description" class="form-textarea" rows="8"></textarea>
+                            <span asp-validation-for="Description" class="validation-error"></span>
                         </div>
-                        
-                        <div class="d-flex justify-content-between">
-                            <a asp-action="AdminIndex" class="btn btn-secondary">Back to List</a>
-                            <button type="submit" class="btn btn-primary">Save</button>
-                        </div>
-                    </form>
+                    </div>
+                    
+                    <div class="form-actions">
+                        <button type="submit" class="lesson-btn lesson-btn-primary" id="submitBtn">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                                <polyline points="7 3 7 8 15 8"></polyline>
+                            </svg>
+                            Save Changes
+                        </button>
+                        <a asp-action="AdminIndex" class="lesson-btn lesson-btn-secondary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                            Back to List
+                        </a>
+                    </div>
                 </div>
-            </div>
+            </form>
         </div>
     </div>
 </div>
 
-@section Scripts {
+@section CustomScripts {
+    <script>
+        $(document).ready(function() {
+            // Enhanced animations with staggered timing
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            fadeElements.forEach(function(element, index) {
+                setTimeout(() => {
+                    element.classList.add('visible');
+                }, 50 * index);
+            });
+            
+            // Show loading overlay on form submit
+            $('#lessonForm').on('submit', function() {
+                document.getElementById('loadingOverlay').classList.add('visible');
+            });
+        });
+    </script>
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
 } 

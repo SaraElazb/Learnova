@@ -153,18 +153,103 @@ namespace PresentationLayer.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, QuizRequest model)
         {
-            if (!ModelState.IsValid)
+            try
             {
+                Console.WriteLine("======= QUIZ EDIT POST DIAGNOSTICS =======");
+                Console.WriteLine($"Quiz ID from route: {id}");
+                Console.WriteLine($"Quiz ID from model: {model.Quiz_ID}");
+                Console.WriteLine($"Title: {model.Title}");
+                Console.WriteLine($"Lesson ID: {model.Lesson_ID}");
+                Console.WriteLine($"Passing Score: {model.Passing_score}");
+                Console.WriteLine($"Instructions: {model.Instructions?.Substring(0, Math.Min(model.Instructions?.Length ?? 0, 50))}...");
+                Console.WriteLine($"LessonSelectList count: {model.LessonSelectList?.Count() ?? 0}");
+                
+                // The LessonSelectList is coming back as null, which is okay for an edit operation
+                // Clear the model state before validation to ignore binding issues with complex properties
+                ModelState.Clear();
+                
+                // Manually add validation errors for required fields
+                if (string.IsNullOrEmpty(model.Title))
+                {
+                    ModelState.AddModelError("Title", "Title is required");
+                }
+                
+                if (model.Lesson_ID <= 0)
+                {
+                    ModelState.AddModelError("Lesson_ID", "A valid lesson must be selected");
+                }
+                
+                if (model.Quiz_ID != id)
+                {
+                    Console.WriteLine($"ID mismatch: route ID {id} doesn't match model ID {model.Quiz_ID}");
+                    ModelState.AddModelError("", $"ID mismatch: route ID {id} doesn't match model ID {model.Quiz_ID}");
+                }
+                
+                if (!ModelState.IsValid)
+                {
+                    Console.WriteLine("======= MODEL STATE ERRORS =======");
+                    foreach (var state in ModelState)
+                    {
+                        foreach (var error in state.Value.Errors)
+                        {
+                            Console.WriteLine($"Validation error for {state.Key}: {error.ErrorMessage}");
+                        }
+                    }
+                    
+                    Console.WriteLine("Model state is invalid. Returning to edit form.");
+                    
+                    // Refresh lesson select list
+                    model.LessonSelectList = await GetLessonsAsync();
+                    Console.WriteLine($"Refreshed LessonSelectList with {model.LessonSelectList.Count()} items");
+                    
+                    return View(model);
+                }
+
+                Console.WriteLine($"Updating quiz: {model.Title}, Lesson ID: {model.Lesson_ID}");
+                
+                // Create a clean model with only the needed properties
+                var quizToUpdate = new QuizRequest
+                {
+                    Quiz_ID = id,
+                    Title = model.Title,
+                    Lesson_ID = model.Lesson_ID,
+                    Passing_score = model.Passing_score,
+                    Instructions = model.Instructions
+                };
+                
+                var success = await _quizManager.EditQuizAsync(id, quizToUpdate);
+                
+                if (!success)
+                {
+                    Console.WriteLine($"Failed to update quiz with ID: {id}");
+                    TempData["ErrorMessage"] = "Failed to update quiz. The quiz may not exist or there was a server error.";
+                    model.LessonSelectList = await GetLessonsAsync();
+                    return View(model);
+                }
+                
+                Console.WriteLine($"Quiz updated successfully: {model.Title}");
+                TempData["SuccessMessage"] = $"Quiz '{model.Title}' updated successfully!";
+                
+                return RedirectToAction(nameof(AdminIndex));
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error updating quiz: {ex.Message}");
+                Console.WriteLine($"Stack trace: {ex.StackTrace}");
+                
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
+                    Console.WriteLine($"Inner stack trace: {ex.InnerException.StackTrace}");
+                }
+                
+                TempData["ErrorMessage"] = $"An error occurred while updating the quiz: {ex.Message}";
                 model.LessonSelectList = await GetLessonsAsync();
                 return View(model);
             }
-
-            var success = await _quizManager.EditQuizAsync(id, model);
-            if (!success) return NotFound();
-
-            return RedirectToAction(nameof(AdminIndex));
         }
 
         public async Task<IActionResult> Delete(int id)

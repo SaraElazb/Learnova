@@ -147,6 +147,7 @@ a:hover {
 .hero {
   padding: 3rem 0;
   background-color: var(--white);
+  margin-top: 3rem;
 }
 
 .hero .container {

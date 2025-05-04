@@ -5,12 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using DataAccessLayer.Entities;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Storage;
 
 namespace DataAccessLayer.Repositories
 {
     public class UnitOfWork : IUnitOfWork
     {
         private readonly ELearningDbContext _context;
+        private IDbContextTransaction _transaction;
 
         public IGenericRepository<User> Users { get; private set; }
         public IGenericRepository<Course> Courses { get; private set; }
@@ -67,6 +69,7 @@ namespace DataAccessLayer.Repositories
 
         public void Dispose()
         {
+            _transaction?.Dispose();
             _context.Dispose();
         }
 
@@ -84,6 +87,41 @@ namespace DataAccessLayer.Repositories
         public async Task SaveAsync()
         {
             await _context.SaveChangesAsync();
+        }
+        
+        // Transaction methods implementation
+        public async Task BeginTransactionAsync()
+        {
+            Console.WriteLine("Beginning database transaction");
+            _transaction = await _context.Database.BeginTransactionAsync();
+        }
+
+        public async Task CommitTransactionAsync()
+        {
+            try
+            {
+                Console.WriteLine("Committing database transaction");
+                await _transaction.CommitAsync();
+            }
+            finally
+            {
+                await _transaction.DisposeAsync();
+                _transaction = null;
+            }
+        }
+
+        public async Task RollbackTransactionAsync()
+        {
+            try
+            {
+                Console.WriteLine("Rolling back database transaction");
+                await _transaction.RollbackAsync();
+            }
+            finally
+            {
+                await _transaction.DisposeAsync();
+                _transaction = null;
+            }
         }
     }
 }

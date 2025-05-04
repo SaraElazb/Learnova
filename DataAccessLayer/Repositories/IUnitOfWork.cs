@@ -34,6 +34,11 @@ namespace DataAccessLayer.Repositories
         
         IGenericRepository<T> GetRepository<T>() where T : class;
         Task SaveAsync();
+        
+        // Transaction methods
+        Task BeginTransactionAsync();
+        Task CommitTransactionAsync();
+        Task RollbackTransactionAsync();
     }
 
 

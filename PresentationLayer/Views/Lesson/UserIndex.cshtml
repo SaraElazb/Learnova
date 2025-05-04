@@ -1,49 +1,256 @@
 @model IEnumerable<BusinessLogicLayer.DTOs.LessonDtos.LessonDto>
 
 @{
-    ViewData["Title"] = "Course Lessons";
+    ViewData["Title"] = "Lessons";
+    Layout = "_Layout";
 }
 
-<div class="container mt-4">
-    <h1>Course Lessons</h1>
+@section CustomHeadContent {
+    <link rel="stylesheet" href="~/css/lesson.css">
+    <style>
+        .lesson-card {
+            border-radius: var(--border-radius);
+            border: 1px solid var(--layout-border-color);
+            overflow: hidden;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            background-color: white;
+        }
+        
+        .lesson-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        
+        .lesson-card-header {
+            background-color: var(--brand-teal-light);
+            color: var(--brand-teal);
+            padding: 1rem;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .lesson-order-badge {
+            background-color: var(--brand-teal);
+            color: white;
+            border-radius: 9999px;
+            padding: 0.25rem 0.75rem;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .lesson-card-body {
+            padding: 1.5rem;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .lesson-card-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-gray-800);
+            margin-bottom: 0.75rem;
+            line-height: 1.4;
+        }
+        
+        .lesson-card-meta {
+            color: var(--text-gray-600);
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .lesson-card-description {
+            color: var(--text-gray-700);
+            margin-bottom: 1.5rem;
+            flex: 1;
+            line-height: 1.6;
+        }
+        
+        .lesson-card-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: 1rem 1.5rem;
+            border-top: 1px solid var(--layout-border-color);
+            background-color: var(--light-gray);
+        }
+        
+        .lesson-btn-start {
+            position: relative;
+            overflow: hidden;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: var(--border-radius);
+            background-color: var(--brand-teal);
+            color: white;
+            font-weight: 500;
+            transition: background-color 0.2s ease;
+            border: none;
+            cursor: pointer;
+            text-decoration: none;
+        }
+        
+        .lesson-btn-start:hover {
+            background-color: #0e9f6e;
+        }
+        
+        .lesson-btn-start::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 5px;
+            height: 5px;
+            background: rgba(255, 255, 255, 0.5);
+            opacity: 0;
+            border-radius: 100%;
+            transform: scale(1, 1) translate(-50%);
+            transform-origin: 50% 50%;
+        }
+        
+        .lesson-btn-start:hover::after {
+            animation: ripple 0.6s ease-out;
+        }
+        
+        @@keyframes ripple {
+            0% {
+                transform: scale(0, 0);
+                opacity: 0.5;
+            }
+            20% {
+                transform: scale(25, 25);
+                opacity: 0.3;
+            }
+            100% {
+                opacity: 0;
+                transform: scale(40, 40);
+            }
+        }
+        
+        .lesson-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+        
+        .lesson-empty {
+            text-align: center;
+            padding: 3rem;
+            background-color: white;
+            border-radius: var(--border-radius);
+            border: 1px dashed var(--layout-border-color);
+            color: var(--text-gray-600);
+            margin-top: 1.5rem;
+        }
+        
+        .lesson-empty svg {
+            opacity: 0.5;
+            margin-bottom: 1rem;
+        }
+    </style>
+}
+
+<div class="lesson-container">
+    <div class="lesson-breadcrumb animate-fade-in">
+        <a asp-controller="Course" asp-action="UserIndex" class="breadcrumb-link">Courses</a>
+        <span class="lesson-breadcrumb-separator">•</span>
+        <span>Lessons</span>
+    </div>
+
+    <div class="lesson-header">
+        <h1 class="lesson-title animate-fade-in">@ViewBag.CourseName</h1>
+    </div>
     
-    <div class="row">
-        @if (!Model.Any())
+    <div class="lesson-content animate-fade-in animate-delay-100">
+        @if (Model == null || !Model.Any())
         {
-            <div class="col-12 text-center my-5">
-                <h3>No lessons available for this course yet.</h3>
+            <div class="lesson-empty animate-fade-in animate-delay-200">
+                <svg xmlns="http://www.w3.org/2000/svg" width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path>
+                    <path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path>
+                </svg>
+                <h3 style="color: var(--text-gray-800); margin-bottom: 0.5rem;">No lessons available</h3>
+                <p>This course doesn't have any lessons yet. Please check back later.</p>
             </div>
         }
         else
         {
-            @foreach (var item in Model)
-            {
-                <div class="col-md-6 col-lg-4 mb-4">
-                    <div class="card h-100 shadow-sm">
-                        <div class="card-body">
-                            <h5 class="card-title">@item.Title</h5>
-                            <div class="d-flex justify-content-between mb-2">
-                                <span class="badge bg-info">Lesson @item.LessonOrder</span>
-                                <span class="badge bg-secondary">@item.Duration min</span>
+            <div class="lesson-grid">
+                @foreach (var item in Model)
+                {
+                    <div class="animate-fade-in animate-delay-@(200 + Model.ToList().IndexOf(item) * 100)">
+                        <div class="lesson-card">
+                            <div class="lesson-card-header">
+                                <div>Lesson</div>
+                                <div class="lesson-order-badge">@item.LessonOrder</div>
                             </div>
-                            <p class="card-text text-truncate">@item.Description</p>
-                        </div>
-                        <div class="card-footer bg-transparent border-top-0">
-                            <div class="d-flex justify-content-between">
-                                <a asp-action="Details" asp-route-id="@item.Lesson_ID" class="btn btn-outline-primary">View Details</a>
-                                @if (item.Quiz_ID.HasValue)
-                                {
-                                    <a asp-controller="Quiz" asp-action="UserIndex" asp-route-lessonId="@item.Lesson_ID" class="btn btn-outline-success">Take Quiz</a>
-                                }
+                            <div class="lesson-card-body">
+                                <h3 class="lesson-card-title">@item.Title</h3>
+                                <div class="lesson-card-meta">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polyline points="12 6 12 12 16 14"></polyline>
+                                    </svg>
+                                    @item.Duration minutes
+                                </div>
+                                <div class="lesson-card-description">
+                                    @if (!string.IsNullOrEmpty(item.Description))
+                                    {
+                                        @Html.Raw(item.Description)
+                                    }
+                                    else
+                                    {
+                                        <p>No description available.</p>
+                                    }
+                                </div>
+                            </div>
+                            <div class="lesson-card-footer">
+                                <a asp-action="Details" asp-route-id="@item.Lesson_ID" class="lesson-btn-start">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <circle cx="12" cy="12" r="10"></circle>
+                                        <polygon points="10 8 16 12 10 16 10 8"></polygon>
+                                    </svg>
+                                    Start Lesson
+                                </a>
                             </div>
                         </div>
                     </div>
-                </div>
-            }
+                }
+            </div>
         }
+        
+        <div class="lesson-actions" style="margin-top: 2rem; justify-content: flex-start;">
+            <a asp-controller="Course" asp-action="UserIndex" class="lesson-btn lesson-btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="19" y1="12" x2="5" y2="12"></line>
+                    <polyline points="12 19 5 12 12 5"></polyline>
+                </svg>
+                Back to Courses
+            </a>
+        </div>
     </div>
-    
-    <div class="mt-4">
-        <a asp-controller="Course" asp-action="Details" asp-route-id="@ViewBag.CourseId" class="btn btn-secondary">Back to Course</a>
-    </div>
-</div> 
+</div>
+
+@section CustomScripts {
+    <script>
+        $(document).ready(function() {
+            // Enhanced animations with staggered timing
+            const fadeElements = document.querySelectorAll('.animate-fade-in');
+            fadeElements.forEach(function(element, index) {
+                setTimeout(() => {
+                    element.classList.add('visible');
+                }, 50 * index);
+            });
+        });
+    </script>
+} 
