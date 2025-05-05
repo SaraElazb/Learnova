@@ -8,9 +8,12 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using System.Linq;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace PresentationLayer.Controllers
 {
+    [Authorize]
     public class CourseController : Controller
     {
         
@@ -82,37 +85,63 @@ namespace PresentationLayer.Controllers
             return View(courseDTO);
         }
 
+        // GET: Courses/Create
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Create()
         {
             var model = new CourseRequest
             {
-                CategorySelectList = await GetCategoriesAsync()
+                CategorySelectList = await GetCategoriesAsync(),
+                InstructorId = User.FindFirstValue(ClaimTypes.NameIdentifier) // Set current user as instructor
             };
             return View(model);
         }
 
-         
+        // POST: Courses/Create
         [HttpPost]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Create(CourseRequest model)
         {
-            if (!ModelState.IsValid)
+            try
             {
+                if (!ModelState.IsValid)
+                {
+                    model.CategorySelectList = await GetCategoriesAsync();
+                    return View(model);
+                }
+
+                // Set the instructor ID to the current user
+                model.InstructorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                await _courseManager.CreateCourseAsync(model);
+                TempData["SuccessMessage"] = "Course created successfully!";
+                return RedirectToAction("Dashboard", "Instructor"); // Redirect to instructor dashboard
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = "Error creating course: " + ex.Message;
                 model.CategorySelectList = await GetCategoriesAsync();
                 return View(model);
             }
-
-            await _courseManager.CreateCourseAsync(model);
-            TempData["SuccessMessage"] = "Course created successfully!";
-            return RedirectToAction(nameof(List));
         }
 
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id)
         {
             var course = await _courseManager.GetByIdAsync(id);
             if (course == null) return NotFound();
 
+            // Check if current user is the course instructor
+            string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (course.InstructorId != currentUserId)
+            {
+                TempData["ErrorMessage"] = "You do not have permission to edit this course.";
+                return RedirectToAction("Dashboard", "Instructor");
+            }
+
             var model = _mapper.Map<CourseRequest>(course);
             model.CategorySelectList = await GetCategoriesAsync();
+            model.InstructorId = course.InstructorId; // Preserve the instructor ID
             
             // Pass the current image path via ViewBag
             ViewBag.CurrentImage = course.ImagePath;
@@ -121,30 +150,48 @@ namespace PresentationLayer.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id, CourseRequest model)
         {
             if (!ModelState.IsValid)
             {
                 model.CategorySelectList = await GetCategoriesAsync();
+                ViewBag.CurrentImage = (await _courseManager.GetByIdAsync(id))?.ImagePath;
                 return View(model);
             }
 
+            // Set the instructor ID to the current user to verify ownership
+            model.InstructorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             var success = await _courseManager.EditCourseAsync(id, model);
-            if (!success) return NotFound();
+            if (!success)
+            {
+                TempData["ErrorMessage"] = "You do not have permission to edit this course or the course was not found.";
+                return RedirectToAction("Dashboard", "Instructor");
+            }
 
             TempData["SuccessMessage"] = "Course updated successfully!";
-            return RedirectToAction(nameof(List));
+            return RedirectToAction("Dashboard", "Instructor");
         }
 
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Delete(int id)
         {
             var course = await _courseManager.GetByIdAsync(id);
             if (course == null) return NotFound();
 
+            // Check if current user is the course instructor
+            string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (course.InstructorId != currentUserId)
+            {
+                TempData["ErrorMessage"] = "You do not have permission to delete this course.";
+                return RedirectToAction("Dashboard", "Instructor");
+            }
+
             await _courseManager.SoftDelete(course);
             
             TempData["SuccessMessage"] = "Course deleted successfully!";
-            return RedirectToAction(nameof(List));
+            return RedirectToAction("Dashboard", "Instructor");
         }
     }
 }

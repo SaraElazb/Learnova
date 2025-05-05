@@ -12,7 +12,7 @@ namespace BusinessLogicLayer.Services.AccountServices
     {
         Task<IdentityResult> RegisterStudentAsync(StudentRegisterDto request);
         Task<IdentityResult> RegisterTeacherAsync(TeacherRegisterDto request);
-        Task<(bool Succeeded, string Message)> LoginAsync(LogInDto logInDto);
+        Task<(bool Succeeded, string Message, string Role)> LoginAsync(LogInDto logInDto);
         Task LogOutAsync();
     }
 }

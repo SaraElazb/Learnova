@@ -11,5 +11,6 @@ namespace BusinessLogicLayer.Manager.QuizManager
         Task<bool> EditQuizAsync(int id, QuizRequest model);
         Task<bool> SoftDelete(QuizDto quiz);
         Task<IEnumerable<QuizDto>> GetQuizzesByLessonAsync(int lessonId);
+        Task<IEnumerable<QuizDto>> GetQuizzesByInstructorAsync(string instructorId);
     }
 } 

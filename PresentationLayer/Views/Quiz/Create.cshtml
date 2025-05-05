@@ -11,7 +11,9 @@
 
 <div class="quiz-container">
     <div class="quiz-breadcrumb animate-fade-in">
-        <a asp-controller="Quiz" asp-action="AdminIndex">Quizzes</a>
+        <a asp-controller="Instructor" asp-action="Dashboard">Dashboard</a>
+        <span class="quiz-breadcrumb-separator">•</span>
+        <a asp-controller="Instructor" asp-action="Quizzes">Quizzes</a>
         <span class="quiz-breadcrumb-separator">•</span>
         <span>Create Quiz</span>
     </div>
@@ -89,7 +91,7 @@
                 </div>
                 
                 <div class="quiz-actions">
-                    <a asp-action="AdminIndex" class="quiz-btn quiz-btn-secondary">Back to List</a>
+                    <a asp-controller="Instructor" asp-action="Quizzes" class="quiz-btn quiz-btn-secondary">Back to Quizzes</a>
                     <button type="submit" class="quiz-btn quiz-btn-primary">Create Quiz</button>
                 </div>
             </form>

@@ -117,13 +117,26 @@ namespace BusinessLogicLayer.Manager.QuizManager
 
         public async Task<IEnumerable<QuizDto>> GetQuizzesByLessonAsync(int lessonId)
         {
-            var quizzes = await _unitOfWork.GetRepository<Quiz>()
-                .FindByCondition(q => q.Lesson_ID == lessonId)
-                .Include(q => q.Lesson)
-                .Include(q => q.Questions)
-                .ToListAsync();
-
+            var quizzes = await _unitOfWork.Quizzes.FindAllAsync(
+                q => q.Lesson_ID == lessonId,
+                include: q => q.Include(q => q.Lesson)
+            );
             return _mapper.Map<IEnumerable<QuizDto>>(quizzes);
+        }
+
+        public async Task<IEnumerable<QuizDto>> GetQuizzesByInstructorAsync(string instructorId)
+        {
+            // Get all quizzes with their related lessons and courses
+            var quizzes = await _unitOfWork.Quizzes.FindAllAsync(
+                q => true, // No filter here, we'll filter by instructor after loading
+                include: q => q.Include(q => q.Lesson)
+                              .ThenInclude(l => l.Course)
+            );
+            
+            // Now filter to only include quizzes from courses owned by this instructor
+            var filteredQuizzes = quizzes.Where(q => q.Lesson?.Course?.InstructorId == instructorId).ToList();
+            
+            return _mapper.Map<IEnumerable<QuizDto>>(filteredQuizzes);
         }
     }
 } 

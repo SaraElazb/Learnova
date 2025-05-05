@@ -11,7 +11,9 @@
 
 <div class="quiz-container">
     <div class="quiz-breadcrumb animate-fade-in">
-        <a asp-controller="Quiz" asp-action="AdminIndex">Quizzes</a>
+        <a asp-controller="Instructor" asp-action="Dashboard">Dashboard</a>
+        <span class="quiz-breadcrumb-separator">•</span>
+        <a asp-controller="Instructor" asp-action="Quizzes">Quizzes</a>
         <span class="quiz-breadcrumb-separator">•</span>
         <span>Edit Quiz</span>
     </div>
@@ -34,6 +36,16 @@
         }
 
         <div class="quiz-main">
+            <div class="quiz-actions" style="margin-top: 0; padding-top: 0; border-top: none; margin-bottom: 2rem;">
+                <a asp-controller="Question" asp-action="Create" asp-route-quizId="@Model.Quiz_ID" class="quiz-btn quiz-btn-primary">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <line x1="12" y1="5" x2="12" y2="19"></line>
+                        <line x1="5" y1="12" x2="19" y2="12"></line>
+                    </svg>
+                    Add New Question
+                </a>
+            </div>
+        
             <form asp-action="Edit" method="post" class="quiz-form" id="quizEditForm">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
                 <input type="hidden" asp-for="Quiz_ID" />
@@ -64,18 +76,26 @@
                 </div>
                 
                 <div class="quiz-actions">
-                    <a asp-action="AdminIndex" class="quiz-btn quiz-btn-secondary">
+                    <a asp-controller="Instructor" asp-action="Quizzes" class="quiz-btn quiz-btn-secondary">
                         <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <line x1="19" y1="12" x2="5" y2="12"></line>
                             <polyline points="12 19 5 12 12 5"></polyline>
                         </svg>
-                        Back to List
+                        Back to Quizzes
                     </a>
                     <div style="display: flex; gap: 0.5rem;">
-                        <a asp-controller="Question" asp-action="Index" asp-route-quizId="@Model.Quiz_ID" class="quiz-btn quiz-btn-secondary">
+                        <a asp-controller="Question" asp-action="Index" asp-route-quizId="@Model.Quiz_ID" class="quiz-btn quiz-btn-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="8" y1="6" x2="21" y2="6"></line>
+                                <line x1="8" y1="12" x2="21" y2="12"></line>
+                                <line x1="8" y1="18" x2="21" y2="18"></line>
+                                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                            </svg>
                             Manage Questions
                         </a>
-                        <button type="submit" class="quiz-btn quiz-btn-primary">
+                        <button type="submit" class="quiz-btn quiz-btn-secondary">
                             Save Changes
                         </button>
                     </div>

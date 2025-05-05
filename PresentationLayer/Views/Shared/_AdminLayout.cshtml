@@ -41,8 +41,8 @@
         </div>
         <nav class="sidebar-nav">
             <ul>
-                <li class="@IsActive("Course", "AdminIndex")">
-                    <a href="/course/adminindex">
+                <li class="@IsActive("Admin", "Dashboard")">
+                    <a asp-controller="Admin" asp-action="Dashboard">
                         <!-- Dashboard SVG -->
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                             <path d="M3 9L12 2L21 9V20C21 20.53 20.79 21.04 20.41 21.41C20.04 21.79 19.53 22 19 22H5C4.47 22 3.96 21.79 3.59 21.41C3.21 21.04 3 20.53 3 20V9Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -51,28 +51,28 @@
                         Dashboard
                     </a>
                 </li>
-                <li class="@IsActive("Course", "Creator")">
-                    <a href="/course-creator.html">
+                <li class="@IsActive("Course", "List")">
+                    <a asp-controller="Course" asp-action="List">
                         <!-- Courses SVG -->
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                             <path d="M12 6.25V19.25" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M12 6.25C10.83 5.48 9.25 5 7.5 5C5.75 5 4.17 5.48 3 6.25V19.25C4.17 18.48 5.75 18 7.5 18C9.25 18 10.83 18.48 12 19.25" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        Courses
+                        Manage Courses
                     </a>
                 </li>
-                <li class="@IsActive("Categories")">
-                    <a href="/categories-list">
-                        <!-- Categories SVG -->
+                <li class="@IsActive("Admin", "ViewUserRoles")">
+                    <a asp-controller="Admin" asp-action="ViewUserRoles">
+                        <!-- User Roles SVG -->
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                             <path d="M3 6.5C3 4.01 5.01 2 7.5 2H16.5C18.99 2 21 4.01 21 6.5V17.5C21 19.99 18.99 22 16.5 22H7.5C5.01 22 3 19.99 3 17.5V6.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M7 9H17M7 13H17M7 17H13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
-                        Categories
+                        User Roles
                     </a>
                 </li>
-                <li>
-                    <a href="#" class="students-link">
+                <li class="@IsActive("Student", "Index")">
+                    <a asp-controller="Student" asp-action="Index">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                             <path d="M17 21V19C17 17.94 16.58 16.92 15.83 16.17C15.08 15.42 14.06 15 13 15H5C3.94 15 2.92 15.42 2.17 16.17C1.42 16.92 1 17.94 1 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             <path d="M23 21V19C22.99 18.11 22.70 17.25 22.16 16.55C21.62 15.85 20.86 15.35 20 15.13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -82,8 +82,8 @@
                         Students
                     </a>
                 </li>
-                <li>
-                    <a href="#" class="reports-link">
+                <li class="@IsActive("Reports", "Index")">
+                    <a asp-controller="Reports" asp-action="Index">
                         <!-- Reports SVG -->
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                             <path d="M18 20V10M12 20V4M6 20V14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -91,8 +91,8 @@
                         Reports
                     </a>
                 </li>
-                <li>
-                    <a href="#" class="settings-link">
+                <li class="@IsActive("Settings", "Index")">
+                    <a asp-controller="Settings" asp-action="Index">
                         <!-- Settings SVG -->
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
                             <path d="M12 15C13.66 15 15 13.66 15 12C15 10.34 13.66 9 12 9C10.34 9 9 10.34 9 12C9 13.66 10.34 15 12 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -104,15 +104,17 @@
             </ul>
         </nav>
         <div class="sidebar-footer">
-            <a href="#" class="logout-link">
-                <!-- Logout SVG -->
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
-                    <path d="M9 21H5C4.47 21 3.96 20.79 3.59 20.41C3.21 20.04 3 19.53 3 19V5C3 4.47 3.21 3.96 3.59 3.59C3.96 3.21 4.47 3 5 3H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    <path d="M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-                Logout
-            </a>
+            <form asp-controller="Account" asp-action="LogOut" method="post">
+                <button type="submit" class="logout-link">
+                    <!-- Logout SVG -->
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                        <path d="M9 21H5C4.47 21 3.96 20.79 3.59 20.41C3.21 20.04 3 19.53 3 19V5C3 4.47 3.21 3.96 3.59 3.59C3.96 3.21 4.47 3 5 3H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        <path d="M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Logout
+                </button>
+            </form>
         </div>
     </aside>
     <main class="main-content">
@@ -144,7 +146,7 @@
                 <div class="user-profile">
                     <button class="profile-btn">
                         <img src="~/assets/user-avatar.png" alt="User" class="user-avatar" />
-                        <span class="user-name">Admin User</span>
+                        <span class="user-name">@User.Identity.Name</span>
                         <!-- Dropdown arrow SVG -->
                         <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
                             <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

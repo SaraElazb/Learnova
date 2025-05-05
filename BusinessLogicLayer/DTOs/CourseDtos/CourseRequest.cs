@@ -15,6 +15,7 @@ namespace BusinessLogicLayer.DTOs.CourseDtos
         public decimal Price { get; set; }
         public int Category_ID { get; set; }
         public IFormFile? Image { get; set; }
+        public string InstructorId { get; set; }
 
         public IEnumerable<SelectListItem>? CategorySelectList { get; set; }
     }

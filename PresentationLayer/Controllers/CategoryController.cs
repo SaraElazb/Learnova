@@ -3,9 +3,11 @@ using BusinessLogicLayer.Helpers;
 using Microsoft.AspNetCore.Mvc;
 using BusinessLogicLayer.DTOs.CategoryDtos;
 using BusinessLogicLayer.Manager.CategoryManager;
+using Microsoft.AspNetCore.Authorization;
 
 namespace PresentationLayer.Controllers
 {
+    [Authorize(Roles = "Admin")]
     public class CategoryController : Controller
     {
         private readonly IMapper _mapper;

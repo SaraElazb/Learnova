@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using BusinessLogicLayer.DTOs.LessonDtos;
 
 namespace BusinessLogicLayer.DTOs.CourseDtos
 {
@@ -17,5 +18,9 @@ namespace BusinessLogicLayer.DTOs.CourseDtos
         public DateTime CreatedDate { get; set; }
         public bool IsActive { get; set; }
         public string CategoryName { get; set; }
+        public int EnrollmentCount { get; set; }
+        public string InstructorId { get; set; }
+        public string InstructorName { get; set; }
+        public List<LessonDto> Lessons { get; set; } = new List<LessonDto>();
     }
 }

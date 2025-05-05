@@ -58,7 +58,10 @@ namespace BusinessLogicLayer.Manager.CourseManager
         {
             var course = _mapper.Map<Course>(model);
 
-           
+            // Explicitly set the instructor ID
+            course.InstructorId = model.InstructorId;
+            course.CreatedDate = DateTime.Now;
+
             if (model.Image != null)
             {
                 course.ImagePath = ImageHelper.SaveImage(model.Image, "CourseImages", _webHostEnvironment);
@@ -80,19 +83,38 @@ namespace BusinessLogicLayer.Manager.CourseManager
 
         public async Task<bool> EditCourseAsync(int id, CourseRequest model)
         {
-            var course = await _unitOfWork.Courses.GetByIdAsync(id);
-            if (course == null) return false;
-
-            _mapper.Map(model, course);
-
-            if (model.Image != null)
+            try
             {
-                course.ImagePath = ImageHelper.SaveImage(model.Image, "CourseImages", _webHostEnvironment);
+                var course = await _unitOfWork.Courses.GetByIdAsync(id);
+                if (course == null) return false;
+                
+                // Verify the instructor is the owner of the course
+                if (!string.IsNullOrEmpty(course.InstructorId) && 
+                    !string.IsNullOrEmpty(model.InstructorId) && 
+                    course.InstructorId != model.InstructorId)
+                {
+                    return false; // Not authorized to edit this course
+                }
+                
+                _mapper.Map(model, course);
+                
+                // Ensure the instructor ID is preserved
+                course.InstructorId = model.InstructorId;
+                
+                if (model.Image != null)
+                {
+                    course.ImagePath = ImageHelper.SaveImage(model.Image, "CourseImages", _webHostEnvironment);
+                }
+                
+                _unitOfWork.Courses.Update(course);
+                await _unitOfWork.CompleteAsync();
+                return true;
             }
-
-            _unitOfWork.Courses.Update(course);
-            await _unitOfWork.CompleteAsync();
-            return true;
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in EditCourseAsync: {ex.Message}");
+                return false;
+            }
         }
         public async Task<IEnumerable<SelectListItem>> GetCategoriesAsync()
         {
@@ -114,7 +136,47 @@ namespace BusinessLogicLayer.Manager.CourseManager
         {
             _unitOfWork.Courses.SoftDelete(course);
             await _unitOfWork.CompleteAsync();
+        }
 
+        public async Task<IEnumerable<CourseDTO>> GetInstructorCoursesAsync(string instructorId)
+        {
+            try
+            {
+                // Filter courses by instructor ID
+                var courses = await _unitOfWork.Courses.FindAllAsync(
+                    c => c.IsActive && c.InstructorId == instructorId,
+                    include: q => q.Include(c => c.Category)
+                                .Include(c => c.Lessons)
+                                .Include(c => c.Enrollments)
+                );
+                
+                var courseDTOs = _mapper.Map<IEnumerable<CourseDTO>>(courses);
+                
+                // Set enrollment count from actual enrollments
+                foreach (var course in courseDTOs)
+                {
+                    var courseEntity = courses.FirstOrDefault(c => c.Course_ID == course.Course_ID);
+                    course.EnrollmentCount = courseEntity?.Enrollments?.Count ?? 0;
+                    course.InstructorId = instructorId;
+                    
+                    // Try to get instructor name if possible
+                    if (courseEntity?.Instructor != null)
+                    {
+                        course.InstructorName = $"{courseEntity.Instructor.First_name} {courseEntity.Instructor.Last_name}";
+                    }
+                    else
+                    {
+                        course.InstructorName = "Instructor";
+                    }
+                }
+                
+                return courseDTOs;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetInstructorCoursesAsync: {ex.Message}");
+                return new List<CourseDTO>();
+            }
         }
     }
 }

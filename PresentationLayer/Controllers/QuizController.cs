@@ -2,111 +2,162 @@ using AutoMapper;
 using BusinessLogicLayer.DTOs.QuizDtos;
 using BusinessLogicLayer.Manager.LessonManager;
 using BusinessLogicLayer.Manager.QuizManager;
+using BusinessLogicLayer.Manager.CourseManager;
 using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Authorization;
+using System.Security.Claims;
 
 namespace PresentationLayer.Controllers
 {
+    [Authorize]
     public class QuizController : Controller
     {
         private readonly IMapper _mapper;
         private readonly IQuizManager _quizManager;
         private readonly ILessonManager _lessonManager;
+        private readonly ICourseManager _courseManager;
         private readonly IUnitOfWork _unitOfWork;
 
         public QuizController(
             IMapper mapper,
             IQuizManager quizManager,
             ILessonManager lessonManager,
+            ICourseManager courseManager,
             IUnitOfWork unitOfWork)
         {
             _mapper = mapper ?? throw new ArgumentNullException(nameof(mapper));
             _quizManager = quizManager ?? throw new ArgumentNullException(nameof(quizManager));
             _lessonManager = lessonManager ?? throw new ArgumentNullException(nameof(lessonManager));
+            _courseManager = courseManager ?? throw new ArgumentNullException(nameof(courseManager));
             _unitOfWork = unitOfWork ?? throw new ArgumentNullException(nameof(unitOfWork));
         }
 
-        private async Task<IEnumerable<SelectListItem>> GetLessonsAsync()
+        private async Task<IEnumerable<SelectListItem>> GetLessonsForInstructorAsync(string instructorId)
         {
             try
             {
-                Console.WriteLine("Starting GetLessonsAsync in QuizController");
-                var lessons = await _lessonManager.FindAllAsync();
+                Console.WriteLine($"[DEBUG] Starting GetLessonsForInstructorAsync in QuizController for instructor: {instructorId}");
                 
-                Console.WriteLine($"GetLessonsAsync received {lessons?.Count() ?? 0} lessons from LessonManager");
+                // Get all lessons
+                var allLessons = await _lessonManager.FindAllAsync();
+                Console.WriteLine($"[DEBUG] Found {allLessons.Count()} total lessons");
                 
-                if (lessons == null || !lessons.Any())
+                // Filter lessons by instructor's courses
+                var instructorCourses = await _courseManager.GetInstructorCoursesAsync(instructorId);
+                Console.WriteLine($"[DEBUG] Found {instructorCourses.Count()} courses for instructor {instructorId}");
+                
+                var instructorCourseIds = instructorCourses.Select(c => c.Course_ID).ToList();
+                Console.WriteLine($"[DEBUG] Course IDs: {string.Join(", ", instructorCourseIds)}");
+                
+                var instructorLessons = allLessons.Where(l => instructorCourseIds.Contains(l.Course_ID)).ToList();
+                
+                Console.WriteLine($"[DEBUG] GetLessonsForInstructorAsync filtered {instructorLessons.Count} lessons for instructor {instructorId}");
+                
+                if (!instructorLessons.Any())
                 {
-                    Console.WriteLine("No lessons found or lessons is null");
+                    Console.WriteLine("[DEBUG] No lessons found for this instructor");
                     return new List<SelectListItem>();
                 }
                 
-                var selectItems = lessons.Select(l => new SelectListItem
+                var selectItems = instructorLessons.Select(l => new SelectListItem
                 {
                     Value = l.Lesson_ID.ToString(),
-                    Text = l.Title
+                    Text = $"{l.Title} (Course: {l.CourseName})"
                 }).ToList();
                 
-                Console.WriteLine($"Created {selectItems.Count} select list items");
+                Console.WriteLine($"[DEBUG] Created {selectItems.Count} select list items");
                 return selectItems;
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in GetLessonsAsync: {ex.Message}");
+                Console.WriteLine($"[ERROR] GetLessonsForInstructorAsync: {ex.Message}");
+                Console.WriteLine($"[ERROR] Stack trace: {ex.StackTrace}");
                 return new List<SelectListItem>();
             }
         }
 
-        public async Task<IActionResult> AdminIndex()
+        // Helper method to check if a lesson belongs to the current instructor
+        private async Task<bool> IsLessonOwnedByInstructorAsync(int lessonId, string instructorId)
         {
-            var quizDtos = await _quizManager.FindAllAsync();
-            return View(quizDtos);
+            var lesson = await _lessonManager.FindAsync(lessonId);
+            if (lesson == null) return false;
+            
+            var course = await _courseManager.FindAsync(lesson.Course_ID);
+            return course != null && course.InstructorId == instructorId;
         }
 
-        public async Task<IActionResult> UserIndex(int lessonId)
-        {
-            var quizDtos = await _quizManager.GetQuizzesByLessonAsync(lessonId);
-            ViewBag.LessonId = lessonId;
-            return View(quizDtos);
-        }
-
-        public async Task<IActionResult> Details(int id)
-        {
-            var quizDto = await _quizManager.FindAsync(id);
-            if (quizDto == null) return NotFound();
-
-            return View(quizDto);
-        }
-
+        [HttpGet]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Create(int? lessonId = null)
         {
-            var lessonsList = await GetLessonsAsync();
-            
-            if (!lessonsList.Any())
-            {
-                TempData["ErrorMessage"] = "No lessons are available. Please create a lesson first.";
-                return RedirectToAction("Create", "Lesson");
+            try {
+                Console.WriteLine("[DEBUG] === Quiz Create Action Triggered ===");
+                string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                Console.WriteLine($"[DEBUG] Create Quiz action - User ID: {currentUserId}, lessonId: {lessonId}");
+                Console.WriteLine($"[DEBUG] Request method: {HttpContext.Request.Method}");
+                Console.WriteLine($"[DEBUG] Request path: {HttpContext.Request.Path}");
+                
+                var lessonsList = await GetLessonsForInstructorAsync(currentUserId);
+                
+                if (!lessonsList.Any())
+                {
+                    Console.WriteLine("[DEBUG] No lessons available - redirecting to Dashboard");
+                    TempData["ErrorMessage"] = "You must create a course and add lessons before creating quizzes.";
+                    return RedirectToAction("Dashboard", "Instructor");
+                }
+                
+                // If lessonId is provided, verify it belongs to the instructor
+                if (lessonId.HasValue)
+                {
+                    bool isOwned = await IsLessonOwnedByInstructorAsync(lessonId.Value, currentUserId);
+                    if (!isOwned)
+                    {
+                        TempData["ErrorMessage"] = "You do not have permission to create a quiz for this lesson.";
+                        return RedirectToAction("Quizzes", "Instructor");
+                    }
+                }
+                
+                var model = new QuizRequest
+                {
+                    LessonSelectList = lessonsList
+                };
+                
+                if (lessonId.HasValue)
+                {
+                    model.Lesson_ID = lessonId.Value;
+                    ViewBag.SelectedLessonName = lessonsList.FirstOrDefault(l => l.Value == lessonId.Value.ToString())?.Text;
+                }
+                
+                Console.WriteLine("[DEBUG] Successfully prepared quiz create view");
+                return View(model);
             }
-            
-            var model = new QuizRequest
+            catch (Exception ex)
             {
-                LessonSelectList = lessonsList
-            };
-            
-            if (lessonId.HasValue)
-            {
-                model.Lesson_ID = lessonId.Value;
-                ViewBag.SelectedLessonName = lessonsList.FirstOrDefault(l => l.Value == lessonId.Value.ToString())?.Text;
+                Console.WriteLine($"[ERROR] Create Quiz action: {ex.Message}");
+                Console.WriteLine($"[ERROR] Stack trace: {ex.StackTrace}");
+                TempData["ErrorMessage"] = "Error loading quiz creation page: " + ex.Message;
+                return RedirectToAction("Dashboard", "Instructor");
             }
-            
-            return View(model);
         }
 
         [HttpPost]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Create(QuizRequest model)
         {
+            string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            // Verify the lesson belongs to the instructor
+            bool isOwned = await IsLessonOwnedByInstructorAsync(model.Lesson_ID, currentUserId);
+            if (!isOwned)
+            {
+                TempData["ErrorMessage"] = "You do not have permission to create a quiz for this lesson.";
+                model.LessonSelectList = await GetLessonsForInstructorAsync(currentUserId);
+                return View(model);
+            }
+            
             try
             {
                 Console.WriteLine("======= QUIZ CREATE DIAGNOSTICS =======");
@@ -123,7 +174,7 @@ namespace PresentationLayer.Controllers
                 
                 TempData["SuccessMessage"] = $"Quiz '{model.Title}' created successfully!";
                 
-                return RedirectToAction(nameof(AdminIndex));
+                return RedirectToAction("Quizzes", "Instructor");
             }
             catch (Exception ex)
             {
@@ -137,134 +188,96 @@ namespace PresentationLayer.Controllers
                 }
                 
                 TempData["ErrorMessage"] = $"An error occurred while creating the quiz: {ex.Message}";
-                model.LessonSelectList = await GetLessonsAsync();
+                model.LessonSelectList = await GetLessonsForInstructorAsync(currentUserId);
                 return View(model);
             }
         }
 
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id)
         {
             var quiz = await _quizManager.GetByIdAsync(id);
             if (quiz == null) return NotFound();
+            
+            // Check if the quiz's lesson belongs to the instructor
+            string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            bool isOwned = await IsLessonOwnedByInstructorAsync(quiz.Lesson_ID, currentUserId);
+            if (!isOwned)
+            {
+                TempData["ErrorMessage"] = "You do not have permission to edit this quiz.";
+                return RedirectToAction("Quizzes", "Instructor");
+            }
 
             var model = _mapper.Map<QuizRequest>(quiz);
-            model.LessonSelectList = await GetLessonsAsync();
+            model.LessonSelectList = await GetLessonsForInstructorAsync(currentUserId);
             return View(model);
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Edit(int id, QuizRequest model)
         {
-            try
+            string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            // Verify the lesson belongs to the instructor
+            bool isOwned = await IsLessonOwnedByInstructorAsync(model.Lesson_ID, currentUserId);
+            if (!isOwned)
             {
-                Console.WriteLine("======= QUIZ EDIT POST DIAGNOSTICS =======");
-                Console.WriteLine($"Quiz ID from route: {id}");
-                Console.WriteLine($"Quiz ID from model: {model.Quiz_ID}");
-                Console.WriteLine($"Title: {model.Title}");
-                Console.WriteLine($"Lesson ID: {model.Lesson_ID}");
-                Console.WriteLine($"Passing Score: {model.Passing_score}");
-                Console.WriteLine($"Instructions: {model.Instructions?.Substring(0, Math.Min(model.Instructions?.Length ?? 0, 50))}...");
-                Console.WriteLine($"LessonSelectList count: {model.LessonSelectList?.Count() ?? 0}");
-                
-                // The LessonSelectList is coming back as null, which is okay for an edit operation
-                // Clear the model state before validation to ignore binding issues with complex properties
-                ModelState.Clear();
-                
-                // Manually add validation errors for required fields
-                if (string.IsNullOrEmpty(model.Title))
-                {
-                    ModelState.AddModelError("Title", "Title is required");
-                }
-                
-                if (model.Lesson_ID <= 0)
-                {
-                    ModelState.AddModelError("Lesson_ID", "A valid lesson must be selected");
-                }
-                
-                if (model.Quiz_ID != id)
-                {
-                    Console.WriteLine($"ID mismatch: route ID {id} doesn't match model ID {model.Quiz_ID}");
-                    ModelState.AddModelError("", $"ID mismatch: route ID {id} doesn't match model ID {model.Quiz_ID}");
-                }
-                
-                if (!ModelState.IsValid)
-                {
-                    Console.WriteLine("======= MODEL STATE ERRORS =======");
-                    foreach (var state in ModelState)
-                    {
-                        foreach (var error in state.Value.Errors)
-                        {
-                            Console.WriteLine($"Validation error for {state.Key}: {error.ErrorMessage}");
-                        }
-                    }
-                    
-                    Console.WriteLine("Model state is invalid. Returning to edit form.");
-                    
-                    // Refresh lesson select list
-                    model.LessonSelectList = await GetLessonsAsync();
-                    Console.WriteLine($"Refreshed LessonSelectList with {model.LessonSelectList.Count()} items");
-                    
-                    return View(model);
-                }
-
-                Console.WriteLine($"Updating quiz: {model.Title}, Lesson ID: {model.Lesson_ID}");
-                
-                // Create a clean model with only the needed properties
-                var quizToUpdate = new QuizRequest
-                {
-                    Quiz_ID = id,
-                    Title = model.Title,
-                    Lesson_ID = model.Lesson_ID,
-                    Passing_score = model.Passing_score,
-                    Instructions = model.Instructions
-                };
-                
-                var success = await _quizManager.EditQuizAsync(id, quizToUpdate);
-                
-                if (!success)
-                {
-                    Console.WriteLine($"Failed to update quiz with ID: {id}");
-                    TempData["ErrorMessage"] = "Failed to update quiz. The quiz may not exist or there was a server error.";
-                    model.LessonSelectList = await GetLessonsAsync();
-                    return View(model);
-                }
-                
-                Console.WriteLine($"Quiz updated successfully: {model.Title}");
-                TempData["SuccessMessage"] = $"Quiz '{model.Title}' updated successfully!";
-                
-                return RedirectToAction(nameof(AdminIndex));
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error updating quiz: {ex.Message}");
-                Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                
-                if (ex.InnerException != null)
-                {
-                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
-                    Console.WriteLine($"Inner stack trace: {ex.InnerException.StackTrace}");
-                }
-                
-                TempData["ErrorMessage"] = $"An error occurred while updating the quiz: {ex.Message}";
-                model.LessonSelectList = await GetLessonsAsync();
+                TempData["ErrorMessage"] = "You do not have permission to edit a quiz for this lesson.";
+                model.LessonSelectList = await GetLessonsForInstructorAsync(currentUserId);
                 return View(model);
             }
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    await _quizManager.EditQuizAsync(id, model);
+                    TempData["SuccessMessage"] = "Quiz updated successfully!";
+                    return RedirectToAction("Quizzes", "Instructor");
+                }
+                catch (Exception ex)
+                {
+                    TempData["ErrorMessage"] = $"Error updating quiz: {ex.Message}";
+                }
+            }
+
+            model.LessonSelectList = await GetLessonsForInstructorAsync(currentUserId);
+            return View(model);
         }
 
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Delete(int id)
         {
             var quiz = await _quizManager.GetByIdAsync(id);
             if (quiz == null) return NotFound();
-
-            await _quizManager.SoftDelete(quiz);
-
-            return RedirectToAction(nameof(AdminIndex));
+            
+            // Check if the quiz's lesson belongs to the instructor
+            string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            bool isOwned = await IsLessonOwnedByInstructorAsync(quiz.Lesson_ID, currentUserId);
+            if (!isOwned)
+            {
+                TempData["ErrorMessage"] = "You do not have permission to delete this quiz.";
+                return RedirectToAction("Quizzes", "Instructor");
+            }
+            
+            try
+            {
+                await _quizManager.SoftDelete(quiz);
+                TempData["SuccessMessage"] = "Quiz deleted successfully!";
+            }
+            catch (Exception ex)
+            {
+                TempData["ErrorMessage"] = $"Error deleting quiz: {ex.Message}";
+            }
+            
+            return RedirectToAction("Quizzes", "Instructor");
         }
 
         public async Task<IActionResult> CheckLessonsForQuiz()
         {
-            var lessonItems = await GetLessonsAsync();
+            var lessonItems = await GetLessonsForInstructorAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
             var lessons = await _lessonManager.FindAllAsync();
             
             return Json(new {
@@ -294,7 +307,7 @@ namespace PresentationLayer.Controllers
                     l.Lesson_ID, l.Title, l.Course_ID
                 }));
                 
-                var selectItems = await GetLessonsAsync();
+                var selectItems = await GetLessonsForInstructorAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
                 diagnosticInfo.Add("3_SelectItemsCount", selectItems.Count());
                 diagnosticInfo.Add("3_SelectItems", selectItems);
                 

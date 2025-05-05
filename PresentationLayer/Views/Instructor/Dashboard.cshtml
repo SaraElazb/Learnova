@@ -1,0 +1,262 @@
+@{
+    ViewData["Title"] = "Instructor Dashboard";
+    Layout = "_Layout2";
+}
+@using System.Linq
+
+@section CustomHeadContent {
+    <link rel="stylesheet" href="~/css/instructor-dashboard.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+}
+
+<div class="container dashboard-container">
+    <div class="dashboard-header">
+        <h1 class="dashboard-title">Welcome, <span>@User.Identity.Name</span></h1>
+        <div class="dashboard-actions">
+            <a href="@Url.Action("CreateCourse", "Instructor")" class="btn btn-primary">
+                <i class="bi bi-plus-lg"></i> Create Course
+            </a>
+            <a href="@Url.Action("Create", "Quiz")" class="btn btn-success ml-2" style="margin-left: 10px;">
+                <i class="bi bi-plus-lg"></i> Create Quiz
+            </a>
+            <a href="@Url.Action("Create", "Lesson")" class="btn btn-info ml-2" style="margin-left: 10px;">
+                <i class="bi bi-plus-lg"></i> Add Lesson
+            </a>
+        </div>
+    </div>
+
+    <div class="stats-grid">
+        <div class="stat-card">
+            <div class="stat-icon courses-icon">
+                <i class="bi bi-book"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Total Courses</h3>
+                <p class="stat-value">@ViewBag.TotalCourses</p>
+                <p class="stat-change positive">+2 this month</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon students-icon">
+                <i class="bi bi-people"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Total Students</h3>
+                <p class="stat-value">@ViewBag.TotalStudents</p>
+                <p class="stat-change positive">+15 this month</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon quiz-icon">
+                <i class="bi bi-question-circle"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Total Quizzes</h3>
+                <p class="stat-value">@ViewBag.TotalQuizzes</p>
+                <p class="stat-change positive">+5 this month</p>
+            </div>
+        </div>
+
+        <div class="stat-card">
+            <div class="stat-icon revenue-icon">
+                <i class="bi bi-cash"></i>
+            </div>
+            <div class="stat-content">
+                <h3>Total Revenue</h3>
+                <p class="stat-value">$@ViewBag.TotalRevenue.ToString("0.00")</p>
+                <p class="stat-change positive">+12% this month</p>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-grid">
+        <div class="dashboard-card">
+            <div class="dashboard-card-header">
+                <h3>My Courses</h3>
+                <div class="actions">
+                    <a href="@Url.Action("Courses", "Instructor")" class="btn">View All</a>
+                </div>
+            </div>
+            <div class="dashboard-card-body">
+                <div class="table-responsive">
+                    <table class="courses-table">
+                        <thead>
+                            <tr>
+                                <th>Course</th>
+                                <th>Students</th>
+                                <th>Price</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (ViewBag.Courses != null && ((IEnumerable<dynamic>)ViewBag.Courses).Count() > 0)
+                            {
+                                foreach (var course in ViewBag.Courses)
+                                {
+                                    <tr>
+                                        <td>@course.Title</td>
+                                        <td>@course.EnrollmentCount</td>
+                                        <td>$@course.Price.ToString("0.00")</td>
+                                        <td class="actions-cell">
+                                            <a href="@Url.Action("EditCourse", "Instructor", new { id = course.Course_ID })" class="action-icon">
+                                                <i class="bi bi-pencil-square"></i>
+                                            </a>
+                                            <a href="@Url.Action("DeleteCourse", "Instructor", new { id = course.Course_ID })" class="action-icon">
+                                                <i class="bi bi-trash"></i>
+                                            </a>
+                                            <a href="@Url.Action("AddLesson", "Instructor", new { courseId = course.Course_ID })" class="action-icon" title="Add Lesson">
+                                                <i class="bi bi-plus-circle"></i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center">No courses found</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <div>
+            <div class="dashboard-card mb-4">
+                <div class="dashboard-card-header">
+                    <h3>Course Lessons</h3>
+                </div>
+                <div class="dashboard-card-body">
+                    <div class="accordion" id="courseLessonsAccordion">
+                        @if (ViewBag.Courses != null && ((IEnumerable<dynamic>)ViewBag.Courses).Count() > 0)
+                        {
+                            foreach (var course in ViewBag.Courses)
+                            {
+                                <div class="accordion-item">
+                                    <h2 class="accordion-header" id="heading@(course.Course_ID)">
+                                        <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse@(course.Course_ID)" aria-expanded="false" aria-controls="collapse@(course.Course_ID)">
+                                            <strong>@course.Title</strong> - @(course.Lessons != null ? ((IEnumerable<dynamic>)course.Lessons).Count() : 0) Lessons
+                                        </button>
+                                    </h2>
+                                    <div id="collapse@(course.Course_ID)" class="accordion-collapse collapse" aria-labelledby="heading@(course.Course_ID)" data-bs-parent="#courseLessonsAccordion">
+                                        <div class="accordion-body">
+                                            @if (course.Lessons != null && ((IEnumerable<dynamic>)course.Lessons).Count() > 0)
+                                            {
+                                                <ul class="lesson-list">
+                                                    @foreach (var lesson in course.Lessons)
+                                                    {
+                                                        <li class="lesson-item">
+                                                            <span class="lesson-title">@lesson.Title</span>
+                                                            <div class="lesson-actions">
+                                                                <a href="@Url.Action("Edit", "Lesson", new { id = lesson.Lesson_ID })" class="btn btn-sm btn-outline-primary">
+                                                                    <i class="bi bi-pencil"></i> Edit
+                                                                </a>
+                                                                <a href="@Url.Action("Create", "Quiz", new { lessonId = lesson.Lesson_ID })" class="btn btn-sm btn-outline-success">
+                                                                    <i class="bi bi-plus"></i> Add Quiz
+                                                                </a>
+                                                            </div>
+                                                        </li>
+                                                    }
+                                                </ul>
+                                            }
+                                            else
+                                            {
+                                                <p>No lessons added yet.</p>
+                                            }
+                                            <div class="mt-3">
+                                                <a href="@Url.Action("AddLesson", "Instructor", new { courseId = course.Course_ID })" class="btn btn-primary">
+                                                    <i class="bi bi-plus-lg"></i> Add Lesson
+                                                </a>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        }
+                        else
+                        {
+                            <p>No courses found. Create a course to start adding lessons.</p>
+                        }
+                    </div>
+                </div>
+            </div>
+
+            <div class="dashboard-card">
+                <div class="dashboard-card-header">
+                    <h3>Quick Actions</h3>
+                </div>
+                <div class="dashboard-card-body">
+                    <div class="quick-actions">
+                        <a href="@Url.Action("CreateCourse", "Instructor")" class="action-btn create-course">
+                            <i class="bi bi-plus-lg"></i> Create Course
+                        </a>
+                        <a href="@Url.Action("Quizzes", "Instructor")" class="action-btn">
+                            <i class="bi bi-list-check"></i> View Quizzes
+                        </a>
+                        <a href="@Url.Action("Create", "Quiz")" class="action-btn create-quiz">
+                            <i class="bi bi-plus-lg"></i> Create Quiz
+                        </a>
+                        <a href="@Url.Action("Create", "Lesson")" class="action-btn create-lesson">
+                            <i class="bi bi-plus-lg"></i> Add Lesson
+                        </a>
+                        @if (ViewBag.LatestQuiz != null)
+                        {
+                            <a href="@Url.Action("Index", "Question", new { quizId = ViewBag.LatestQuiz.Quiz_ID })" class="action-btn">
+                                <i class="bi bi-question-circle"></i> Manage Quiz Questions
+                            </a>
+                        }
+                        <a href="#" class="action-btn">
+                            <i class="bi bi-graph-up"></i> View Analytics
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section CustomScripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Add any client-side functionality here
+            console.log('Instructor dashboard loaded');
+        });
+    </script>
+    
+    <style>
+        .lesson-list {
+            list-style: none;
+            padding: 0;
+        }
+        
+        .lesson-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .lesson-item:last-child {
+            border-bottom: none;
+        }
+        
+        .lesson-title {
+            font-weight: 500;
+        }
+        
+        .lesson-actions {
+            display: flex;
+            gap: 5px;
+        }
+        
+        .accordion-button:not(.collapsed) {
+            background-color: #e7f1ff;
+            color: #0c63e4;
+        }
+    </style>
+} 

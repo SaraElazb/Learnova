@@ -21,7 +21,7 @@ namespace BusinessLogicLayer.Services.AccountServices
         }
 
 
-        public async Task<(bool Succeeded, string Message)> LoginAsync(LogInDto logInDto)
+        public async Task<(bool Succeeded, string Message, string Role)> LoginAsync(LogInDto logInDto)
         {
             var result = await _signInManager.PasswordSignInAsync(
                 logInDto.UserName,      
@@ -33,16 +33,24 @@ namespace BusinessLogicLayer.Services.AccountServices
            
             if (result.Succeeded)
             {
-                return (true, "Login successful");
+                // Get the user to determine their role
+                var user = await _userManager.FindByNameAsync(logInDto.UserName);
+                if (user != null)
+                {
+                    var roles = await _userManager.GetRolesAsync(user);
+                    var role = roles.FirstOrDefault() ?? "User";
+                    return (true, "Login successful", role);
+                }
+                return (true, "Login successful", "User");
             }
 
             if (result.IsLockedOut)
             {
-                return (false, "Your account is locked. Please try again later.");
+                return (false, "Your account is locked. Please try again later.", string.Empty);
             }
 
            
-            return (false, "Invalid username or password");
+            return (false, "Invalid username or password", string.Empty);
         }
 
 

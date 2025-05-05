@@ -11,7 +11,7 @@
 
 <div class="app-container">
     <header class="header">
-        <a asp-action="AdminIndex" class="back-button">
+        <a asp-controller="Instructor" asp-action="Dashboard" class="back-button">
             <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <path d="M10.5 12.5L5.5 7.5L10.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
                       stroke-linejoin="round" />
@@ -27,6 +27,7 @@
         </section>
 
         <form id="courseForm" asp-action="Create" method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="InstructorId" />
             <section id="course-info-section" class="section-container active">
                 <div class="course-name-section">
                     <h2>Course Information</h2>
@@ -79,7 +80,7 @@
                     </div>
 
                     <div class="action-buttons">
-                        <a asp-action="AdminIndex" class="cancel-button">Cancel</a>
+                        <a asp-controller="Instructor" asp-action="Dashboard" class="cancel-button">Cancel</a>
                         <button type="submit" class="save-button">Save Course</button>
                     </div>
                 </div>

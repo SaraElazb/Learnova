@@ -2,8 +2,10 @@ using AutoMapper;
 using BusinessLogicLayer.DTOs.LessonDtos;
 using BusinessLogicLayer.Manager.CourseManager;
 using BusinessLogicLayer.Manager.LessonManager;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.Security.Claims;
 
 namespace PresentationLayer.Controllers
 {
@@ -54,29 +56,57 @@ namespace PresentationLayer.Controllers
             return View(lessonDto);
         }
 
-        public async Task<IActionResult> Create()
+        [HttpGet]
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> Create(int? courseId = null)
         {
-            var model = new LessonRequest
+            string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var model = new LessonRequest();
+            
+            if (courseId.HasValue)
             {
-                CourseSelectList = await GetCoursesAsync()
-            };
+                // Check if the course belongs to the instructor
+                var courses = await _courseManager.GetInstructorCoursesAsync(currentUserId);
+                var course = courses.FirstOrDefault(c => c.Course_ID == courseId.Value);
+                
+                if (course == null)
+                {
+                    TempData["ErrorMessage"] = "You don't have permission to add lessons to this course.";
+                    return RedirectToAction("Dashboard", "Instructor");
+                }
+                
+                model.Course_ID = courseId.Value;
+                model.CourseSelectList = new List<SelectListItem> {
+                    new SelectListItem { Value = course.Course_ID.ToString(), Text = course.Title, Selected = true }
+                };
+            }
+            else
+            {
+                // Get only courses belonging to this instructor
+                model.CourseSelectList = await GetInstructorCoursesAsync(currentUserId);
+            }
+            
             return View(model);
         }
 
         [HttpPost]
+        [Authorize(Roles = "Teacher")]
         public async Task<IActionResult> Create(LessonRequest model)
         {
             try
             {
-                Console.WriteLine("======= LESSON CREATE DIAGNOSTICS =======");
-                Console.WriteLine($"Title: {model.Title}");
-                Console.WriteLine($"Description: {model.Description?.Substring(0, Math.Min(model.Description?.Length ?? 0, 50))}...");
-                Console.WriteLine($"Course ID: {model.Course_ID}");
-                Console.WriteLine($"Duration: {model.Duration}");
-                Console.WriteLine($"LessonOrder: {model.LessonOrder}");
-                Console.WriteLine($"VideoUri: {model.VideoUri}");
+                string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 
-                ModelState.Clear();
+                // Verify this course belongs to the instructor
+                var courses = await _courseManager.GetInstructorCoursesAsync(currentUserId);
+                var course = courses.FirstOrDefault(c => c.Course_ID == model.Course_ID);
+                
+                if (course == null)
+                {
+                    TempData["ErrorMessage"] = "You don't have permission to add lessons to this course.";
+                    model.CourseSelectList = await GetInstructorCoursesAsync(currentUserId);
+                    return View(model);
+                }
                 
                 Console.WriteLine($"Creating lesson: {model.Title}, Course ID: {model.Course_ID}");
                 
@@ -86,36 +116,22 @@ namespace PresentationLayer.Controllers
                 {
                     Console.WriteLine("Lesson creation returned false");
                     TempData["ErrorMessage"] = "Failed to create lesson. Please check your inputs and try again.";
-                    model.CourseSelectList = await GetCoursesAsync();
+                    model.CourseSelectList = await GetInstructorCoursesAsync(currentUserId);
                     return View(model);
                 }
                 
-                Console.WriteLine("Lesson creation successful, redirecting to AdminIndex");
-                TempData["SuccessMessage"] = $"Lesson '{model.Title}' created successfully! You can now create a quiz for this lesson.";
+                Console.WriteLine("Lesson creation successful, redirecting to Instructor Dashboard");
+                TempData["SuccessMessage"] = $"Lesson '{model.Title}' created successfully!";
                 
-                var lessons = await _lessonManager.FindAllAsync();
-                var createdLesson = lessons.FirstOrDefault(l => l.Title == model.Title && l.Course_ID == model.Course_ID);
-                
-                if (createdLesson != null)
-                {
-                    return RedirectToAction(nameof(SuccessCreated), new { lessonId = createdLesson.Lesson_ID, lessonTitle = createdLesson.Title });
-                }
-                
-                return RedirectToAction(nameof(AdminIndex));
+                // Redirect back to instructor dashboard
+                return RedirectToAction("Dashboard", "Instructor");
             }
             catch (Exception ex)
             {
                 Console.WriteLine($"Error creating lesson: {ex.Message}");
-                Console.WriteLine($"Stack trace: {ex.StackTrace}");
-                
-                if (ex.InnerException != null)
-                {
-                    Console.WriteLine($"Inner exception: {ex.InnerException.Message}");
-                    Console.WriteLine($"Inner stack trace: {ex.InnerException.StackTrace}");
-                }
                 
                 TempData["ErrorMessage"] = $"An error occurred while creating the lesson: {ex.Message}";
-                model.CourseSelectList = await GetCoursesAsync();
+                model.CourseSelectList = await GetInstructorCoursesAsync(User.FindFirstValue(ClaimTypes.NameIdentifier));
                 return View(model);
             }
         }
@@ -253,6 +269,17 @@ namespace PresentationLayer.Controllers
             ViewBag.LessonId = lessonId;
             ViewBag.LessonTitle = lessonTitle;
             return View();
+        }
+
+        // Get courses for a specific instructor
+        private async Task<IEnumerable<SelectListItem>> GetInstructorCoursesAsync(string instructorId)
+        {
+            var courses = await _courseManager.GetInstructorCoursesAsync(instructorId);
+            return courses.Select(c => new SelectListItem
+            {
+                Value = c.Course_ID.ToString(),
+                Text = c.Title
+            });
         }
     }
 } 

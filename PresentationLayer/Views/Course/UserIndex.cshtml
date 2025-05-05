@@ -16,6 +16,105 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EdTech Platform</title>
   <link rel="stylesheet" href="~/css/userIndex.css" />
+  <style>
+        /* Dropdown menu styles */
+        .profile-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .profile-button {
+            background: none;
+            border: none;
+            padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            font-weight: 500;
+            color: var(--text-primary);
+            transition: color 0.3s;
+        }
+
+        .profile-button:hover {
+            color: var(--primary);
+        }
+        
+        .profile-button span {
+            display: inline-block;
+            max-width: 120px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .profile-dropdown-content {
+            display: none;
+            position: absolute;
+            right: 0;
+            background-color: white;
+            min-width: 200px;
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+            z-index: 1000;
+            padding: 8px 0;
+        }
+
+        .profile-dropdown-content a {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: #000000;
+            padding: 10px 16px;
+            text-decoration: none;
+            font-size: 14px;
+            transition: background-color 0.2s;
+        }
+
+        .profile-dropdown-content a:hover {
+            background-color: #f8f9fa;
+            color: var(--primary);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background-color: #e9ecef;
+            margin: 8px 0;
+        }
+
+        .profile-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            background-color: #e9ecef;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            font-weight: 600;
+            color: #495057;
+        }
+
+        .show {
+            display: block;
+        }
+        
+        /* Role-specific coloring */
+        .role-student .profile-avatar {
+            background-color: #4e73df;
+            color: white;
+        }
+        
+        .role-teacher .profile-avatar {
+            background-color: #1cc88a;
+            color: white;
+        }
+        
+        .role-admin .profile-avatar {
+            background-color: #e74a3b;
+            color: white;
+        }
+    </style>
 </head>
 <body>
   <!-- Header -->
@@ -34,10 +133,80 @@
           <a href="/about">About Us</a>
         </nav>
         
-        <div class="auth-buttons">
-          <a href="/signin" class="btn btn-secondary">Sign In</a>
-          <a href="/signup" class="btn btn-primary">Sign Up</a>
-        </div>
+       @if (User.Identity.IsAuthenticated)
+                {
+                    <div class="profile-dropdown">
+                        <button class="profile-button" onclick="toggleDropdown()">
+                            <div class="profile-avatar @(User.IsInRole("Admin") ? "role-admin" : User.IsInRole("Teacher") ? "role-teacher" : "role-student")">
+                                @{
+                                    var username = User.Identity.Name;
+                                    var initial = !string.IsNullOrEmpty(username) ? username[0].ToString().ToUpper() : "U";
+                                }
+                                @initial
+                            </div>
+                            <span>@User.Identity.Name</span>
+                            <i class="bi bi-chevron-down"></i>
+                        </button>
+                        <div class="profile-dropdown-content" id="profileDropdown">
+                            @if (User.IsInRole("Teacher"))
+                            {
+                                <a asp-controller="Instructor" asp-action="Dashboard">
+                                    <i class="bi bi-speedometer2"></i> Instructor Dashboard
+                                </a>
+                                <a asp-controller="Instructor" asp-action="Courses">
+                                    <i class="bi bi-book"></i> My Courses
+                                </a>
+                                <a asp-controller="Instructor" asp-action="Quizzes">
+                                    <i class="bi bi-question-circle"></i> My Quizzes
+                                </a>
+                            }
+                            else if (User.IsInRole("Student"))
+                            {
+                                <a asp-controller="Student" asp-action="Dashboard">
+                                    <i class="bi bi-speedometer2"></i> Student Dashboard
+                                </a>
+                                <a asp-controller="Student" asp-action="MyCourses">
+                                    <i class="bi bi-book"></i> My Courses
+                                </a>
+                                <a asp-controller="Student" asp-action="MyQuizzes">
+                                    <i class="bi bi-question-circle"></i> My Quizzes
+                                </a>
+                            }
+                            else if (User.IsInRole("Admin"))
+                            {
+                                <a asp-controller="Admin" asp-action="Dashboard">
+                                    <i class="bi bi-speedometer2"></i> Admin Dashboard
+                                </a>
+                                <a asp-controller="Course" asp-action="List">
+                                    <i class="bi bi-book"></i> Manage Courses
+                                </a>
+                                <a asp-controller="Category" asp-action="Index">
+                                    <i class="bi bi-tags"></i> Manage Categories
+                                </a>
+                                <a asp-controller="User" asp-action="Index">
+                                    <i class="bi bi-people"></i> Manage Users
+                                </a>
+                            }
+                            <a href="#">
+                                <i class="bi bi-person"></i> Profile
+                            </a>
+                            <a href="#">
+                                <i class="bi bi-gear"></i> Settings
+                            </a>
+                            <div class="dropdown-divider"></div>
+                            <form asp-controller="Account" asp-action="LogOut" method="post" style="margin: 0;">
+                                <button type="submit" style="display: flex; align-items: center; gap: 10px; color: #000000; padding: 10px 16px; text-decoration: none; font-size: 14px; background: none; border: none; cursor: pointer; width: 100%; text-align: left;">
+                                    <i class="bi bi-box-arrow-right"></i> Log out
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <a class="btn btn-ghost" asp-controller="Account" asp-action="LogIn">Log in</a>
+                    <a class="btn btn-primary" asp-controller="Account" asp-action="Register">Sign up</a>
+                }
         
         <button class="mobile-menu-toggle" aria-label="Toggle menu">
           <svg xmlns="http://www.w3.org/2000/svg" class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">

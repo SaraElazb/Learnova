@@ -6,93 +6,308 @@
     int currentPage = ViewBag.CurrentPage ?? 1;
     int totalPages = ViewBag.TotalPages ?? 1;
     string searchTerm = ViewBag.SearchTerm as string ?? "";
+    Layout = "_layout2.cshtml";
 }
 
-<h2 class="mb-4 text-center text-primary">Manage User Roles</h2>
+<style>
+    .user-role-card {
+        background-color: #fff;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        overflow: hidden;
+        margin-bottom: 25px;
+    }
 
-<!-- Search Form -->
-<form asp-action="ViewUserRoles" method="get" class="mb-4">
-    <div class="input-group">
-        <input type="text" name="searchTerm" value="@searchTerm" class="form-control" placeholder="Search by username or email" />
-        <button type="submit" class="btn btn-outline-primary">Search</button>
+    .user-role-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-header {
+        background: linear-gradient(135deg, #3a8bcd, #2d6fa7);
+        color: white;
+        padding: 15px 20px;
+        border-top-left-radius: 10px;
+        border-top-right-radius: 10px;
+    }
+
+    .card-body {
+        padding: 20px;
+    }
+
+    .role-badge {
+        border-radius: 20px;
+        padding: 5px 12px;
+        font-size: 0.85rem;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        display: inline-block;
+        transition: all 0.2s ease;
+    }
+    
+    .role-badge.admin {
+        background-color: #dc3545;
+        color: white;
+    }
+    
+    .role-badge.teacher {
+        background-color: #28a745;
+        color: white;
+    }
+    
+    .role-badge.student {
+        background-color: #17a2b8;
+        color: white;
+    }
+    
+    .role-badge.none {
+        background-color: #6c757d;
+        color: white;
+    }
+
+    .role-checkbox {
+        margin-right: 5px;
+        cursor: pointer;
+    }
+
+    .role-checkbox-label {
+        cursor: pointer;
+        margin-right: 12px;
+        padding: 5px 10px;
+        border-radius: 5px;
+        transition: background-color 0.2s;
+        user-select: none;
+    }
+
+    .role-checkbox-label:hover {
+        background-color: rgba(0, 0, 0, 0.05);
+    }
+
+    .search-container {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 20px;
+        margin-bottom: 30px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    }
+
+    .search-input {
+        border-radius: 30px;
+        padding-left: 20px;
+        border: 1px solid #ced4da;
+        box-shadow: none;
+    }
+
+    .search-btn {
+        border-radius: 30px;
+        padding: 0.375rem 1.5rem;
+    }
+
+    .update-role-btn {
+        background: linear-gradient(135deg, #28a745, #218838);
+        border: none;
+        border-radius: 30px;
+        color: white;
+        padding: 8px 20px;
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.5px;
+        transition: all 0.3s;
+    }
+
+    .update-role-btn:hover {
+        background: linear-gradient(135deg, #218838, #1e7e34);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .page-link {
+        border-radius: 50%;
+        margin: 0 5px;
+        width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #3a8bcd;
+        border: 1px solid #3a8bcd;
+    }
+
+    .page-item.active .page-link {
+        background-color: #3a8bcd;
+        border-color: #3a8bcd;
+    }
+
+    .user-username {
+        font-weight: 600;
+        font-size: 1.1rem;
+        color: #343a40;
+    }
+
+    .empty-state {
+        text-align: center;
+        padding: 60px 20px;
+        color: #6c757d;
+    }
+</style>
+
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2 class="text-center fw-bold mb-3" style="color: #3a8bcd;">
+                <i class="bi bi-people-fill me-2"></i>User Role Management
+            </h2>
+            <p class="text-center text-muted mb-4">Manage user roles across your e-learning platform</p>
+        </div>
     </div>
-</form>
 
-<!-- User Roles Table -->
-<div class="table-responsive">
-    <table class="table table-striped table-hover align-middle">
-        <thead class="thead-light">
-            <tr>
-                <th>User Name</th>
-                <th>Current Roles</th>
-                <th>Assign / Remove Roles</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var user in Model)
+    <!-- Search Form -->
+    <div class="search-container">
+        <form asp-action="ViewUserRoles" method="get" class="row g-3 align-items-center">
+            <div class="col-md-10">
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0">
+                        <i class="bi bi-search"></i>
+                    </span>
+                    <input type="text" name="searchTerm" value="@searchTerm" class="form-control search-input border-start-0" 
+                           placeholder="Search by username or email..." />
+                </div>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary search-btn w-100">Search</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- User Roles Cards -->
+    <div class="row">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var user in Model)
             {
-                <tr>
-                    <td>@user.UserName</td>
-                    <td>
-                        @if (user.Roles.Any())
-                        {
-                            <div class="d-flex flex-wrap gap-2">
-                                @foreach (var role in user.Roles)
-                                {
-                                    <span class="badge bg-success">@role</span>
-                                }
+                <div class="col-lg-6">
+                    <div class="user-role-card">
+                        <div class="card-header d-flex justify-content-between align-items-center">
+                            <span class="user-username">@user.UserName</span>
+                            <span class="user-id small text-white-50">ID: @user.UserId.Substring(0, 8)...</span>
+                        </div>
+                        <div class="card-body">
+                            <div class="mb-3">
+                                <h6 class="mb-2 text-muted">Current Roles:</h6>
+                                <div>
+                                    @if (user.Roles.Any())
+                                    {
+                                        foreach (var role in user.Roles)
+                                        {
+                                            string badgeClass = "role-badge ";
+                                            switch (role.ToLower())
+                                            {
+                                                case "admin":
+                                                    badgeClass += "admin";
+                                                    break;
+                                                case "teacher":
+                                                    badgeClass += "teacher";
+                                                    break;
+                                                case "student":
+                                                    badgeClass += "student";
+                                                    break;
+                                                default:
+                                                    badgeClass += "none";
+                                                    break;
+                                            }
+                                            <span class="@badgeClass">
+                                                <i class="bi bi-person-check-fill me-1"></i>@role
+                                            </span>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span class="role-badge none">
+                                            <i class="bi bi-exclamation-circle me-1"></i>No roles
+                                        </span>
+                                    }
+                                </div>
                             </div>
-                        }
-                        else
-                        {
-                            <span class="badge bg-secondary">No roles</span>
-                        }
-                    </td>
-                    <td>
-                        <form asp-action="UpdateUserRoles" method="post" class="d-flex flex-wrap gap-3 align-items-center">
-                            <input type="hidden" name="UserId" value="@user.UserId" />
 
-                            <div class="d-flex flex-wrap gap-3">
-                                @foreach (var role in allRoles)
-                                {
-                                    var isChecked = user.Roles.Contains(role);
-                                    var checkboxId = $"{user.UserId}_{role}";
+                            <form asp-action="UpdateUserRoles" method="post">
+                                <input type="hidden" name="UserId" value="@user.UserId" />
 
-                                    <div class="form-check form-check-inline">
-                                        <input class="form-check-input" type="checkbox"
-                                               name="SelectedRoles"
-                                               value="@role"
-                                               id="@checkboxId"
-                                        @(isChecked ? "checked" : "") />
-                                        <label class="form-check-label" for="@checkboxId">
-                                            @role
-                                        </label>
-                                    </div>
-                                }
-                            </div>
+                                <h6 class="mb-3 text-muted">Modify Roles:</h6>
+                                <div class="mb-3">
+                                    @foreach (var role in allRoles)
+                                    {
+                                        var isChecked = user.Roles.Contains(role);
+                                        var checkboxId = $"{user.UserId}_{role}";
 
-                            <div>
-                                <button type="submit" class="btn btn-outline-success btn-sm mt-2">Update Roles</button>
-                            </div>
-                        </form>
-                    </td>
-                </tr>
+                                        <div class="form-check form-check-inline mb-2">
+                                            <input class="form-check-input role-checkbox" type="checkbox"
+                                                name="SelectedRoles"
+                                                value="@role"
+                                                id="@checkboxId"
+                                                @(isChecked ? "checked" : "") />
+                                            <label class="form-check-label role-checkbox-label" for="@checkboxId">
+                                                @role
+                                            </label>
+                                        </div>
+                                    }
+                                </div>
+
+                                <div class="text-end">
+                                    <button type="submit" class="btn update-role-btn">
+                                        <i class="bi bi-check2-circle me-1"></i>Update Roles
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             }
-        </tbody>
-    </table>
+        }
+        else
+        {
+            <div class="col-12">
+                <div class="empty-state">
+                    <i class="bi bi-search" style="font-size: 3rem;"></i>
+                    <h4 class="mt-3">No users found</h4>
+                    <p>Try modifying your search criteria or add new users to the system.</p>
+                </div>
+            </div>
+        }
+    </div>
+
+    <!-- Pagination -->
+    @if (totalPages > 1)
+    {
+        <div class="d-flex justify-content-center mt-4">
+            <nav aria-label="User pagination">
+                <ul class="pagination">
+                    @if (currentPage > 1)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="ViewUserRoles" asp-route-searchTerm="@searchTerm" asp-route-page="@(currentPage - 1)" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    }
+
+                    @for (int i = Math.Max(1, currentPage - 2); i <= Math.Min(totalPages, currentPage + 2); i++)
+                    {
+                        <li class="page-item @(i == currentPage ? "active" : "")">
+                            <a class="page-link" asp-action="ViewUserRoles" asp-route-searchTerm="@searchTerm" asp-route-page="@i">@i</a>
+                        </li>
+                    }
+
+                    @if (currentPage < totalPages)
+                    {
+                        <li class="page-item">
+                            <a class="page-link" asp-action="ViewUserRoles" asp-route-searchTerm="@searchTerm" asp-route-page="@(currentPage + 1)" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </nav>
+        </div>
+    }
 </div>
-
-<!-- Pagination -->
-@if (totalPages > 1)
-{
-    <nav aria-label="User pagination">
-        <ul class="pagination justify-content-center">
-            @for (int i = 1; i <= totalPages; i++)
-            {
-                <li class="page-item @(i == currentPage ? "active" : "")">
-                    <a class="page-link" asp-action="ViewUserRoles" asp-route-searchTerm="@searchTerm" asp-route-page="@i">@i</a>
-                </li>
-            }
-        </ul>
-    </nav>
-}

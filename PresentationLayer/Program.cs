@@ -16,7 +16,7 @@ namespace PresentationLayer
 {
     public class Program
     {
-        public static void Main(string[] args)
+        public static async Task Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
 
@@ -76,6 +76,53 @@ namespace PresentationLayer
             app.UseAuthorization();
             app.UseAuthorization();
             app.UseSession();
+
+            // Seed roles
+            using (var scope = app.Services.CreateScope())
+            {
+                var roleManager = scope.ServiceProvider.GetRequiredService<RoleManager<Role>>();
+                
+                // Define roles
+                string[] roleNames = { "Admin", "Teacher", "Student" };
+                
+                foreach (var roleName in roleNames)
+                {
+                    // Check if role already exists
+                    var roleExists = await roleManager.RoleExistsAsync(roleName);
+                    if (!roleExists)
+                    {
+                        // Create role if it doesn't exist
+                        await roleManager.CreateAsync(new Role { Name = roleName });
+                    }
+                }
+                
+                // Seed admin user
+                var userManager = scope.ServiceProvider.GetRequiredService<UserManager<User>>();
+                string adminEmail = "admin@site.com";
+                
+                // Check if admin user exists
+                var adminUser = await userManager.FindByEmailAsync(adminEmail);
+                if (adminUser == null)
+                {
+                    // Create admin user if it doesn't exist
+                    var admin = new User
+                    {
+                        Id = Guid.NewGuid().ToString(),
+                        UserName = adminEmail,
+                        Email = adminEmail,
+                        First_name = "Admin",
+                        Last_name = "User",
+                        EmailConfirmed = true
+                    };
+                    
+                    var result = await userManager.CreateAsync(admin, "Admin@123");
+                    if (result.Succeeded)
+                    {
+                        // Assign admin role
+                        await userManager.AddToRoleAsync(admin, "Admin");
+                    }
+                }
+            }
 
             app.MapControllerRoute(
                 name: "default",

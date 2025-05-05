@@ -2,47 +2,50 @@
 
 @{
     ViewData["Title"] = "Add Category";
+    Layout = "_Layout2";
 }
 
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Courses - LearnNova</title>
+@section CustomHeadContent {
     <link rel="stylesheet" href="~/css/AddCategory.css" />
-</head>
-<body>
+}
 
 <div class="container">
+    <h2>Add New Category</h2>
 
-    <h2>➕ Add New Category</h2>
-
-    <form asp-action="Create" method="post" enctype="multipart/form-data" class="card p-4 shadow-sm">
-        <div class="mb-3">
-            <label asp-for="Category_Name" class="form-label">Category Name</label>
-            <input asp-for="Category_Name" class="form-control" placeholder="Enter category name">
-            <span asp-validation-for="Category_Name" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="Description" class="form-label">Description</label>
-            <textarea asp-for="Description" class="form-control" placeholder="Enter category description"></textarea>
-            <span asp-validation-for="Description" class="text-danger"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="Image" class="form-label">Category Image</label>
-            <input type="file" asp-for="Image" class="form-control">
-            <span asp-validation-for="Image" class="text-danger"></span>
-        </div>
-        <div class="btns">
-
-        <button type="submit" class="btn btn-success">✅ Add</button>
-        <a asp-action="Index" class="btn btn-secondary">🔙 Back</a>
+    <div class="card">
+        <form asp-action="Create" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            
+            <div class="mb-3">
+                <label asp-for="Category_Name" class="form-label">Category Name</label>
+                <input asp-for="Category_Name" class="form-control" placeholder="Enter category name">
+                <span asp-validation-for="Category_Name" class="text-danger"></span>
             </div>
-    </form>
+
+            <div class="mb-3">
+                <label asp-for="Description" class="form-label">Description</label>
+                <textarea asp-for="Description" class="form-control" placeholder="Enter category description"></textarea>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
+
+            <div class="mb-3">
+                <label asp-for="Image" class="form-label">Category Image</label>
+                <input type="file" asp-for="Image" class="form-control">
+                <span asp-validation-for="Image" class="text-danger"></span>
+            </div>
+            
+            <div class="btns">
+                <a asp-action="Index" class="btn btn-secondary">
+                    <i class="bi bi-arrow-left"></i> Back to List
+                </a>
+                <button type="submit" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Add Category
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
-
-</body>
+@section CustomScripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

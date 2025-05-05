@@ -25,6 +25,12 @@ public class Course
     [ForeignKey("Category_ID")]
     public Category Category { get; set; }
 
+    [Required]
+    public string InstructorId { get; set; }
+
+    [ForeignKey("InstructorId")]
+    public User Instructor { get; set; }
+
     public ICollection<Enrollment> Enrollments { get; set; }
     public ICollection<Review> Reviews { get; set; }
     public ICollection<Lesson> Lessons { get; set; }

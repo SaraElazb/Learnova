@@ -17,6 +17,6 @@ namespace BusinessLogicLayer.Manager.CourseManager
         Task CreateCourseAsync(CourseRequest model);
         Task SoftDelete(Course course);
         Task<IEnumerable<CourseDTO>> GetCoursesAsync(int? categoryId);
-
+        Task<IEnumerable<CourseDTO>> GetInstructorCoursesAsync(string instructorId);
     }
 }

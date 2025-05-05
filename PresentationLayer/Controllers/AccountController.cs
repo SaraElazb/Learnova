@@ -14,6 +14,61 @@ namespace PresentationLayer.Controllers
         {
            _accountService = accountService;
         }
+
+        // New combined registration GET action
+        public IActionResult Register()
+        {
+            return View();
+        }
+
+        // New combined registration POST action
+        [HttpPost]
+        public async Task<IActionResult> Register(RegisterActionRequest request)
+        {
+            if (ModelState.IsValid)
+            {
+                if (request.Role == "Student")
+                {
+                    var studentDto = request.ToStudentDto();
+                    var result = await _accountService.RegisterStudentAsync(studentDto);
+
+                    if (result.Succeeded)
+                    {
+                        TempData["SuccessMessage"] = "Registration successful! Welcome to LearnNova.";
+                        return RedirectToAction("Dashboard", "Student");
+                    }
+
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+                else if (request.Role == "Instructor")
+                {
+                    var teacherDto = request.ToTeacherDto();
+                    var result = await _accountService.RegisterTeacherAsync(teacherDto);
+
+                    if (result.Succeeded)
+                    {
+                        TempData["SuccessMessage"] = "Registration successful! Welcome to LearnNova.";
+                        return RedirectToAction("Dashboard", "Instructor");
+                    }
+
+                    foreach (var error in result.Errors)
+                    {
+                        ModelState.AddModelError(string.Empty, error.Description);
+                    }
+                }
+                else
+                {
+                    ModelState.AddModelError(string.Empty, "Invalid role selected.");
+                }
+            }
+
+            return View(request);
+        }
+
+        // Original Teacher Registration methods
         public IActionResult RegisterTeacher()
         {
             return View();
@@ -29,7 +84,8 @@ namespace PresentationLayer.Controllers
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    TempData["SuccessMessage"] = "Registration successful! Welcome to LearnNova.";
+                    return RedirectToAction("Dashboard", "Instructor");
                 }
 
                 foreach (var error in result.Errors)
@@ -56,11 +112,27 @@ namespace PresentationLayer.Controllers
             {
                 var dto = request.ToLogInDto();
                 
-                var (succeeded, message) = await _accountService.LoginAsync(dto);
+                var (succeeded, message, role) = await _accountService.LoginAsync(dto);
 
                 if (succeeded)
                 {
-                    return RedirectToAction("Index", "Home"); 
+                    // Redirect based on user role
+                    if (role == "Admin")
+                    {
+                        return RedirectToAction("Dashboard", "Admin");
+                    }
+                    else if (role == "Teacher")
+                    {
+                        return RedirectToAction("Dashboard", "Instructor");
+                    }
+                    else if (role == "Student")
+                    {
+                        return RedirectToAction("Dashboard", "Student");
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "Home");
+                    }
                 }
 
                
@@ -82,7 +154,8 @@ namespace PresentationLayer.Controllers
 
                 if (result.Succeeded)
                 {
-                    return RedirectToAction("Index", "Home");
+                    TempData["SuccessMessage"] = "Registration successful! Welcome to LearnNova.";
+                    return RedirectToAction("Dashboard", "Student");
                 }
 
                 foreach (var error in result.Errors)
