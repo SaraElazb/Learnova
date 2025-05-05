@@ -125,7 +125,7 @@ namespace PresentationLayer.Controllers
             }
         }
 
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> Edit(int id)
         {
             var course = await _courseManager.GetByIdAsync(id);
@@ -133,7 +133,9 @@ namespace PresentationLayer.Controllers
 
             // Check if current user is the course instructor
             string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (course.InstructorId != currentUserId)
+            // Allow admin or course owner to edit
+            bool isAdmin = User.IsInRole("Admin");
+            if (course.InstructorId != currentUserId && !isAdmin)
             {
                 TempData["ErrorMessage"] = "You do not have permission to edit this course.";
                 return RedirectToAction("Dashboard", "Instructor");
@@ -150,7 +152,7 @@ namespace PresentationLayer.Controllers
         }
 
         [HttpPost]
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> Edit(int id, CourseRequest model)
         {
             if (!ModelState.IsValid)
@@ -160,8 +162,21 @@ namespace PresentationLayer.Controllers
                 return View(model);
             }
 
-            // Set the instructor ID to the current user to verify ownership
-            model.InstructorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            // If user is admin, allow editing any course
+            if (User.IsInRole("Admin"))
+            {
+                // Preserve the original instructor
+                var originalCourse = await _courseManager.GetByIdAsync(id);
+                if (originalCourse != null)
+                {
+                    model.InstructorId = originalCourse.InstructorId;
+                }
+            }
+            else
+            {
+                // Set the instructor ID to the current user to verify ownership
+                model.InstructorId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            }
 
             var success = await _courseManager.EditCourseAsync(id, model);
             if (!success)
@@ -171,18 +186,24 @@ namespace PresentationLayer.Controllers
             }
 
             TempData["SuccessMessage"] = "Course updated successfully!";
-            return RedirectToAction("Dashboard", "Instructor");
+            
+            // Redirect based on role
+            if (User.IsInRole("Admin"))
+                return RedirectToAction("AdminIndex");
+            else
+                return RedirectToAction("Dashboard", "Instructor");
         }
 
-        [Authorize(Roles = "Teacher")]
+        [Authorize(Roles = "Teacher,Admin")]
         public async Task<IActionResult> Delete(int id)
         {
             var course = await _courseManager.GetByIdAsync(id);
             if (course == null) return NotFound();
 
-            // Check if current user is the course instructor
+            // Check if current user is the course instructor or an admin
             string currentUserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            if (course.InstructorId != currentUserId)
+            bool isAdmin = User.IsInRole("Admin");
+            if (course.InstructorId != currentUserId && !isAdmin)
             {
                 TempData["ErrorMessage"] = "You do not have permission to delete this course.";
                 return RedirectToAction("Dashboard", "Instructor");
@@ -191,7 +212,12 @@ namespace PresentationLayer.Controllers
             await _courseManager.SoftDelete(course);
             
             TempData["SuccessMessage"] = "Course deleted successfully!";
-            return RedirectToAction("Dashboard", "Instructor");
+            
+            // Redirect based on role
+            if (isAdmin)
+                return RedirectToAction("AdminIndex");
+            else
+                return RedirectToAction("Dashboard", "Instructor");
         }
     }
 }

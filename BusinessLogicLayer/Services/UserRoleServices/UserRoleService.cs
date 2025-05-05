@@ -13,11 +13,13 @@ namespace BusinessLogicLayer.Services.UserRoleServices
     {
         private readonly UserManager<User> userManager;
         private readonly RoleManager<Role> roleManager;
+        private readonly ELearningDbContext dbContext;
 
-        public UserRoleService(UserManager<User> userManager, RoleManager<Role> roleManager)
+        public UserRoleService(UserManager<User> userManager, RoleManager<Role> roleManager, ELearningDbContext dbContext)
         {
             this.userManager = userManager;
             this.roleManager = roleManager;
+            this.dbContext = dbContext;
         }
 
         public async Task<(List<UserRolesDto> Users, int TotalUsers)> GetUsersWithRolesAsync(string searchTerm, int page, int pageSize)
@@ -42,6 +44,7 @@ namespace BusinessLogicLayer.Services.UserRoleServices
                 {
                     UserId = user.Id,
                     UserName = user.UserName,
+                    Email = user.Email,
                     Roles = (List<string>)await userManager.GetRolesAsync(user)
                 };
                 userRoles.Add(userRole);
@@ -72,6 +75,59 @@ namespace BusinessLogicLayer.Services.UserRoleServices
 
             return true;
         }
+        
+        public async Task<(bool CanDelete, List<string> AssociatedData)> CheckUserAssociationsAsync(string userId)
+        {
+            var associatedData = new List<string>();
+            
+            // Check for courses created by the user (as instructor)
+            var coursesCreated = await dbContext.Courses
+                .Where(c => c.InstructorId == userId)
+                .Select(c => c.Title)
+                .ToListAsync();
+                
+            if (coursesCreated.Any())
+            {
+                associatedData.Add($"Instructor for {coursesCreated.Count} course(s): {string.Join(", ", coursesCreated.Take(3))}");
+                if (coursesCreated.Count > 3)
+                    associatedData[associatedData.Count - 1] += $" and {coursesCreated.Count - 3} more";
+            }
+            
+            // Check for course enrollments
+            var enrollments = await dbContext.Enrollments
+                .Include(e => e.Course)
+                .Where(e => e.User_ID == userId)
+                .Select(e => e.Course.Title)
+                .ToListAsync();
+                
+            if (enrollments.Any())
+            {
+                associatedData.Add($"Enrolled in {enrollments.Count} course(s): {string.Join(", ", enrollments.Take(3))}");
+                if (enrollments.Count > 3)
+                    associatedData[associatedData.Count - 1] += $" and {enrollments.Count - 3} more";
+            }
+            
+            // Check for course reviews
+            var reviews = await dbContext.Reviews
+                .Where(r => r.User_ID == userId)
+                .CountAsync();
+                
+            if (reviews > 0)
+            {
+                associatedData.Add($"Authored {reviews} course review(s)");
+            }
+            
+            // Check for quiz submissions
+            var submissions = await dbContext.Submissions
+                .Where(s => s.User_ID == userId)
+                .CountAsync();
+                
+            if (submissions > 0)
+            {
+                associatedData.Add($"Has {submissions} quiz submission(s)");
+            }
+            
+            return (associatedData.Count == 0, associatedData);
+        }
     }
-
 }

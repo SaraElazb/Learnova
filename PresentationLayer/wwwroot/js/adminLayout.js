@@ -3,11 +3,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const mobileMenuBtn = document.querySelector(".mobile-menu-btn");
     const mobileCloseBtn = document.querySelector(".mobile-close-btn");
     const profileBtn = document.querySelector(".profile-btn");
-    const studentsLink = document.querySelector(".students-link");
-    const reportsLink = document.querySelector(".reports-link");
-    const settingsLink = document.querySelector(".settings-link");
-    const logoutLink = document.querySelector(".logout-link");
     const notificationBtn = document.querySelector(".notification-btn");
+    const logoutLink = document.querySelector(".logout-link");
 
     // Create profile dropdown dynamically
     const profileDropdown = document.createElement("div");
@@ -16,11 +13,15 @@ document.addEventListener("DOMContentLoaded", function () {
       <ul>
         <li><a href="#">My Profile</a></li>
         <li><a href="#">Account Settings</a></li>
-        <li><a href="#">Logout</a></li>
+        <li>
+          <form method="post" action="/Account/LogOut">
+            <button type="submit" class="dropdown-logout-btn">Logout</button>
+          </form>
+        </li>
       </ul>
     `;
     // Append profile dropdown to user menu
-    const userMenu = document.querySelector(".user-menu");
+    const userMenu = document.querySelector(".user-profile");
     userMenu.appendChild(profileDropdown);
 
     // Create notification popup dynamically
@@ -111,34 +112,32 @@ document.addEventListener("DOMContentLoaded", function () {
         }
     });
 
-    studentsLink.addEventListener("click", function (e) {
-        e.preventDefault();
-        alert("Students management will be implemented in a future update.");
-    });
-    reportsLink.addEventListener("click", function (e) {
-        e.preventDefault();
-        alert("Reports will be implemented in a future update.");
-    });
-    settingsLink.addEventListener("click", function (e) {
-        e.preventDefault();
-        alert("Settings will be implemented in a future update.");
-    });
-    logoutLink.addEventListener("click", function (e) {
-        e.preventDefault();
-        if (confirm("Are you sure you want to logout?")) {
-            window.location.href = "/";
-        }
-    });
-
-    function initializeCharts() {
-        console.log("Charts initialized");
+    // Only set up logout handler if it's not a form submit
+    if (logoutLink) {
+        logoutLink.addEventListener("click", function (e) {
+            // The form will handle the actual logout
+            // This is just for any custom confirmation
+            if (logoutLink.tagName !== 'BUTTON' || !logoutLink.closest('form')) {
+                e.preventDefault();
+                if (confirm("Are you sure you want to logout?")) {
+                    // Find the form and submit it
+                    const logoutForm = document.querySelector('form[action*="LogOut"]');
+                    if (logoutForm) {
+                        logoutForm.submit();
+                    } else {
+                        window.location.href = "/Account/LogOut";
+                    }
+                }
+            }
+        });
     }
-    initializeCharts();
 
+    // Initialize ripple effect for buttons
     const buttons = document.querySelectorAll("button:not(.profile-btn):not(.notification-btn)");
     buttons.forEach(button => {
         button.addEventListener("click", createRippleEffect);
     });
+    
     function createRippleEffect(e) {
         const button = this;
         const ripple = document.createElement("span");
@@ -156,28 +155,7 @@ document.addEventListener("DOMContentLoaded", function () {
         setTimeout(() => ripple.remove(), 600);
     }
 
-    const viewAllButtons = document.querySelectorAll(".view-all-btn");
-    viewAllButtons.forEach(button => {
-        button.addEventListener("click", function (e) {
-            e.preventDefault();
-            const cardTitle = this.closest(".card-header").querySelector("h3").textContent;
-            if (cardTitle === "Recent Activity") {
-                alert("View all activities will be implemented in a future update.");
-            } else if (cardTitle === "Popular Courses") {
-                window.location.href = "/course-creator.html";
-            }
-        });
-    });
-
-    const sidebarLinks = document.querySelectorAll(".sidebar-nav ul li");
-    sidebarLinks.forEach(linkItem => {
-        const anchor = linkItem.querySelector("a");
-        anchor.addEventListener("click", function () {
-            sidebarLinks.forEach(item => item.classList.remove("active"));
-            linkItem.classList.add("active");
-        });
-    });
-
+    // Handle responsive behavior
     if (window.innerWidth <= 1024) {
         sidebar.classList.remove("active");
     }

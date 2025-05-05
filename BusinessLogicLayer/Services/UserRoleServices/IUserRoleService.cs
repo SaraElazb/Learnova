@@ -11,5 +11,6 @@ namespace BusinessLogicLayer.Services.UserRoleServices
     {
         Task<(List<UserRolesDto> Users, int TotalUsers)> GetUsersWithRolesAsync(string searchTerm, int page, int pageSize);
         Task<bool> UpdateUserRolesAsync(EditUserRolesDto request);
+        Task<(bool CanDelete, List<string> AssociatedData)> CheckUserAssociationsAsync(string userId);
     }
 }

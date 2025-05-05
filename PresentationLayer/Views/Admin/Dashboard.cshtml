@@ -1,232 +1,547 @@
-﻿<@using Microsoft.AspNetCore.Mvc.TagHelpers
-        @model List<BusinessLogicLayer.DTOs.UserRolesDtos.UserRolesDto>
+﻿@using Microsoft.AspNetCore.Mvc.TagHelpers
+@model List<BusinessLogicLayer.DTOs.UserRolesDtos.UserRolesDto>
 @{
-    ViewData["Title"] = "Dashboard";
+    ViewData["Title"] = "Admin Dashboard";
     Layout = "_AdminLayout";
-}
-@section CustomHeadContent {
-        <link rel="stylesheet" href="~/css/admin-dashboard.css" />
+    var totalStudents = ViewBag.TotalStudents ?? 0;
+    var totalInstructors = ViewBag.TotalInstructors ?? 0;
+    var totalUsers = ViewBag.TotalUsers ?? 0;
+    var totalCourses = ViewBag.TotalCourses ?? 0;
 }
 
-    <div class="dashboard-content">
+@functions {
+    public string GetAvatarUrl(string userName)
+    {
+        if (string.IsNullOrEmpty(userName))
+            return "https://ui-avatars.com/api/?name=User&background=10B981&color=ffffff";
+            
+        // Get the first letter of each word in the name and combine them
+        string initials = string.Join("", userName.Split(' ')
+            .Where(n => !string.IsNullOrEmpty(n))
+            .Select(n => n[0].ToString().ToUpper()));
+            
+        // Limit to 2 characters if there are more
+        if (initials.Length > 2)
+            initials = initials.Substring(0, 2);
+            
+        // Generate placeholder avatar URL with user's initials
+        return $"https://ui-avatars.com/api/?name={initials}&background=10B981&color=ffffff";
+    }
+}
 
-        <div class="page-header">
-            <h1>Dashboard</h1>
-            <p>Welcome back, Admin User!</p>
+<style>
+    .admin-dashboard-content {
+        padding: 0;
+    }
+    
+    .welcome-section {
+        background: linear-gradient(135deg, var(--layout-color-primary), var(--layout-color-secondary));
+        padding: 2rem;
+        border-radius: var(--layout-border-radius-lg);
+        margin-bottom: 2rem;
+        color: white;
+        position: relative;
+        overflow: hidden;
+        box-shadow: var(--layout-shadow-md);
+    }
+    
+    .welcome-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        right: 0;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+        border-radius: 50%;
+        transform: translate(30%, -30%);
+    }
+    
+    .welcome-title {
+        font-size: 2rem;
+        font-weight: 700;
+        margin-bottom: 0.5rem;
+    }
+    
+    .welcome-subtitle {
+        font-size: 1.1rem;
+        opacity: 0.9;
+        max-width: 600px;
+    }
+    
+    .quick-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-top: 1.5rem;
+    }
+    
+    .quick-action-btn {
+        background-color: rgba(255, 255, 255, 0.15);
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: var(--layout-border-radius-md);
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .quick-action-btn:hover {
+        background-color: rgba(255, 255, 255, 0.25);
+        transform: translateY(-2px);
+        color: white;
+    }
+    
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .stat-card {
+        background-color: var(--layout-color-card-bg);
+        border-radius: var(--layout-border-radius-lg);
+        padding: 1.5rem;
+        box-shadow: var(--layout-shadow-sm);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+    
+    .stat-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--layout-shadow-md);
+    }
+    
+    .stat-content {
+        flex: 1;
+    }
+    
+    .stat-title {
+        font-size: 0.9rem;
+        color: var(--layout-color-text-light);
+        margin-bottom: 0.5rem;
+    }
+    
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 700;
+        color: var(--layout-color-text);
+    }
+    
+    .stat-change {
+        font-size: 0.8rem;
+        color: var(--layout-color-text-light);
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        margin-top: 0.25rem;
+    }
+    
+    .stat-change.positive {
+        color: var(--layout-color-success);
+    }
+    
+    .stat-change.negative {
+        color: var(--layout-color-error);
+    }
+    
+    .stat-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: rgba(255, 255, 255, 0.1);
+    }
+    
+    .users-icon {
+        background-color: rgba(59, 130, 246, 0.15);
+        color: #3B82F6;
+    }
+    
+    .students-icon {
+        background-color: rgba(16, 185, 129, 0.15);
+        color: #10B981;
+    }
+    
+    .teachers-icon {
+        background-color: rgba(139, 92, 246, 0.15);
+        color: #8B5CF6;
+    }
+    
+    .courses-icon {
+        background-color: rgba(245, 158, 11, 0.15);
+        color: #F59E0B;
+    }
+    
+    .card-grid {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 1.5rem;
+    }
+    
+    .dashboard-card {
+        background-color: var(--layout-color-card-bg);
+        border-radius: var(--layout-border-radius-lg);
+        box-shadow: var(--layout-shadow-sm);
+        overflow: hidden;
+    }
+    
+    .dashboard-card-header {
+        padding: 1.25rem 1.5rem;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+    
+    .dashboard-card-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: var(--layout-color-text);
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .dashboard-card-body {
+        padding: 1.5rem;
+    }
+    
+    .view-all {
+        color: var(--layout-color-primary);
+        font-size: 0.9rem;
+        font-weight: 500;
+        transition: color 0.2s ease;
+    }
+    
+    .view-all:hover {
+        color: var(--layout-color-primary-hover);
+    }
+    
+    .recent-users {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .user-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+        border-radius: var(--layout-border-radius-md);
+        transition: background-color 0.2s ease;
+    }
+    
+    .user-item:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .user-avatar {
+        width: 45px;
+        height: 45px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    
+    .user-details {
+        flex: 1;
+    }
+    
+    .user-name {
+        font-weight: 600;
+        color: var(--layout-color-text);
+        margin-bottom: 0.25rem;
+    }
+    
+    .user-email {
+        color: var(--layout-color-text-light);
+        font-size: 0.85rem;
+    }
+    
+    .user-role {
+        padding: 0.25rem 0.75rem;
+        border-radius: 2rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+    
+    .role-admin {
+        background-color: rgba(239, 68, 68, 0.15);
+        color: #EF4444;
+    }
+    
+    .role-teacher {
+        background-color: rgba(139, 92, 246, 0.15);
+        color: #8B5CF6;
+    }
+    
+    .role-student {
+        background-color: rgba(16, 185, 129, 0.15);
+        color: #10B981;
+    }
+    
+    .quick-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1rem;
+    }
+    
+    .quick-stat {
+        background-color: rgba(255, 255, 255, 0.05);
+        padding: 1rem;
+        border-radius: var(--layout-border-radius-md);
+        text-align: center;
+    }
+    
+    .quick-stat-value {
+        font-size: 1.5rem;
+        font-weight: 700;
+        color: var(--layout-color-text);
+        margin-bottom: 0.25rem;
+    }
+    
+    .quick-stat-label {
+        color: var(--layout-color-text-light);
+        font-size: 0.85rem;
+    }
+    
+    @@media (max-width: 1024px) {
+        .card-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    @@media (max-width: 768px) {
+        .stats-grid {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+        
+        .welcome-section {
+            padding: 1.5rem;
+        }
+        
+        .welcome-title {
+            font-size: 1.5rem;
+        }
+    }
+    
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+    }
+    
+    .quick-links {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .quick-link-item {
+        padding: 0.85rem;
+        background-color: rgba(255, 255, 255, 0.05);
+        border-radius: var(--layout-border-radius-md);
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        color: var(--layout-color-text);
+        transition: all 0.3s ease;
+    }
+    
+    .quick-link-item:hover {
+        background-color: rgba(255, 255, 255, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .quick-link-item svg {
+        color: var(--layout-color-primary);
+    }
+    
+    .recent-users {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+    
+    .user-item {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        padding: 0.75rem;
+        border-radius: var(--layout-border-radius-md);
+        transition: background-color 0.3s ease;
+    }
+    
+    .user-item:hover {
+        background-color: rgba(255, 255, 255, 0.05);
+    }
+    
+    .user-avatar-sm {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        overflow: hidden;
+    }
+    
+    .user-avatar-sm img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+    
+    .user-info-sm {
+        flex: 1;
+    }
+    
+    .user-name-sm {
+        font-weight: 600;
+        font-size: 0.9rem;
+        color: var(--layout-color-text);
+        margin-bottom: 0.1rem;
+    }
+    
+    .user-roles-sm {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.35rem;
+    }
+    
+    .user-role-badge-sm {
+        font-size: 0.7rem;
+        padding: 0.15rem 0.5rem;
+        border-radius: 9999px;
+        background-color: rgba(255, 255, 255, 0.1);
+        color: var(--layout-color-text-light);
+    }
+</style>
+
+<div class="admin-dashboard-content">
+    <section class="welcome-section">
+        <h1 class="welcome-title">Welcome back, Admin!</h1>
+        <p class="welcome-subtitle">Here's an overview of your e-learning platform statistics.</p>
+        
+        <div class="quick-actions">
+            <a asp-controller="Course" asp-action="AdminIndex" class="quick-action-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 6.25V19.25" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 6.25C10.83 5.48 9.25 5 7.5 5C5.75 5 4.17 5.48 3 6.25V19.25C4.17 18.48 5.75 18 7.5 18C9.25 18 10.83 18.48 12 19.25" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Manage Courses
+            </a>
+            <a asp-controller="Admin" asp-action="ViewUserRoles" class="quick-action-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                    <path d="M17 21V19C17 17.94 16.58 16.92 15.83 16.17C15.08 15.42 14.06 15 13 15H5C3.94 15 2.92 15.42 2.17 16.17C1.42 16.92 1 17.94 1 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 11C11.21 11 13 9.21 13 7C13 4.79 11.21 3 9 3C6.79 3 5 4.79 5 7C5 9.21 6.79 11 9 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Manage Users
+            </a>
         </div>
+    </section>
 
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon courses-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M12 6.25278V19.2528M12 6.25278C10.8321 5.47686 9.24649 5 7.5 5C5.75351 5 4.16789 5.47686 3 6.25278V19.2528C4.16789 18.4769 5.75351 18 7.5 18C9.24649 18 10.8321 18.4769 12 19.2528M12 6.25278C13.1679 5.47686 14.7535 5 16.5 5C18.2465 5 19.8321 5.47686 21 6.25278V19.2528C19.8321 18.4769 18.2465 18 16.5 18C14.7535 18 13.1679 18.4769 12 19.2528"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </div>
                 <div class="stat-content">
-                    <h3>Total Courses</h3>
-                    <p class="stat-value">24</p>
-                    <p class="stat-change positive">+3 this month</p>
+                <div class="stat-title">Total Users</div>
+                <div class="stat-value">@totalUsers</div>
+            </div>
+            <div class="stat-icon users-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M17 21V19C17 17.94 16.58 16.92 15.83 16.17C15.08 15.42 14.06 15 13 15H5C3.94 15 2.92 15.42 2.17 16.17C1.42 16.92 1 17.94 1 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 11C11.21 11 13 9.21 13 7C13 4.79 11.21 3 9 3C6.79 3 5 4.79 5 7C5 9.21 6.79 11 9 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M23 21V19C22.99 18.11 22.70 17.24 22.16 16.55C21.62 15.85 20.86 15.35 20 15.13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M16 3.13C16.86 3.35 17.62 3.85 18.17 4.55C18.71 5.25 19.01 6.11 19.01 7.00C19.01 7.88 18.71 8.75 18.17 9.45C17.62 10.15 16.86 10.65 16 10.87" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
                 </div>
             </div>
 
             <div class="stat-card">
-                <div class="stat-icon categories-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M3 6.5C3 4.01472 5.01472 2 7.5 2H16.5C18.9853 2 21 4.01472 21 6.5V17.5C21 19.9853 18.9853 22 16.5 22H7.5C5.01472 22 3 19.9853 3 17.5V6.5Z"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                        <path d="M7 9H17M7 13H17M7 17H13" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                              stroke-linejoin="round" />
-                    </svg>
-                </div>
                 <div class="stat-content">
-                    <h3>Total Categories</h3>
-                    <p class="stat-value">8</p>
-                    <p class="stat-change positive">+2 this month</p>
-                </div>
+                <div class="stat-title">Total Students</div>
+                <div class="stat-value">@totalStudents</div>
             </div>
-
-            <div class="stat-card">
-                <div class="stat-icon students-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88M13 7C13 9.20914 11.2091 11 9 11C6.79086 11 5 9.20914 5 7C5 4.79086 6.79086 3 9 3C11.2091 3 13 4.79086 13 7Z"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <div class="stat-icon students-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M17 21V19C17 17.94 16.58 16.92 15.83 16.17C15.08 15.42 14.06 15 13 15H5C3.94 15 2.92 15.42 2.17 16.17C1.42 16.92 1 17.94 1 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 11C11.21 11 13 9.21 13 7C13 4.79 11.21 3 9 3C6.79 3 5 4.79 5 7C5 9.21 6.79 11 9 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                </div>
-                <div class="stat-content">
-                    <h3>Total Students</h3>
-                    <p class="stat-value">1,253</p>
-                    <p class="stat-change positive">+123 this month</p>
-                </div>
-            </div>
-
-            <div class="stat-card">
-                <div class="stat-icon revenue-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path
-                            d="M12 2V22M17 5H9.5C8.83696 5 8.20107 5.26339 7.73223 5.73223C7.26339 6.20107 7 6.83696 7 7.5C7 8.16304 7.26339 8.79893 7.73223 9.26777C8.20107 9.73661 8.83696 10 9.5 10H14.5C15.163 10 15.7989 10.2634 16.2678 10.7322C16.7366 11.2011 17 11.837 17 12.5C17 13.163 16.7366 13.7989 16.2678 14.2678C15.7989 14.7366 15.163 15 14.5 15H7"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                    </svg>
-                </div>
-                <div class="stat-content">
-                    <h3>Revenue</h3>
-                    <p class="stat-value">$12,650</p>
-                    <p class="stat-change positive">+15% this month</p>
-                </div>
             </div>
         </div>
 
-        <div class="content-grid">
-            <div class="left-column">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Recent Activity</h3>
-                        <a href="#" class="view-all-btn">View All</a>
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-title">Total Instructors</div>
+                <div class="stat-value">@totalInstructors</div>
                     </div>
-                    <div class="card-body">
-                        <div class="activity-list">
-                            <div class="activity-item">
-                                <div class="activity-icon course">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M12 6.25278V19.2528M12 6.25278C10.8321 5.47686 9.24649 5 7.5 5C5.75351 5 4.16789 5.47686 3 6.25278V19.2528C4.16789 18.4769 5.75351 18 7.5 18C9.24649 18 10.8321 18.4769 12 19.2528M12 6.25278C13.1679 5.47686 14.7535 5 16.5 5C18.2465 5 19.8321 5.47686 21 6.25278V19.2528C19.8321 18.4769 18.2465 18 16.5 18C14.7535 18 13.1679 18.4769 12 19.2528"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <div class="stat-icon teachers-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 12H14C15.1 12 16 11.1 16 10V6C16 4.9 15.1 4 14 4H12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 4V20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 16H14C15.1 16 16 16.9 16 18V20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 12H10C8.9 12 8 11.1 8 10V6C8 4.9 8.9 4 10 4H12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 16H10C8.9 16 8 16.9 8 18V20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
-                                </div>
-                                <div class="activity-content">
-                                    <h4 class="activity-title">New course published: "Advanced React Patterns"</h4>
-                                    <p class="activity-time">25 minutes ago</p>
                                 </div>
                             </div>
 
-                            <div class="activity-item">
-                                <div class="activity-icon student">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88M13 7C13 9.20914 11.2091 11 9 11C6.79086 11 5 9.20914 5 7C5 4.79086 6.79086 3 9 3C11.2091 3 13 4.79086 13 7Z"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </div>
-                                <div class="activity-content">
-                                    <h4 class="activity-title">10 new students enrolled today</h4>
-                                    <p class="activity-time">2 hours ago</p>
-                                </div>
-                            </div>
-
-                            <div class="activity-item">
-                                <div class="activity-icon category">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M3 6.5C3 4.01472 5.01472 2 7.5 2H16.5C18.9853 2 21 4.01472 21 6.5V17.5C21 19.9853 18.9853 22 16.5 22H7.5C5.01472 22 3 19.9853 3 17.5V6.5Z"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                        <path d="M7 9H17M7 13H17M7 17H13" stroke="currentColor" stroke-width="2"
-                                              stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </div>
-                                <div class="activity-content">
-                                    <h4 class="activity-title">New category added: "Mobile Development"</h4>
-                                    <p class="activity-time">Yesterday</p>
-                                </div>
-                            </div>
-
-                            <div class="activity-item">
-                                <div class="activity-icon course">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                        <path
-                                            d="M12 6.25278V19.2528M12 6.25278C10.8321 5.47686 9.24649 5 7.5 5C5.75351 5 4.16789 5.47686 3 6.25278V19.2528C4.16789 18.4769 5.75351 18 7.5 18C9.24649 18 10.8321 18.4769 12 19.2528M12 6.25278C13.1679 5.47686 14.7535 5 16.5 5C18.2465 5 19.8321 5.47686 21 6.25278V19.2528C19.8321 18.4769 18.2465 18 16.5 18C14.7535 18 13.1679 18.4769 12 19.2528"
-                                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                                    </svg>
-                                </div>
-                                <div class="activity-content">
-                                    <h4 class="activity-title">Course updated: "JavaScript Fundamentals"</h4>
-                                    <p class="activity-time">2 days ago</p>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+        <div class="stat-card">
+            <div class="stat-content">
+                <div class="stat-title">Total Courses</div>
+                <div class="stat-value">@totalCourses</div>
             </div>
-
-            <div class="right-column">
-                <div class="card">
-                    <div class="card-header">
-                        <h3>Popular Courses</h3>
-                        <a href="#" class="view-all-btn">View All</a>
-                    </div>
-                    <div class="card-body">
-                        <div class="course-list">
-                            <div class="course-item">
-                                <img src="" alt="Course"
-                                     class="course-image">
-                                <div class="course-details">
-                                    <h4 class="course-title">Advanced React Patterns</h4>
-                                    <div class="course-stats">
-                          <span class="students-count">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                  d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88M13 7C13 9.20914 11.2091 11 9 11C6.79086 11 5 9.20914 5 7C5 4.79086 6.79086 3 9 3C11.2091 3 13 4.79086 13 7Z"
-                                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            <div class="stat-icon courses-icon">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
+                    <path d="M12 6.25V19.25" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 6.25C10.83 5.48 9.25 5 7.5 5C5.75 5 4.17 5.48 3 6.25V19.25C4.17 18.48 5.75 18 7.5 18C9.25 18 10.83 18.48 12 19.25" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 6.25C13.17 5.48 14.75 5 16.5 5C18.25 5 19.83 5.48 21 6.25V19.25C19.83 18.48 18.25 18 16.5 18C14.75 18 13.17 18.48 12 19.25" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            342 students
-                          </span>
                                     </div>
                                 </div>
                             </div>
 
-                            <div class="course-item">
-                                <img src="" alt="Course"
-                                     class="course-image">
-                                <div class="course-details">
-                                    <h4 class="course-title">JavaScript Fundamentals</h4>
-                                    <div class="course-stats">
-                          <span class="students-count">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                  d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88M13 7C13 9.20914 11.2091 11 9 11C6.79086 11 5 9.20914 5 7C5 4.79086 6.79086 3 9 3C11.2091 3 13 4.79086 13 7Z"
-                                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+    <div class="dashboard-card">
+        <div class="dashboard-card-header">
+            <h2 class="dashboard-card-title">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                    <path d="M17 21V19C17 17.94 16.58 16.92 15.83 16.17C15.08 15.42 14.06 15 13 15H5C3.94 15 2.92 15.42 2.17 16.17C1.42 16.92 1 17.94 1 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M9 11C11.21 11 13 9.21 13 7C13 4.79 11.21 3 9 3C6.79 3 5 4.79 5 7C5 9.21 6.79 11 9 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
-                            218 students
-                          </span>
+                Recent Users
+            </h2>
+            <a asp-controller="Admin" asp-action="ViewUserRoles" class="view-all">View All</a>
                                     </div>
-                                </div>
+        <div class="dashboard-card-body">
+            <div class="recent-users">
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var user in Model.Take(5))
+                    {
+                        var roleClass = user.Roles.Contains("Admin") ? "role-admin" : 
+                                      user.Roles.Contains("Teacher") ? "role-teacher" : "role-student";
+                        var roleName = user.Roles.FirstOrDefault() ?? "No Role";
+                        
+                        <div class="user-item">
+                            <img src="@GetAvatarUrl(user.UserName)" alt="@user.UserName" class="user-avatar" />
+                            <div class="user-details">
+                                <div class="user-name">@user.UserName</div>
+                                <div class="user-email">@user.Email</div>
                             </div>
-
-                            <div class="course-item">
-                                <img src="" alt="Course"
-                                     class="course-image">
-                                <div class="course-details">
-                                    <h4 class="course-title">UI Design Principles</h4>
-                                    <div class="course-stats">
-                          <span class="students-count">
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"
-                                 xmlns="http://www.w3.org/2000/svg">
-                              <path
-                                  d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21M23 21V19C22.9993 18.1137 22.7044 17.2528 22.1614 16.5523C21.6184 15.8519 20.8581 15.3516 20 15.13M16 3.13C16.8604 3.35031 17.623 3.85071 18.1676 4.55232C18.7122 5.25392 19.0078 6.11683 19.0078 7.005C19.0078 7.89318 18.7122 8.75608 18.1676 9.45769C17.623 10.1593 16.8604 10.6597 16 10.88M13 7C13 9.20914 11.2091 11 9 11C6.79086 11 5 9.20914 5 7C5 4.79086 6.79086 3 9 3C11.2091 3 13 4.79086 13 7Z"
-                                  stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-                            </svg>
-                            186 students
-                          </span>
-                                    </div>
-                                </div>
-                            </div>
+                            <span class="user-role @roleClass">@roleName</span>
                         </div>
-                    </div>
-                </div>
-
-                <div class="quick-stats">
-                    <div class="quick-stat">
-                        <h4>This Week</h4>
-                        <p>+28 Students</p>
-                    </div>
-                    <div class="quick-stat">
-                        <h4>This Month</h4>
-                        <p>+123 Students</p>
-                    </div>
+                    }
+                }
+                else
+                {
+                    <p class="text-center text-muted my-4">No users found</p>
+                }
                 </div>
             </div>
         </div>

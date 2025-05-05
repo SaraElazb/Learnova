@@ -46,7 +46,7 @@
                  class="course-thumbnail">
             <div class="card-content">
                 <div class="course-price">$@Model.Price</div>
-                <button class="btn btn-enroll" data-course-id="@Model.Course_ID">Enroll Now</button>
+                <a href="/AddToCart/@Model.Course_ID" class="btn btn-enroll" data-course-id="@Model.Course_ID">Enroll Now</a>
                 <div class="guarantee">30-Day Money-Back Guarantee</div>
                 <div class="course-includes">
                     <div class="include-item">
@@ -75,27 +75,7 @@
                 <h2 class="section-title">Course Description</h2>
                 <p>@Model.Description</p>
                 
-                <div class="highlights">
-                    <h3>What you'll learn</h3>
-                    <ul class="highlights-list">
-                        <li class="highlight-item">
-                            <span class="highlight-icon">✓</span>
-                            <span>Master the core concepts and features of this subject</span>
-                        </li>
-                        <li class="highlight-item">
-                            <span class="highlight-icon">✓</span>
-                            <span>Build real-world projects to apply your knowledge</span>
-                        </li>
-                        <li class="highlight-item">
-                            <span class="highlight-icon">✓</span>
-                            <span>Learn best practices and optimization techniques</span>
-                        </li>
-                        <li class="highlight-item">
-                            <span class="highlight-icon">✓</span>
-                            <span>Understand advanced concepts and techniques</span>
-                        </li>
-                    </ul>
-                </div>
+        
             </div>
 
             <div class="content-section" id="curriculum">
@@ -141,7 +121,7 @@
                 <div class="instructor">
                     <img src="/assets/instructor-placeholder.jpg" alt="Instructor" class="instructor-avatar">
                     <div class="instructor-info">
-                        <h3 class="instructor-name">Course Instructor</h3>
+                        <h3 class="instructor-name">@Model.InstructorName</h3>
                         <p class="instructor-title">Expert in @Model.CategoryName</p>
                         <p class="instructor-bio">
                             Our instructors are experts in their fields with real-world experience. 
@@ -160,7 +140,7 @@
 <!-- Fixed CTA for mobile -->
 <div class="mobile-cta">
     <div class="mobile-price">$@Model.Price</div>
-    <button class="btn btn-enroll" data-course-id="@Model.Course_ID">Enroll Now</button>
+    <a href="/ShoppingCart/AddToCart/@Model.Course_ID" class="btn btn-enroll" data-course-id="@Model.Course_ID">Enroll Now</a>
 </div>
 
 @section CustomScripts {

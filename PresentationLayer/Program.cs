@@ -7,6 +7,7 @@ using BusinessLogicLayer.Manager.QuestionManager;
 using BusinessLogicLayer.Manager.QuizManager;
 using BusinessLogicLayer.Services.AccountServices;
 using BusinessLogicLayer.Services.RoleServices;
+using BusinessLogicLayer.Services.StudentServices;
 using BusinessLogicLayer.Services.UserRoleServices;
 using DataAccessLayer.Repositories;
 using Microsoft.AspNetCore.Identity;
@@ -32,6 +33,7 @@ namespace PresentationLayer
             builder.Services.AddScoped<ILessonManager, LessonManager>();
             builder.Services.AddScoped<IQuizManager, QuizManager>();
             builder.Services.AddScoped<IQuestionManager, QuestionManager>();
+            builder.Services.AddScoped<IStudentDashboardService, StudentDashboardService>();
             //builder.Services.AddScoped<IOrderManager, OrderManager>();
             builder.Services.AddScoped<ICategoryManager, CategoryManager>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));

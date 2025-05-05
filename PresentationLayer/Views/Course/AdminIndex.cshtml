@@ -1,0 +1,346 @@
+@model IEnumerable<BusinessLogicLayer.DTOs.CourseDtos.CourseDTO>
+@{
+    ViewData["Title"] = "Course Management";
+    Layout = "_AdminLayout";
+}
+
+<style>
+    .courses-container {
+        padding: 2rem;
+    }
+    
+    .page-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+    }
+    
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 700;
+        color: var(--layout-color-text);
+    }
+    
+    .action-button {
+        background: linear-gradient(135deg, var(--layout-color-primary), var(--layout-color-primary-hover));
+        color: white;
+        border: none;
+        padding: 0.6rem 1.2rem;
+        border-radius: var(--layout-border-radius-md);
+        font-weight: 500;
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        text-decoration: none;
+    }
+    
+    .action-button:hover {
+        transform: translateY(-2px);
+        box-shadow: var(--layout-shadow-md);
+        color: white;
+    }
+    
+    .courses-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+    }
+    
+    .course-card {
+        background-color: var(--layout-color-card-bg);
+        border-radius: var(--layout-border-radius-lg);
+        overflow: hidden;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        box-shadow: var(--layout-shadow-sm);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+    }
+    
+    .course-card:hover {
+        transform: translateY(-5px);
+        box-shadow: var(--layout-shadow-md);
+    }
+    
+    .course-image {
+        height: 180px;
+        object-fit: cover;
+        width: 100%;
+    }
+    
+    .course-content {
+        padding: 1.5rem;
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .course-title {
+        font-size: 1.1rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+        color: var(--layout-color-text);
+        height: 2.75rem;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+    
+    .course-category {
+        font-size: 0.85rem;
+        color: var(--layout-color-primary);
+        margin-bottom: 0.75rem;
+    }
+    
+    .course-info {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1rem;
+        color: var(--layout-color-text-light);
+        font-size: 0.85rem;
+    }
+    
+    .info-item {
+        display: flex;
+        align-items: center;
+        gap: 0.35rem;
+    }
+    
+    .course-price {
+        font-weight: 700;
+        color: var(--layout-color-accent);
+        font-size: 1.2rem;
+        margin-top: auto;
+        margin-bottom: 1rem;
+    }
+    
+    .course-actions {
+        display: flex;
+        gap: 0.75rem;
+    }
+    
+    .btn {
+        flex: 1;
+        padding: 0.5rem;
+        border-radius: var(--layout-border-radius-md);
+        font-weight: 500;
+        text-align: center;
+        font-size: 0.9rem;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.35rem;
+    }
+    
+    .btn-edit {
+        background-color: var(--layout-color-secondary);
+        color: white;
+    }
+    
+    .btn-edit:hover {
+        background-color: var(--layout-color-secondary-hover);
+        color: white;
+    }
+    
+    .btn-delete {
+        background-color: var(--layout-color-error);
+        color: white;
+    }
+    
+    .btn-delete:hover {
+        opacity: 0.9;
+        color: white;
+    }
+    
+    .btn-view {
+        background-color: var(--layout-color-primary);
+        color: white;
+    }
+    
+    .btn-view:hover {
+        background-color: var(--layout-color-primary-hover);
+        color: white;
+    }
+    
+    .status-badge {
+        position: absolute;
+        top: 1rem;
+        right: 1rem;
+        padding: 0.25rem 0.75rem;
+        border-radius: 2rem;
+        font-size: 0.75rem;
+        font-weight: 600;
+        z-index: 10;
+    }
+    
+    .status-active {
+        background-color: var(--layout-color-success);
+        color: white;
+    }
+    
+    .status-draft {
+        background-color: var(--layout-color-warning);
+        color: white;
+    }
+    
+    .status-deleted {
+        background-color: var(--layout-color-error);
+        color: white;
+    }
+    
+
+    
+    .instructor-avatar {
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        object-fit: cover;
+    }
+    
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 3rem;
+        background-color: var(--layout-color-card-bg);
+        border-radius: var(--layout-border-radius-lg);
+    }
+    
+    .empty-state svg {
+        width: 60px;
+        height: 60px;
+        color: var(--layout-color-text-light);
+        margin-bottom: 1rem;
+    }
+    
+    .empty-state h3 {
+        font-size: 1.25rem;
+        margin-bottom: 0.5rem;
+        color: var(--layout-color-text);
+    }
+    
+    .empty-state p {
+        color: var(--layout-color-text-light);
+        margin-bottom: 1.5rem;
+    }
+    
+    @@media (max-width: 768px) {
+        .courses-grid {
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        }
+        
+        .page-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+    }
+</style>
+
+<div class="courses-container">
+    <div class="page-header">
+        <h1 class="page-title">Course Management</h1>
+        <a asp-controller="Course" asp-action="Create" class="action-button">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+            </svg>
+            Add New Course
+        </a>
+    </div>
+    
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["SuccessMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["ErrorMessage"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+    
+    <div class="courses-grid">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var course in Model)
+            {
+                <div class="course-card">
+                    <span class="status-badge status-active">Active</span>
+                    <img src="@course.ImagePath" alt="@course.Title" class="course-image" onerror="this.src='/assets/default-course.jpg';" />
+                    <div class="course-content">
+                        
+                        <h2 class="course-title">@course.Title</h2>
+                        <div class="course-category">@course.CategoryName</div>
+                        <div class="course-info">
+                            <div class="info-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 6.25V19.25" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M12 6.25C10.83 5.48 9.25 5 7.5 5C5.75 5 4.17 5.48 3 6.25V19.25C4.17 18.48 5.75 18 7.5 18C9.25 18 10.83 18.48 12 19.25" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                @(course.Lessons?.Count ?? 0) Lessons
+                            </div>
+                            <div class="info-item">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <path d="M17 21V19C17 17.94 16.58 16.92 15.83 16.17C15.08 15.42 14.06 15 13 15H5C3.94 15 2.92 15.42 2.17 16.17C1.42 16.92 1 17.94 1 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M9 11C11.21 11 13 9.21 13 7C13 4.79 11.21 3 9 3C6.79 3 5 4.79 5 7C5 9.21 6.79 11 9 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                @course.EnrollmentCount Students
+                            </div>
+                        </div>
+                        <div class="course-price">$@course.Price.ToString("0.00")</div>
+                        <div class="course-actions">
+                            <a asp-controller="Course" asp-action="Details" asp-route-id="@course.Course_ID" class="btn btn-view">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 4.5C7 4.5 2.73 7.61 1 12C2.73 16.39 7 19.5 12 19.5C17 19.5 21.27 16.39 23 12C21.27 7.61 17 4.5 12 4.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M12 15C13.66 15 15 13.66 15 12C15 10.34 13.66 9 12 9C10.34 9 9 10.34 9 12C9 13.66 10.34 15 12 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                View
+                            </a>
+                            <a asp-controller="Course" asp-action="Edit" asp-route-id="@course.Course_ID" class="btn btn-edit">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <path d="M11 4H4C3.46957 4 2.96086 4.21071 2.58579 4.58579C2.21071 4.96086 2 5.46957 2 6V20C2 20.5304 2.21071 21.0391 2.58579 21.4142C2.96086 21.7893 3.46957 22 4 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V13" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M18.5 2.5C18.8978 2.10217 19.4374 1.87868 20 1.87868C20.5626 1.87868 21.1022 2.10217 21.5 2.5C21.8978 2.89782 22.1213 3.43739 22.1213 4C22.1213 4.56261 21.8978 5.10217 21.5 5.5L12 15L8 16L9 12L18.5 2.5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Edit
+                            </a>
+                            <a asp-controller="Course" asp-action="Delete" asp-route-id="@course.Course_ID" class="btn btn-delete" onclick="return confirm('Are you sure you want to delete this course?')">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none">
+                                    <path d="M3 6H5H21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M8 6V4C8 3.46957 8.21071 2.96086 8.58579 2.58579C8.96086 2.21071 9.46957 2 10 2H14C14.5304 2 15.0391 2.21071 15.4142 2.58579C15.7893 2.96086 16 3.46957 16 4V6M19 6V20C19 20.5304 18.7893 21.0391 18.4142 21.4142C18.0391 21.7893 17.5304 22 17 22H7C6.46957 22 5.96086 21.7893 5.58579 21.4142C5.21071 21.0391 5 20.5304 5 20V6H19Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                Delete
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-state">
+                <svg viewBox="0 0 24 24" fill="none">
+                    <path d="M12 6.25V19.25" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 6.25C10.83 5.48 9.25 5 7.5 5C5.75 5 4.17 5.48 3 6.25V19.25C4.17 18.48 5.75 18 7.5 18C9.25 18 10.83 18.48 12 19.25" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M12 6.25C13.17 5.48 14.75 5 16.5 5C18.25 5 19.83 5.48 21 6.25V19.25C19.83 18.48 18.25 18 16.5 18C14.75 18 13.17 18.48 12 19.25" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <h3>No courses found</h3>
+                <p>There are no courses in the system yet. Add your first course to get started.</p>
+                <a asp-controller="Course" asp-action="Create" class="action-button">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                        <path d="M12 5V19M5 12H19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                    </svg>
+                    Add New Course
+                </a>
+            </div>
+        }
+    </div>
+</div> 
