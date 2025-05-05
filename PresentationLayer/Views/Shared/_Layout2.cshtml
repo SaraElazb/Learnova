@@ -23,6 +23,7 @@
                         @if (User.Identity.IsAuthenticated && User.IsInRole("Admin"))
                         {
                             <a asp-controller="Admin" asp-action="Dashboard" class="nav-link">Dashboard</a>
+                            <a asp-controller="Course" asp-action="List" class="nav-link">Manage Courses</a>
                         }
                     </nav>
                 </div>

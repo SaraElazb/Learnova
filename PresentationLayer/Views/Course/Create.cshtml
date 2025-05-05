@@ -2,13 +2,12 @@
 @model BusinessLogicLayer.DTOs.CourseDtos.CourseRequest
 
 @{
-    ViewData["Title"] = "Add Course";
-    Layout = "_AdminLayout";
+    ViewData["Title"] = "Create Course";
+    Layout = "_Layout2";
 }
 @section CustomHeadContent {
-    <link rel="stylesheet" href="~/css/course-creator.css" />
+    <link rel="stylesheet" href="~/css/course-create.css" />
 }
-
 
 <div class="app-container">
     <header class="header">
@@ -19,27 +18,12 @@
             </svg>
             Back to Dashboard
         </a>
-        <button type="submit" form="courseForm" class="save-button">Save</button>
     </header>
 
     <main class="page-main-content">
         <section class="course-header">
             <h1>Create New Course</h1>
-            <p>Make sure you have filled in all the necessary fields and have uploaded all the required files.</p>
-        </section>
-
-        <section class="progress-section">
-            <div class="progress-steps">
-                <div class="step active" data-section="course-info">
-                    <div class="step-circle">1</div>
-                    <span class="step-text">Course Information</span>
-                </div>
-                <div class="progress-line"></div>
-                <div class="step" data-section="course-curriculum">
-                    <div class="step-circle">2</div>
-                    <span class="step-text">Course Curriculum</span>
-                </div>
-            </div>
+            <p>Fill in the course details to create your new course.</p>
         </section>
 
         <form id="courseForm" asp-action="Create" method="post" enctype="multipart/form-data">
@@ -74,9 +58,9 @@
                         <label for="Image">Course Thumbnail</label>
                         <div class="file-upload-area">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M12 15V3M12 3L7 8M12 3L17 8" stroke="#10B981" stroke-width="1.5" stroke-linecap="round"
+                                <path d="M12 15V3M12 3L7 8M12 3L17 8" stroke="#00b8a9" stroke-width="1.5" stroke-linecap="round"
                                       stroke-linejoin="round" />
-                                <path d="M3 15V16C3 18.2091 4.79086 20 7 20H17C19.2091 20 21 18.2091 21 16V15" stroke="#10B981"
+                                <path d="M3 15V16C3 18.2091 4.79086 20 7 20H17C19.2091 20 21 18.2091 21 16V15" stroke="#00b8a9"
                                       stroke-width="1.5" stroke-linecap="round" />
                             </svg>
                             <p class="upload-text">Click here or drag and drop to upload image</p>
@@ -96,49 +80,15 @@
 
                     <div class="action-buttons">
                         <a asp-action="AdminIndex" class="cancel-button">Cancel</a>
-                        <button type="button" id="continue-button" class="save-button">Save & Continue</button>
-                    </div>
-                </div>
-            </section>
-
-            <section id="course-curriculum-section" class="section-container">
-                <div class="curriculum-section">
-                    <h2>Course Curriculum</h2>
-                    <p class="section-description">
-                        Add information to your course outline to guide students through course
-                        materials.
-                    </p>
-
-                    <div class="curriculum-container">
-                        <button type="button" class="add-lecture-button">
-                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path d="M8 3.5V12.5M3.5 8H12.5" stroke="#10B981" stroke-width="1.5" stroke-linecap="round"
-                                      stroke-linejoin="round" />
-                            </svg>
-                            Add New Lecture
-                        </button>
-                    </div>
-
-                    <div class="action-buttons">
-                        <a asp-action="AdminIndex" class="cancel-button">Cancel</a>
-                        <button type="submit" class="save-button">Save</button>
+                        <button type="submit" class="save-button">Save Course</button>
                     </div>
                 </div>
             </section>
         </form>
-
-        <div class="bottom-actions">
-            <div class="nav-buttons">
-                <button id="back-btn" class="back-button">Back</button>
-                <button id="next-btn" class="next-button">Next</button>
-            </div>
-            <button class="add-section-button">+ Add New Curriculum</button>
-            <button type="submit" form="courseForm" class="publish-button">Publish</button>
-        </div>
     </main>
 </div>
 @section CustomScripts {
-    <script src="~/js/course-creator.js"></script>
+    <script src="~/js/course-create.js"></script>
 }
 
 

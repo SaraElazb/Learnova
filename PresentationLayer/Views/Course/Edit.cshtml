@@ -3,35 +3,168 @@
 
 @{
     ViewData["Title"] = "Edit Course";
+    Layout = "_Layout2";
+}
+@section CustomHeadContent {
+    <link rel="stylesheet" href="~/css/course-edit.css" />
 }
 
-<h2>Edit Course</h2>
+<div class="app-container">
+    <header class="header">
+        <a asp-action="List" class="back-button">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M10.5 12.5L5.5 7.5L10.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"
+                      stroke-linejoin="round" />
+            </svg>
+            Back to Courses
+        </a>
+    </header>
 
-<form asp-action="Edit" method="post" enctype="multipart/form-data">
-    <input type="hidden" asp-for="Category_ID">
+    <main class="page-main-content">
+        <section class="course-header">
+            <h1>Edit Course</h1>
+            <p>Update your course information and content.</p>
+        </section>
 
-    <div class="form-group">
-        <label>Title</label>
-        <input asp-for="Title" class="form-control" required>
-    </div>
-    <div class="form-group">
-        <label>Description</label>
-        <textarea asp-for="Description" class="form-control" required></textarea>
-    </div>
-    <div class="form-group">
-        <label>Price</label>
-        <input asp-for="Price" type="number" step="0.01" class="form-control" required>
-    </div>
-    <div class="form-group">
-        <label>Category</label>
-        <select asp-for="Category_ID" asp-items="Model.CategorySelectList" class="form-control" required>
-            <option value="">-- Select Category --</option>
-        </select>
-    </div>
-    <div class="form-group">
-        <label>New Image</label>
-        <input asp-for="Image" type="file" class="form-control">
-    </div>
-    <button type="submit" class="btn btn-success mt-3">Save Changes</button>
-</form>
+        <div class="course-edit-section">
+            <h2>Course Information</h2>
+            <p class="section-description">Update the basic information about your course.</p>
+
+            <form asp-action="Edit" method="post" enctype="multipart/form-data">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                
+                <div class="form-group">
+                    <label asp-for="Title">Course Name</label>
+                    <input asp-for="Title" class="form-control" placeholder="Enter course name" required />
+                    <span asp-validation-for="Title" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="Description">Course Description</label>
+                    <textarea asp-for="Description" class="form-control" rows="4" placeholder="Enter course description" required></textarea>
+                    <span asp-validation-for="Description" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="Price">Course Price</label>
+                    <input asp-for="Price" type="number" step="0.01" class="form-control" placeholder="Enter course price" required />
+                    <span asp-validation-for="Price" class="text-danger"></span>
+                </div>
+                
+                <div class="form-group">
+                    <label asp-for="Category_ID">Course Category</label>
+                    <select asp-for="Category_ID" asp-items="Model.CategorySelectList" class="form-control" required>
+                        <option value="">-- Select Category --</option>
+                    </select>
+                    <span asp-validation-for="Category_ID" class="text-danger"></span>
+                </div>
+                
+                @if (ViewBag.CurrentImage != null)
+                {
+                    <div class="form-group">
+                        <label>Current Image</label>
+                        <div class="current-image">
+                            <img src="@ViewBag.CurrentImage" alt="Current course image" class="current-image-preview" />
+                            <span class="image-label">Current course thumbnail</span>
+                        </div>
+                    </div>
+                }
+
+                <div class="form-group">
+                    <label asp-for="Image">Update Course Thumbnail</label>
+                    <div class="file-upload-area">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M12 15V3M12 3L7 8M12 3L17 8" stroke="#00b8a9" stroke-width="1.5" stroke-linecap="round"
+                                  stroke-linejoin="round" />
+                            <path d="M3 15V16C3 18.2091 4.79086 20 7 20H17C19.2091 20 21 18.2091 21 16V15" stroke="#00b8a9"
+                                  stroke-width="1.5" stroke-linecap="round" />
+                        </svg>
+                        <p class="upload-text">Click here or drag and drop to upload new image</p>
+                        <p class="upload-hint">Files: JPG, PNG or GIF (Max. 5MB)</p>
+                        <input type="file" id="Image" asp-for="Image" class="file-input" accept="image/*">
+                        <span asp-validation-for="Image" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="action-buttons">
+                    <a asp-action="List" class="cancel-button">Cancel</a>
+                    <button type="submit" class="save-button">Save Changes</button>
+                </div>
+            </form>
+        </div>
+    </main>
+</div>
+
+@section CustomScripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Handle file uploads
+            const fileUploadArea = document.querySelector('.file-upload-area');
+            const fileInput = document.querySelector('.file-input');
+            
+            fileUploadArea.addEventListener('click', function() {
+                fileInput.click();
+            });
+            
+            fileInput.addEventListener('change', function() {
+                if (this.files && this.files[0]) {
+                    const fileName = this.files[0].name;
+                    const fileSize = (this.files[0].size / 1024 / 1024).toFixed(2);
+                    
+                    // Display filename under the upload area
+                    const uploadText = document.querySelector('.upload-text');
+                    uploadText.textContent = `Selected: ${fileName} (${fileSize} MB)`;
+                }
+            });
+            
+            // Prevent default drag behaviors
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+            
+            // Highlight drop area when item is dragged over it
+            ['dragenter', 'dragover'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, highlight, false);
+            });
+            
+            ['dragleave', 'drop'].forEach(eventName => {
+                fileUploadArea.addEventListener(eventName, unhighlight, false);
+            });
+            
+            // Handle dropped files
+            fileUploadArea.addEventListener('drop', handleDrop, false);
+            
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
+            }
+            
+            function highlight() {
+                fileUploadArea.style.borderColor = 'var(--color-primary)';
+                fileUploadArea.style.backgroundColor = 'rgba(0, 184, 169, 0.05)';
+            }
+            
+            function unhighlight() {
+                fileUploadArea.style.borderColor = 'var(--color-border)';
+                fileUploadArea.style.backgroundColor = 'var(--color-bg-upload)';
+            }
+            
+            function handleDrop(e) {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                fileInput.files = files;
+                
+                if (files && files[0]) {
+                    const fileName = files[0].name;
+                    const fileSize = (files[0].size / 1024 / 1024).toFixed(2);
+                    
+                    // Display filename under the upload area
+                    const uploadText = document.querySelector('.upload-text');
+                    uploadText.textContent = `Selected: ${fileName} (${fileSize} MB)`;
+                }
+            }
+        });
+    </script>
+}
 

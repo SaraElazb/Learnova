@@ -3,6 +3,7 @@ using BusinessLogicLayer.DTOs.CourseDtos;
 using BusinessLogicLayer.Helpers;
 using BusinessLogicLayer.Manager.CategoryManager;
 using BusinessLogicLayer.Manager.CourseManager;
+using BusinessLogicLayer.Manager.LessonManager;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
@@ -16,19 +17,22 @@ namespace PresentationLayer.Controllers
         private readonly IMapper _mapper;
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ICourseManager _courseManager;
+        private readonly ILessonManager _lessonManager;
 
         private ICategoryManager _categoryManager { get; }
 
         public CourseController( 
                              IMapper mapper, IWebHostEnvironment webHostEnvironment  , 
                              ICategoryManager categoryManager ,
-                             ICourseManager courseManager)
+                             ICourseManager courseManager,
+                             ILessonManager lessonManager)
         {
             
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
             _categoryManager = categoryManager;
              _courseManager = courseManager;
+            _lessonManager = lessonManager;
         }
         private async Task<IEnumerable<SelectListItem>> GetCategoriesAsync()
         {
@@ -42,6 +46,12 @@ namespace PresentationLayer.Controllers
 
 
         public async Task<IActionResult> AdminIndex()
+        {
+            var courseDTOs = await _courseManager.FindAllAsync();
+            return View(courseDTOs);
+        }
+
+        public async Task<IActionResult> List()
         {
             var courseDTOs = await _courseManager.FindAllAsync();
             return View(courseDTOs);
@@ -65,7 +75,11 @@ namespace PresentationLayer.Controllers
             var courseDTO = await _courseManager.FindAsync(id);
             if (courseDTO == null) return NotFound();
 
-             return View(courseDTO);
+            // Get lessons for this course
+            var lessons = await _lessonManager.GetLessonsByCourseAsync(id);
+            ViewBag.Lessons = lessons;
+
+            return View(courseDTO);
         }
 
         public async Task<IActionResult> Create()
@@ -88,7 +102,8 @@ namespace PresentationLayer.Controllers
             }
 
             await _courseManager.CreateCourseAsync(model);
-            return RedirectToAction(nameof(AdminIndex));
+            TempData["SuccessMessage"] = "Course created successfully!";
+            return RedirectToAction(nameof(List));
         }
 
         public async Task<IActionResult> Edit(int id)
@@ -98,6 +113,10 @@ namespace PresentationLayer.Controllers
 
             var model = _mapper.Map<CourseRequest>(course);
             model.CategorySelectList = await GetCategoriesAsync();
+            
+            // Pass the current image path via ViewBag
+            ViewBag.CurrentImage = course.ImagePath;
+            
             return View(model);
         }
 
@@ -113,7 +132,8 @@ namespace PresentationLayer.Controllers
             var success = await _courseManager.EditCourseAsync(id, model);
             if (!success) return NotFound();
 
-            return RedirectToAction(nameof(AdminIndex));
+            TempData["SuccessMessage"] = "Course updated successfully!";
+            return RedirectToAction(nameof(List));
         }
 
         public async Task<IActionResult> Delete(int id)
@@ -122,8 +142,9 @@ namespace PresentationLayer.Controllers
             if (course == null) return NotFound();
 
             await _courseManager.SoftDelete(course);
-
-            return RedirectToAction(nameof(AdminIndex));
+            
+            TempData["SuccessMessage"] = "Course deleted successfully!";
+            return RedirectToAction(nameof(List));
         }
     }
 }

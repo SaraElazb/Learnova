@@ -1,0 +1,174 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Linq
+@model IEnumerable<BusinessLogicLayer.DTOs.CourseDtos.CourseDTO>
+
+@{
+    ViewData["Title"] = "Course Management";
+    Layout = "_Layout2";
+}
+
+@section CustomHeadContent {
+    <link rel="stylesheet" href="~/css/course-list.css" />
+}
+
+<div class="container">
+    <div class="courses-header">
+        <h1 class="courses-title">Course Management</h1>
+        <div class="courses-actions">
+            <a asp-action="Create" class="btn btn-primary">
+                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="12" y1="5" x2="12" y2="19"></line>
+                    <line x1="5" y1="12" x2="19" y2="12"></line>
+                </svg>
+                Add New Course
+            </a>
+        </div>
+    </div>
+
+    @if (TempData["SuccessMessage"] != null)
+    {
+        <div class="alert alert-success" role="alert">
+            @TempData["SuccessMessage"]
+        </div>
+    }
+
+    @if (TempData["ErrorMessage"] != null)
+    {
+        <div class="alert alert-danger" role="alert">
+            @TempData["ErrorMessage"]
+        </div>
+    }
+
+    <div class="courses-filter">
+        <div class="search-container">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="11" cy="11" r="8"></circle>
+                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+            <input type="text" id="courseSearch" class="search-input" placeholder="Search courses..." />
+        </div>
+        <select id="statusFilter" class="filter-select">
+            <option value="all">All Status</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+        </select>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="courses-table-container">
+            <table class="courses-table">
+                <thead>
+                    <tr>
+                        <th>Title</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Rating</th>
+                        <th>Status</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var course in Model)
+                    {
+                        <tr class="course-row" 
+                            data-title="@course.Title.ToLower()" 
+                            data-status="@(course.IsActive ? "active" : "inactive")">
+                            <td>@course.Title</td>
+                            <td>
+                                <span class="course-category">@course.CategoryName</span>
+                            </td>
+                            <td>
+                                <span class="course-price">$@course.Price.ToString("0.00")</span>
+                            </td>
+                            <td>@course.Rating.ToString("0.0")/5</td>
+                            <td>
+                                <span class="course-status @(course.IsActive ? "status-active" : "status-inactive")">
+                                    @(course.IsActive ? "Active" : "Inactive")
+                                </span>
+                            </td>
+                            <td>
+                                <div class="course-actions">
+                                    <a asp-action="Details" asp-route-id="@course.Course_ID" class="btn btn-info btn-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                            <circle cx="12" cy="12" r="3"></circle>
+                                        </svg>
+                                        View
+                                    </a>
+                                    <a asp-action="Edit" asp-route-id="@course.Course_ID" class="btn btn-warning btn-sm">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path>
+                                            <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>
+                                        </svg>
+                                        Edit
+                                    </a>
+                                    <a asp-action="Delete" asp-route-id="@course.Course_ID" class="btn btn-danger btn-sm" 
+                                       onclick="return confirm('Are you sure you want to delete this course?')">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="3 6 5 6 21 6"></polyline>
+                                            <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                            <line x1="10" y1="11" x2="10" y2="17"></line>
+                                            <line x1="14" y1="11" x2="14" y2="17"></line>
+                                        </svg>
+                                        Delete
+                                    </a>
+                                </div>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+    else
+    {
+        <div class="empty-state">
+            <svg class="empty-state-icon" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M16 16v1a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h2"></path>
+                <path d="M10 4h10v13a2 2 0 0 1-2 2h-8"></path>
+                <line x1="10" y1="4" x2="10" y2="20"></line>
+            </svg>
+            <h3 class="empty-state-title">No Courses Found</h3>
+            <p class="empty-state-text">
+                You haven't created any courses yet. Start by creating your first course.
+            </p>
+            <a asp-action="Create" class="btn btn-primary">
+                Create Your First Course
+            </a>
+        </div>
+    }
+</div>
+
+@section CustomScripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchInput = document.getElementById('courseSearch');
+            const statusFilter = document.getElementById('statusFilter');
+            const courseRows = document.querySelectorAll('.course-row');
+            
+            // Search functionality
+            searchInput.addEventListener('input', filterCourses);
+            statusFilter.addEventListener('change', filterCourses);
+            
+            function filterCourses() {
+                const searchValue = searchInput.value.trim().toLowerCase();
+                const statusValue = statusFilter.value;
+                
+                courseRows.forEach(row => {
+                    const title = row.getAttribute('data-title');
+                    const status = row.getAttribute('data-status');
+                    
+                    const matchesSearch = title.includes(searchValue);
+                    const matchesStatus = statusValue === 'all' || status === statusValue;
+                    
+                    if (matchesSearch && matchesStatus) {
+                        row.style.display = '';
+                    } else {
+                        row.style.display = 'none';
+                    }
+                });
+            }
+        });
+    </script>
+} 
