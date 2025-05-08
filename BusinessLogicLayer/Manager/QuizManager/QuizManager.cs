@@ -58,6 +58,21 @@ namespace BusinessLogicLayer.Manager.QuizManager
                 _unitOfWork.GetRepository<Quiz>().Create(quiz);
                 await _unitOfWork.SaveAsync();
                 
+                // After creating the quiz, update the associated lesson with this quiz's ID
+                if (model.Lesson_ID > 0)
+                {
+                    var lesson = await _unitOfWork.GetRepository<Lesson>()
+                        .FindByCondition(l => l.Lesson_ID == model.Lesson_ID)
+                        .FirstOrDefaultAsync();
+                        
+                    if (lesson != null)
+                    {
+                        lesson.Quiz_ID = quiz.Quiz_ID;
+                        _unitOfWork.GetRepository<Lesson>().Update(lesson);
+                        await _unitOfWork.SaveAsync();
+                    }
+                }
+                
                 return true;
             }
             catch (Exception)

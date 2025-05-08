@@ -27,7 +27,7 @@ document.addEventListener("DOMContentLoaded", function () {
     filterSelect.addEventListener("change", filterCategories);
 
     addCategoryButton.addEventListener("click", () => {
-        window.location.href = "/Category/Creator";
+        window.location.href = "/Category/Create";
     });
     backButton.addEventListener("click", () => {
         window.location.href = "/";
@@ -60,7 +60,7 @@ document.addEventListener("DOMContentLoaded", function () {
         card.className = "category-card";
         card.id = "category-" + category.Category_ID;
 
-        const imageSrc = category.ImagePath ? category.ImagePath : "/images/default-category.png";
+        const imageSrc = category.ImagePath ? category.ImagePath : "https://placehold.co/200x150/e9ecef/495057?text=No+Image";
         const color = category.IsActive ? "#008000" : "#ff0000";
 
         card.innerHTML = `
@@ -102,7 +102,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const editBtn = card.querySelector(".edit-category-button");
         editBtn.addEventListener("click", function (e) {
             e.stopPropagation();
-            window.location.href = `/Category/Creator?id=${category.Category_ID}`;
+            window.location.href = `/Category/Edit/${category.Category_ID}`;
         });
 
         const deleteBtn = card.querySelector(".delete-category-button");
@@ -140,7 +140,7 @@ document.addEventListener("DOMContentLoaded", function () {
         <p class="empty-state-text">
           No categories match your current filters. Try adjusting your search or create a new category.
         </p>
-        <button class="no-categories-button" onclick="window.location.href='/Category/Creator'">
+        <button class="no-categories-button" onclick="window.location.href='/Category/Create'">
           <svg width="16" height="16" viewBox="0 0 16 16" fill="none"
                xmlns="http://www.w3.org/2000/svg">
             <path d="M8 3.5V12.5M3.5 8H12.5" stroke="currentColor" stroke-width="1.5"
@@ -171,12 +171,28 @@ document.addEventListener("DOMContentLoaded", function () {
                 card.style.opacity = "0";
                 card.style.transform = "scale(0.9)";
             }
-            setTimeout(() => {
-                // Remove the category from the array
-                categories = categories.filter(c => c.Category_ID !== categoryToDelete.Category_ID);
-                filterCategories();
+            
+            // Send actual delete request to the server
+            fetch(`/Category/Delete/${categoryToDelete.Category_ID}`, {
+                method: 'GET'
+            })
+            .then(response => {
+                if (response.ok) {
+                    // Remove the category from the local array after successful deletion
+                    categories = categories.filter(c => c.Category_ID !== categoryToDelete.Category_ID);
+                    filterCategories();
+                } else {
+                    console.error('Failed to delete category');
+                    // If deletion fails, refresh the page to show current state
+                    window.location.reload();
+                }
                 closeDeleteModal();
-            }, 300);
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                window.location.reload();
+                closeDeleteModal();
+            });
         }
     });
 

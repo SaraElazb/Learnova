@@ -1,0 +1,312 @@
+@model PresentationLayer.Models.QuizResultViewModel
+
+@{
+    ViewData["Title"] = "Quiz Results";
+    Layout = "_Layout2";
+}
+
+<div class="quiz-results-container">
+    <div class="results-header">
+        <h1>Quiz Results</h1>
+        <p class="quiz-title">@Model.QuizTitle</p>
+    </div>
+
+    <div class="results-card @(Model.Passed ? "passed" : "failed")">
+        <div class="results-summary">
+            <div class="score-circle">
+                <div class="score-value">@Model.Score%</div>
+                <div class="score-label">Score</div>
+            </div>
+            <div class="status-message">
+                @if (Model.Passed)
+                {
+                    <i class="bi bi-check-circle-fill"></i>
+                    <span>Congratulations! You've passed the quiz</span>
+                }
+                else
+                {
+                    <i class="bi bi-x-circle-fill"></i>
+                    <span>Not passed. You can try again.</span>
+                }
+            </div>
+        </div>
+
+        <div class="results-details">
+            <div class="detail-item">
+                <div class="detail-label">Your Score</div>
+                <div class="detail-value">@Model.Score%</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Passing Score</div>
+                <div class="detail-value">@Model.PassingScore%</div>
+            </div>
+            <div class="detail-item">
+                <div class="detail-label">Correct Answers</div>
+                <div class="detail-value">@Model.CorrectAnswers / @Model.TotalQuestions</div>
+            </div>
+        </div>
+
+        <div class="results-actions">
+            <a href="@Url.Action("CourseContent", "Course", new { id = Model.CourseId })" class="layout-btn layout-btn-primary">
+                <i class="bi bi-arrow-left"></i> Back to Course
+            </a>
+            @if (!Model.Passed)
+            {
+                <a href="@Url.Action("Details", "Quiz", new { id = Model.QuizId })" class="layout-btn layout-btn-secondary">
+                    <i class="bi bi-arrow-repeat"></i> Try Again
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+@section CustomHeadContent {
+    <style>
+        .quiz-results-container {
+            max-width: 900px;
+            margin: 3rem auto;
+            padding: 140px 20px;
+        }
+
+        .results-header {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .results-header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+
+        .quiz-title {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .results-card {
+            background-color: #fff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 2.5rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .results-card.passed {
+            border-top: 6px solid #00b8a9;
+        }
+
+        .results-card.failed {
+            border-top: 6px solid #ef5350;
+        }
+
+        .results-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            right: 0;
+            width: 200px;
+            height: 200px;
+            background: radial-gradient(circle at center, rgba(0, 184, 169, 0.1) 0%, rgba(0, 184, 169, 0) 70%);
+            border-radius: 50%;
+            transform: translate(30%, -30%);
+            z-index: 0;
+        }
+
+        .failed .results-card::before {
+            background: radial-gradient(circle at center, rgba(239, 83, 80, 0.1) 0%, rgba(239, 83, 80, 0) 70%);
+        }
+
+        .results-summary {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 2.5rem;
+            flex-wrap: wrap;
+            gap: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .score-circle {
+            width: 140px;
+            height: 140px;
+            border-radius: 50%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+
+        .passed .score-circle {
+            background: linear-gradient(135deg, #e6f8f6 0%, #d0f4f2 100%);
+            box-shadow: 0 4px 15px rgba(0, 184, 169, 0.15);
+        }
+
+        .failed .score-circle {
+            background: linear-gradient(135deg, #feeded 0%, #fde7e7 100%);
+            box-shadow: 0 4px 15px rgba(239, 83, 80, 0.15);
+        }
+
+        .score-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .passed .score-value {
+            color: #00b8a9;
+        }
+
+        .failed .score-value {
+            color: #ef5350;
+        }
+
+        .score-label {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .status-message {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .passed .status-message i {
+            color: #00b8a9;
+            font-size: 2rem;
+        }
+
+        .failed .status-message i {
+            color: #ef5350;
+            font-size: 2rem;
+        }
+
+        .results-details {
+            background-color: #f8f9fa;
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .detail-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 0;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .detail-item:last-child {
+            border-bottom: none;
+        }
+
+        .detail-label {
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+
+        .detail-value {
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .results-actions {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .layout-btn-secondary {
+            background-color: #f8f9fa;
+            color: var(--text-primary);
+            border: 1px solid #e9ecef;
+        }
+
+        .layout-btn-secondary:hover {
+            background-color: #e9ecef;
+        }
+
+        @@media (max-width: 768px) {
+            .results-summary {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+
+            .status-message {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .quiz-results-container {
+                margin: 1.5rem auto;
+            }
+
+            .results-card {
+                padding: 1.5rem;
+            }
+
+            .results-header h1 {
+                font-size: 2rem;
+            }
+
+            .results-actions {
+                flex-direction: column;
+                gap: 0.75rem;
+            }
+
+            .layout-btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+    </style>
+}
+
+@section CustomScripts {
+    <script>
+        $(document).ready(function() {
+            // Add animation to the score display
+            const scoreValue = @Model.Score;
+            let currentScore = 0;
+            const duration = 1000; // 1 second animation
+            const frameDuration = 1000 / 60; // 60fps
+            const totalFrames = Math.round(duration / frameDuration);
+            const scoreElement = document.querySelector('.score-value');
+            
+            function animateScore(currentFrame) {
+                if (currentFrame <= totalFrames) {
+                    const progress = currentFrame / totalFrames;
+                    const currentDisplayScore = Math.floor(progress * scoreValue);
+                    scoreElement.textContent = `${currentDisplayScore}%`;
+                    requestAnimationFrame(() => animateScore(currentFrame + 1));
+                } else {
+                    scoreElement.textContent = `${scoreValue}%`;
+                }
+            }
+            
+            // Start animation after a short delay
+            setTimeout(() => {
+                animateScore(1);
+            }, 300);
+        });
+    </script>
+} 

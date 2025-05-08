@@ -11,179 +11,197 @@
 
 <link rel="stylesheet" href="~/css/student-dashboard.css" />
 
-<div class="dashboard-container">
+<div class="dashboard-wrapper">
     <div class="dashboard-header">
-        <div class="container">
-            <div class="welcome-message">
-                <h1>Welcome, @User.Identity.Name!</h1>
-                <p>Continue learning and tracking your progress on your courses</p>
-            </div>
+        <div class="header-content">
+            <h1>Welcome, @User.Identity.Name!</h1>
+            <div class="header-decoration"></div>
         </div>
     </div>
 
-    <div class="container mt-4">
-        <div class="dashboard-stats mb-4">
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-card-body">
-                            <div class="stat-card-icon">
-                                <i class="bi bi-book"></i>
-                            </div>
-                            <div class="stat-card-info">
-                                <h2>@(enrolledCourses?.Count() ?? 0)</h2>
-                                <p>Enrolled Courses</p>
-                            </div>
-                        </div>
-                    </div>
+    <div class="dashboard-container">
+        <!-- Stats Overview Row -->
+        <div class="stats-row">
+            <div class="stat-card">
+                <div class="stat-icon courses-icon">
+                    <i class="bi bi-journal-bookmark"></i>
                 </div>
-                <div class="col-md-3">
-                    <div class="stat-card">
-                        <div class="stat-card-body">
-                            <div class="stat-card-icon bg-success">
-                                <i class="bi bi-check-circle"></i>
-                            </div>
-                            <div class="stat-card-info">
-                                <h2>@overallProgress%</h2>
-                                <p>Overall Progress</p>
-                            </div>
-                        </div>
-                    </div>
+                <div class="stat-content">
+                    <h2>@(enrolledCourses?.Count() ?? 0)</h2>
+                    <p>Enrolled Courses</p>
                 </div>
-            
-              
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon progress-icon">
+                    <i class="bi bi-graph-up"></i>
+                </div>
+                <div class="stat-content">
+                    <h2>@overallProgress%</h2>
+                    <p>Overall Completion</p>
+                </div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon assignments-icon">
+                    <i class="bi bi-check2-all"></i>
+                </div>
+                <div class="stat-content">
+                    <h2>@(assignments?.Count() ?? 0)</h2>
+                    <p>Pending Assignments</p>
+                </div>
             </div>
         </div>
-
-        <div class="row">
-            <div class="col-md-8">
-                <div class="card mb-4 dashboard-card">
-                    <div class="card-header">
-                        <h4><i class="bi bi-book me-2"></i>My Enrolled Courses</h4>
-                    </div>
-                    <div class="card-body"> 
-                        <div class="row">
-                            @if (enrolledCourses != null && enrolledCourses.Any())
-                            {
-                                @foreach (var course in enrolledCourses)
-                                {
-                                    <div class="col-md-6 mb-4">
-                                        <div class="card h-100 course-card">
-                                            @if (!string.IsNullOrEmpty(course.ThumbnailUrl))
-                                            {
-                                                <div class="course-thumbnail">
-                                                    <img src="@course.ThumbnailUrl" alt="@course.Title" />
-                                                    <div class="course-badge @(course.Progress == 100 ? "badge-completed" : "badge-progress")">
-                                                        @(course.Progress == 100 ? "Completed" : "In Progress")
-                                                    </div>
-                                                </div>
-                                            }
-                                            <div class="card-body">
-                                                <div class="course-category">@course.Category</div>
-                                                <h5 class="card-title">@course.Title</h5>
-                                                <p class="card-text">@(string.IsNullOrEmpty(course.Description) ? "No description available" : 
-                                                    (course.Description.Length > 80 ? course.Description.Substring(0, 80) + "..." : course.Description))</p>
-                                                <div class="progress-container">
-                                                    <div class="progress-label">
-                                                        <span>Progress</span>
-                                                        <span>@course.Progress%</span>
-                                                    </div>
-                                                    <div class="progress mb-2" style="height: 5px;">
-                                                        <div class="progress-bar @(course.Progress == 100 ? "bg-primary" : "bg-success")" 
-                                                             role="progressbar" 
-                                                             style="width: @course.Progress%;" 
-                                                             aria-valuenow="@course.Progress" 
-                                                             aria-valuemin="0" 
-                                                             aria-valuemax="100"></div>
-                                                    </div>
-                                                </div>
-                                                <div class="course-meta">
-                                                    <div><i class="bi bi-book me-1"></i> @course.LessonCount lessons</div>
-                                                    <div><i class="bi bi-calendar me-1"></i> Enrolled: @course.EnrollmentDate?.ToString("MMM dd, yyyy")</div>
-                                                </div>
-                                            </div>
-                                            <div class="card-footer bg-transparent">
-                                                <a href="/Course/Details/@course.Course_ID" class="btn btn-outline-primary btn-continue">
-                                                    <i class="bi @(course.Progress == 100 ? "bi-eye" : "bi-play-fill")"></i>
-                                                    @(course.Progress == 100 ? "Review Course" : "Continue Learning")
-                                                </a>
-                                            </div>
-                                        </div>
-                                    </div>
-                                }
-                            }
-                            else
-                            {
-                                <div class="col-12">
-                                    <div class="empty-state">
-                                        <div class="empty-state-icon">
-                                            <i class="bi bi-book"></i>
-                                        </div>
-                                        <h4>No Courses Yet</h4>
-                                        <p>You haven't enrolled in any courses yet.</p>
-                                        <a href="/Course/UserIndex" class="btn btn-primary mt-2">Browse Courses</a>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-
-            <div class="col-md-4">
-                <div class="card mb-4 dashboard-card">
-                    <div class="card-header">
-                        <h4><i class="bi bi-graph-up me-2"></i>My Progress</h4>
-                    </div>
-                    <div class="card-body">
-                        <div class="progress-overview">
-                            <div class="progress-circle-container">
-                                <div class="progress-circle" style="--progress-value: @overallProgress">
-                                    <div class="progress-circle-inner">
-                                        <span class="progress-value">@overallProgress%</span>
-                                    </div>
-                                </div>
-                            </div>
-                            <h5>Overall Progress</h5>
-                        </div>
-                        
-                        @if (courseProgress != null && courseProgress.Any())
-                        {
-                            <div class="course-progress-list">
-                                @foreach (var course in courseProgress)
-                                {
-                                    <div class="course-progress-item">
-                                        <div class="d-flex justify-content-between align-items-center mb-1">
-                                            <span class="course-name">@course.Key</span>
-                                            <span class="course-percentage">@course.Value%</span>
-                                        </div>
-                                        <div class="progress" style="height: 5px;">
-                                            <div class="progress-bar @(course.Value == 100 ? "bg-primary" : "bg-success")" 
-                                                 role="progressbar" 
-                                                 style="width: @course.Value%;" 
-                                                 aria-valuenow="@course.Value" 
-                                                 aria-valuemin="0" 
-                                                 aria-valuemax="100"></div>
-                                        </div>
-                                    </div>
-                                }
-                            </div>
-                        }
-                        else
-                        {
-                            <div class="empty-state small">
-                                <div class="empty-state-icon">
-                                    <i class="bi bi-graph-up"></i>
-                                </div>
-                                <h4>No Progress Data</h4>
-                                <p>Start learning to track your progress.</p>
-                            </div>
-                        }
-                    </div>
-                </div>
-
         
+        <!-- Main Content Area -->
+        <div class="dashboard-main">
+            <!-- Left Column: Course Grid -->
+            <div class="main-column course-column">
+                @if (enrolledCourses != null && enrolledCourses.Any())
+                {
+                    <div class="section-card courses-section">
+                        <div class="section-header">
+                            <h3><i class="bi bi-journal-bookmark"></i> My Enrolled Courses</h3>
+                            <a href="/Course/UserIndex" class="view-all">View All <i class="bi bi-arrow-right"></i></a>
+                        </div>
+                        <div class="courses-grid">
+                            @foreach (var course in enrolledCourses.Take(4))
+                            {
+                                <div class="course-card">
+                                    @if (!string.IsNullOrEmpty(course.ThumbnailUrl))
+                                    {
+                                        <div class="course-thumbnail">
+                                            <img src="@course.ThumbnailUrl" alt="@course.Title" />
+                                            <div class="course-badge @(course.Progress == 100 ? "badge-completed" : "badge-progress")">
+                                                @(course.Progress == 100 ? "Completed" : "In Progress")
+                                            </div>
+                                        </div>
+                                    }
+                                    <div class="course-body">
+                                        <div class="course-category">@course.Category</div>
+                                        <h4>@course.Title</h4>
+                                        <p>@(string.IsNullOrEmpty(course.Description) ? "No description available" : 
+                                            (course.Description.Length > 80 ? course.Description.Substring(0, 80) + "..." : course.Description))</p>
+                                        <div class="progress-container">
+                                            <div class="progress-label">
+                                                <span>Progress</span>
+                                                <span>@course.Progress%</span>
+                                            </div>
+                                            <div class="progress">
+                                                <div class="progress-bar @(course.Progress == 100 ? "complete" : "")" 
+                                                     role="progressbar" 
+                                                     style="width: @course.Progress%;" 
+                                                     aria-valuenow="@course.Progress" 
+                                                     aria-valuemin="0" 
+                                                     aria-valuemax="100"></div>
+                                            </div>
+                                        </div>
+                                        <div class="course-meta">
+                                            <div><i class="bi bi-book"></i> @course.LessonCount lessons</div>
+                                            <div><i class="bi bi-calendar3"></i> @course.EnrollmentDate?.ToString("MMM dd, yyyy")</div>
+                                        </div>
+                                    </div>
+                                    <div class="course-footer">
+                                        <a href="/Course/ViewCourse/@course.Course_ID" class="btn-continue">
+                                            <i class="bi @(course.Progress == 100 ? "bi-eye" : "bi-play-fill")"></i>
+                                            @(course.Progress == 100 ? "Review Course" : "Continue Learning")
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div class="section-card courses-section">
+                        <div class="section-header">
+                            <h3><i class="bi bi-journal-bookmark"></i> My Enrolled Courses</h3>
+                        </div>
+                        <div class="empty-state">
+                            <div class="empty-state-icon">
+                                <i class="bi bi-journal-bookmark"></i>
+                            </div>
+                            <h4>No Courses</h4>
+                            <a href="/Course/UserIndex" class="btn">Browse Courses</a>
+                        </div>
+                    </div>
+                }
+            </div>
+            
+            <!-- Right Sidebar -->
+            <div class="side-column">
+                <!-- Progress Overview Section -->
+                <div class="section-card progress-section">
+                    <div class="section-header">
+                        <h3><i class="bi bi-graph-up"></i> My Progress</h3>
+                    </div>
+                    <div class="progress-overview">
+                        <div class="progress-circle-container">
+                            <div class="progress-circle" style="--progress-value: @overallProgress">
+                                <div class="progress-circle-inner">
+                                    <span class="progress-value">@overallProgress%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <h5>Overall Completion</h5>
+                    </div>
+                    
+                    @if (courseProgress != null && courseProgress.Any())
+                    {
+                        <div class="course-progress-list">
+                            @foreach (var course in courseProgress)
+                            {
+                                <div class="course-progress-item">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="course-name">@course.Key</span>
+                                        <span class="course-percentage">@course.Value%</span>
+                                    </div>
+                                    <div class="progress">
+                                        <div class="progress-bar @(course.Value == 100 ? "complete" : "")" 
+                                             role="progressbar" 
+                                             style="width: @course.Value%;" 
+                                             aria-valuenow="@course.Value" 
+                                             aria-valuemin="0" 
+                                             aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-state small">
+                            <div class="empty-state-icon">
+                                <i class="bi bi-graph-up"></i>
+                            </div>
+                            <h4>No Progress Data</h4>
+                        </div>
+                    }
+                </div>
+
+                <!-- Recent Activity Section - Only show if there are activities -->
+                @if (activities != null && activities.Any())
+                {
+                    <div class="section-card activity-section">
+                        <div class="section-header">
+                            <h3><i class="bi bi-activity"></i> Recent Activity</h3>
+                        </div>
+                        <div class="activity-timeline">
+                            @foreach (var activity in activities.Take(5))
+                            {
+                                <div class="activity-item">
+                                    <div class="activity-icon">
+                                        <i class="bi bi-circle-fill"></i>
+                                    </div>
+                                    <div class="activity-content">
+                                        <h6>@activity.Type</h6>
+                                        <p>@activity.Description</p>
+                                        <span class="activity-time">@activity.Date.ToString("MMM dd, yyyy - h:mm tt")</span>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -193,12 +211,15 @@
     <script>
         $(document).ready(function() {
             // Fade in animation for dashboard elements
-            $('.dashboard-stats').addClass('fade-in');
-            $('.dashboard-card').each(function(index) {
+            setTimeout(function() {
+                $('.stats-row').addClass('fade-in');
+            }, 100);
+            
+            $('.section-card').each(function(index) {
                 var card = $(this);
                 setTimeout(function() {
                     card.addClass('fade-in');
-                }, index * 100);
+                }, (index + 1) * 150);
             });
         });
     </script>

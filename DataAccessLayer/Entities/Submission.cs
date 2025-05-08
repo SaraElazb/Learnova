@@ -16,6 +16,10 @@ public class Submission
     public int Score { get; set; }
 
     public DateTime SubmissionDate { get; set; }
+    
+    public DateTime DateSubmitted { get; set; }
+    
+    public bool Passed { get; set; }
 
     public string Status { get; set; } 
 

@@ -12,5 +12,7 @@ namespace BusinessLogicLayer.Manager.OrderManager
     {
         Task<int> CreateOrderAsync(string userId, ShoppingCartDto cart);
         Task<OrderDto> GetOrderByIdAsync(int orderId);
+        Task UpdateOrderStatusAsync(int orderId, string status);
+        Task<IEnumerable<OrderDto>> GetUserOrdersAsync(string userId);
     }
 }

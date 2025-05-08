@@ -212,6 +212,7 @@ a {
 
 main {
     flex: 1 0 auto;
+
 }
 
 /* Footer */
@@ -221,6 +222,7 @@ main {
     padding: 2rem 0;
     width: 100%;
     flex-shrink: 0;
+    width: 100vw;
 }
 
 .footer-content {

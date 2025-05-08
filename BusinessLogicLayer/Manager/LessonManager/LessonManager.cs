@@ -111,6 +111,7 @@ namespace BusinessLogicLayer.Manager.LessonManager
                 lesson.VideoUri = model.VideoUri;
                 lesson.LessonOrder = model.LessonOrder;
                 lesson.Course_ID = model.Course_ID;
+                lesson.Quiz_ID = model.Quiz_ID;
 
                 _unitOfWork.GetRepository<Lesson>().Update(lesson);
                 await _unitOfWork.SaveAsync();
@@ -150,10 +151,91 @@ namespace BusinessLogicLayer.Manager.LessonManager
             var lessons = await _unitOfWork.GetRepository<Lesson>()
                 .FindByCondition(l => l.Course_ID == courseId)
                 .Include(l => l.Course)
+                .Include(l => l.Quiz)
                 .OrderBy(l => l.LessonOrder)
                 .ToListAsync();
 
             return _mapper.Map<IEnumerable<LessonDto>>(lessons);
+        }
+
+        public async Task<bool> MarkLessonAsCompleteAsync(int lessonId, string userId)
+        {
+            try
+            {
+                // Check if this lesson exists
+                var lesson = await _unitOfWork.GetRepository<Lesson>()
+                    .FindByCondition(l => l.Lesson_ID == lessonId)
+                    .FirstOrDefaultAsync();
+
+                if (lesson == null)
+                    return false;
+
+                // Check if the lesson is already marked as complete
+                var existingStudy = await _unitOfWork.GetRepository<Studies>()
+                    .FindByCondition(s => s.Lesson_ID == lessonId && s.User_ID == userId)
+                    .FirstOrDefaultAsync();
+
+                if (existingStudy != null)
+                {
+                    // Already completed, just update the completion date if needed
+                    if (existingStudy.CompletionDate == null)
+                    {
+                        existingStudy.CompletionDate = DateTime.Now;
+                        existingStudy.Status = "Completed";
+                        _unitOfWork.GetRepository<Studies>().Update(existingStudy);
+                        await _unitOfWork.SaveAsync();
+                    }
+                    return true;
+                }
+
+                // Create new completion record
+                var studiesRecord = new Studies
+                {
+                    User_ID = userId,
+                    Lesson_ID = lessonId,
+                    Status = "Completed",
+                    Score = 0, // Default score
+                    CompletionDate = DateTime.Now
+                };
+
+                _unitOfWork.GetRepository<Studies>().Create(studiesRecord);
+                await _unitOfWork.SaveAsync();
+                
+                return true;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in MarkLessonAsCompleteAsync: {ex.Message}");
+                return false;
+            }
+        }
+
+        public async Task<IEnumerable<int>> GetCompletedLessonIdsForCourseAsync(int courseId, string userId)
+        {
+            try
+            {
+                // Get all lessons for this course
+                var courseLessons = await _unitOfWork.GetRepository<Lesson>()
+                    .FindByCondition(l => l.Course_ID == courseId)
+                    .Select(l => l.Lesson_ID)
+                    .ToListAsync();
+
+                if (!courseLessons.Any())
+                    return Enumerable.Empty<int>();
+
+                // Get completed lessons for this user and course
+                var completedLessons = await _unitOfWork.GetRepository<Studies>()
+                    .FindByCondition(s => s.User_ID == userId && courseLessons.Contains(s.Lesson_ID))
+                    .Select(s => s.Lesson_ID)
+                    .ToListAsync();
+
+                return completedLessons;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetCompletedLessonIdsForCourseAsync: {ex.Message}");
+                return Enumerable.Empty<int>();
+            }
         }
     }
 } 

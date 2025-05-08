@@ -91,6 +91,17 @@
                             <span>Manage Courses</span>
                         </a>
                     </li>
+                    <li class="@IsActive("Category", "Index")">
+                        <a asp-controller="Category" asp-action="Index">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+                                <path d="M4 7V5C4 4.44772 4.44772 4 5 4H9C9.55228 4 10 4.44772 10 5V7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M10 12V10C10 9.44772 10.4477 9 11 9H15C15.5523 9 16 9.44772 16 10V12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M16 17V15C16 14.4477 16.4477 14 17 14H19C19.5523 14 20 14.4477 20 15V17" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                <path d="M5 7H4C3.44772 7 3 7.44772 3 8V17C3 17.5523 3.44772 18 4 18H20C20.5523 18 21 17.5523 21 17V12C21 11.4477 20.5523 11 20 11H11C10.4477 11 10 10.5523 10 10V8C10 7.44772 9.55228 7 9 7H5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                            <span>Manage Categories</span>
+                        </a>
+                    </li>
                 </ul>
             </div>
             
@@ -153,7 +164,7 @@
                 <span>@ViewData["Title"]</span>
             </div>
             <div class="user-menu">
-                <div class="notifications">
+                <!-- <div class="notifications">
                     <button class="notification-btn">
                         <svg width="22" height="22" viewBox="0 0 24 24" fill="none">
                             <path d="M18 8C18 6.41 17.37 4.88 16.24 3.76C15.12 2.63 13.59 2 12 2C10.41 2 8.88 2.63 7.76 3.76C6.63 4.88 6 6.41 6 8C6 15 3 17 3 17H21C21 17 18 15 18 8Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -161,7 +172,8 @@
                         </svg>
                         <span class="notification-badge">3</span>
                     </button>
-                </div>
+                    
+                </div> -->
                 <div class="user-profile">
                     <button class="profile-btn">
                         <img src="@GetAvatarUrl(User.Identity?.Name)" alt="User" class="user-avatar" />
@@ -170,6 +182,34 @@
                             <path d="M6 9L12 15L18 9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </button>
+                    <div class="profile-dropdown">
+                        <div class="dropdown-content">
+                            <a asp-controller="Profile" asp-action="Index" class="dropdown-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                    <path d="M20 21V19C20 17.9391 19.5786 16.9217 18.8284 16.1716C18.0783 15.4214 17.0609 15 16 15H8C6.93913 15 5.92172 15.4214 5.17157 16.1716C4.42143 16.9217 4 17.9391 4 19V21" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M12 11C14.2091 11 16 9.20914 16 7C16 4.79086 14.2091 3 12 3C9.79086 3 8 4.79086 8 7C8 9.20914 9.79086 11 12 11Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>My Profile</span>
+                            </a>
+                            <a asp-controller="Profile" asp-action="Index" class="dropdown-item">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                    <path d="M12 15C13.6569 15 15 13.6569 15 12C15 10.3431 13.6569 9 12 9C10.3431 9 9 10.3431 9 12C9 13.6569 10.3431 15 12 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    <path d="M19.4 15C19.1277 15.6273 19.0692 16.3254 19.2321 16.9898C19.395 17.6542 19.7709 18.2492 20.3 18.7L20.34 18.74C20.7779 19.1777 21.1057 19.7158 21.2981 20.3088C21.4904 20.9018 21.5428 21.5344 21.452 22.1555C21.3612 22.7766 21.1297 23.3676 20.7757 23.8812C20.4217 24.3948 19.9551 24.8167 19.41 25.12C18.868 25.4204 18.2593 25.5936 17.6344 25.6248C17.0095 25.6559 16.385 25.5441 15.8117 25.2981C15.2384 25.0521 14.7326 24.6792 14.33 24.21C13.9276 23.7412 13.6396 23.1867 13.49 22.59C13.34 21.99 13.33 21.39 13.46 20.79C13.5839 20.1947 13.8395 19.6356 14.21 19.15C13.7975 19.0251 13.3979 18.8556 13.02 18.645C12.6419 18.8556 12.2425 19.0251 11.83 19.15C12.1851 19.6155 12.4395 20.1428 12.5782 20.7075C12.7168 21.2722 12.7359 21.8573 12.6342 22.4293C12.5324 23.0013 12.312 23.5467 11.9863 24.0281C11.6606 24.5095 11.2363 24.9155 10.74 25.22C10.197 25.5205 9.58826 25.6936 8.96333 25.7248C8.33841 25.7559 7.71398 25.6441 7.14068 25.3981C6.56738 25.1521 6.0616 24.7792 5.659 24.31C5.25656 23.8411 4.96855 23.2866 4.81901 22.69C4.66947 22.0934 4.66325 21.4711 4.80069 20.8715C4.93813 20.2719 5.21545 19.712 5.6067 19.2366C5.99794 18.7612 6.49454 18.3832 7.05901 18.135C7.62349 17.8868 8.23939 17.7764 8.85652 17.8127C9.47365 17.849 10.0725 18.0311 10.6 18.345C10.9781 18.5557 11.3222 18.8256 11.62 19.145C12.0248 19.021 12.4425 18.9418 12.865 18.9095C13.2875 18.8772 13.7125 18.8922 14.13 18.954C14.4285 18.6351 14.7733 18.3652 15.152 18.1515C15.5306 17.9377 15.9388 17.7827 16.36 17.6915C16.7812 17.6003 17.2112 17.5741 17.6392 17.6137C18.0673 17.6534 18.4876 17.7585 18.8835 17.9252C19.2793 18.0919 19.6452 18.3178 19.9661 18.5939C20.287 18.87 20.5581 19.1924 20.77 19.55" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                                <span>Settings</span>
+                            </a>
+                            <form asp-controller="Account" asp-action="LogOut" method="post">
+                                <button type="submit" class="dropdown-item dropdown-logout-btn">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none">
+                                        <path d="M9 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V5C3 4.46957 3.21071 3.96086 3.58579 3.58579C3.96086 3.21071 4.46957 3 5 3H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M16 17L21 12L16 7" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <path d="M21 12H9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                    <span>Logout</span>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </header>
@@ -232,31 +272,29 @@
         }
 
         // Dropdown functionality
-        const dropdownButtons = document.querySelectorAll('.user-menu button');
-        const dropdowns = document.querySelectorAll('.user-menu .dropdown');
+        const profileBtn = document.querySelector('.profile-btn');
+        const profileDropdown = document.querySelector('.profile-dropdown');
 
-        dropdownButtons.forEach(function(button, index) {
-            button.addEventListener('click', function(e) {
+        if(profileBtn && profileDropdown) {
+            profileBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
-                dropdowns[index].classList.toggle('active');
+                profileDropdown.classList.toggle('active');
             });
-        });
+        }
 
         // Close dropdowns when clicking outside
         document.addEventListener('click', function(e) {
-            dropdowns.forEach(function(dropdown) {
-                if(dropdown.classList.contains('active')) {
-                    dropdown.classList.remove('active');
-                }
-            });
+            if(profileDropdown && profileDropdown.classList.contains('active') && !profileBtn.contains(e.target)) {
+                profileDropdown.classList.remove('active');
+            }
         });
 
         // Prevent dropdown close when clicking inside
-        dropdowns.forEach(function(dropdown) {
-            dropdown.addEventListener('click', function(e) {
+        if(profileDropdown) {
+            profileDropdown.addEventListener('click', function(e) {
                 e.stopPropagation();
             });
-        });
+        }
 
         // Close alerts
         const closeAlerts = document.querySelectorAll('.close-alert');

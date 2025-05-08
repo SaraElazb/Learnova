@@ -147,6 +147,52 @@ input[type="file"]::-webkit-file-upload-button {
     cursor: pointer;
 }
 
+/* Header Container and Back Button */
+.header-container {
+    display: flex;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.back-button {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1rem;
+    background-color: #f8f9fc;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--dark-color);
+    font-weight: 500;
+    text-decoration: none;
+    transition: all 0.2s ease;
+}
+
+.back-button:hover {
+    background-color: var(--light-color);
+    color: var(--primary-color);
+    box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+}
+
+.back-button svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* Current Image */
+.current-image {
+    margin-top: 0.5rem;
+    padding: 0.5rem;
+    background-color: rgba(78, 115, 223, 0.1);
+    border-radius: var(--border-radius);
+}
+
+.current-image p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--primary-color);
+}
+
 /* Animation */
 .card {
     opacity: 0;

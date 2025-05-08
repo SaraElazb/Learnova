@@ -15,6 +15,13 @@
   --transition-speed: 300ms;
   --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
   --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --primary-color: #2563eb;
+  --secondary-color: #1e40af;
+  --text-color: #1f2937;
+  --light-text: #6b7280;
+  --background-light: #f9fafb;
+  --success-color: #10b981;
+  --warning-color: #f59e0b;
 }
 
 * {
@@ -122,9 +129,13 @@ a:hover {
 
 /* Hero Section */
 .course-hero {
-  padding: 5rem 0 3rem;
-  position: relative;
-  overflow: hidden;
+    padding: 5rem 0 3rem;
+    position: relative;
+    overflow: hidden;
+    background: linear-gradient(to right, var(--background-light), #ffffff);
+    padding: 4rem 0;
+    border-bottom: 1px solid var(--border-color);
+    margin-top: 140px;
 }
 
 .course-hero .container {
@@ -136,50 +147,52 @@ a:hover {
   z-index: 2;
 }
 
+.hero-content {
+  max-width: 600px;
+}
+
 .category-label {
   display: inline-block;
-  background-color: rgba(0, 184, 169, 0.1);
-  color: var(--color-primary);
-  padding: 0.35rem 0.75rem;
-  border-radius: var(--border-radius-sm);
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 2rem;
   font-size: 0.875rem;
-  font-weight: 600;
   margin-bottom: 1rem;
 }
 
 .course-title {
   font-size: 2.5rem;
   margin-bottom: 1.5rem;
-  color: var(--color-text);
+  color: var(--text-color);
+  font-weight: 700;
+  line-height: 1.2;
 }
 
 .course-meta {
   display: flex;
-  flex-wrap: wrap;
-  gap: 1.5rem;
+  gap: 2rem;
   margin-bottom: 1.5rem;
-  align-items: center;
+  flex-wrap: wrap;
 }
 
 .meta-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  color: var(--color-text-light);
+  color: var(--light-text);
 }
 
-.meta-icon {
-  color: var(--color-primary);
-}
-
-.star-icon {
-  color: var(--color-star);
+.meta-item i {
+  color: var(--primary-color);
 }
 
 .course-brief {
   font-size: 1.125rem;
   margin-bottom: 2rem;
   max-width: 600px;
+  line-height: 1.6;
+  color: var(--text-color);
 }
 
 /* Course Card */
@@ -193,9 +206,18 @@ a:hover {
   top: 100px;
 }
 
+.course-image-container {
+  position: relative;
+  padding-top: 56.25%; /* 16:9 Aspect Ratio */
+  background-color: #f3f4f6;
+}
+
 .course-thumbnail {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
-  aspect-ratio: 16/9;
+  height: 100%;
   object-fit: cover;
 }
 
@@ -207,14 +229,18 @@ a:hover {
   font-size: 2rem;
   font-weight: 700;
   margin-bottom: 1rem;
-  color: var(--color-text);
+  color: var(--text-color);
 }
 
 .guarantee {
   text-align: center;
   margin-bottom: 1.5rem;
   font-size: 0.875rem;
-  color: var(--color-text-light);
+  color: var(--light-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
 }
 
 .course-includes {
@@ -227,13 +253,11 @@ a:hover {
   align-items: center;
   gap: 0.75rem;
   margin-bottom: 0.75rem;
-  color: var(--color-text-light);
-  font-size: 0.875rem;
+  color: var(--text-color);
 }
 
-.include-icon {
-  color: var(--color-primary);
-  font-size: 1rem;
+.include-item i {
+  color: var(--primary-color);
 }
 
 /* Main Content */
@@ -268,7 +292,14 @@ a:hover {
   margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--color-border);
-  color: var(--color-text);
+  color: var(--text-color);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.section-title i {
+  color: var(--primary-color);
 }
 
 .content-section p {
@@ -327,17 +358,49 @@ a:hover {
   background-color: var(--color-bg-accent);
 }
 
+.curriculum-title-container {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
 .curriculum-title {
   font-size: 1.125rem;
   margin: 0;
-  color: var(--color-text);
+  color: var(--text-color);
   font-weight: 600;
 }
 
+.curriculum-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.duration {
+  color: var(--light-text);
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.quiz-badge {
+  background-color: var(--primary-color);
+  color: white;
+  padding: 0.25rem 0.75rem;
+  border-radius: 1rem;
+  font-size: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
 .curriculum-toggle {
-  color: var(--color-primary);
+  color: var(--light-text);
   font-size: 1.5rem;
   font-weight: bold;
+  transition: transform 0.2s;
 }
 
 .curriculum-content {
@@ -386,18 +449,18 @@ a:hover {
 .instructor-name {
   margin-bottom: 0.5rem;
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--text-color);
 }
 
 .instructor-title {
-  color: var(--color-primary);
+  color: var(--primary-color);
   font-size: 0.875rem;
   margin-bottom: 0.75rem;
   font-weight: 500;
 }
 
 .instructor-bio {
-  color: var(--color-text-light);
+  color: var(--text-color);
   font-size: 0.9375rem;
   line-height: 1.6;
 }
@@ -421,7 +484,7 @@ a:hover {
 .rating-number {
   font-size: 2rem;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--text-color);
 }
 
 .stars {
@@ -468,7 +531,7 @@ a:hover {
 
 .reviewer-name {
   font-weight: 600;
-  color: var(--color-text);
+  color: var(--text-color);
 }
 
 .review-rating {
@@ -538,7 +601,7 @@ a:hover {
 
 .related-course-price {
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--text-color);
 }
 
 /* Mobile CTA */
@@ -560,7 +623,7 @@ a:hover {
 .mobile-price {
   font-size: 1.5rem;
   font-weight: 700;
-  color: var(--color-text);
+  color: var(--text-color);
 }
 
 .mobile-cta .btn-enroll {
@@ -614,7 +677,7 @@ a:hover {
   }
   
   .course-hero {
-    padding: 4rem 0 2rem;
+    padding: 2rem 0;
   }
   
   .reviews-header {
@@ -663,4 +726,33 @@ a:hover {
   .card-content {
     padding: 1rem;
   }
+}
+
+/* Empty States */
+.empty-curriculum {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--light-text);
+}
+
+.empty-curriculum i {
+  font-size: 3rem;
+  color: var(--border-color);
+  margin-bottom: 1rem;
+}
+
+/* Animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.content-section {
+  animation: fadeIn 0.5s ease-out;
 } 

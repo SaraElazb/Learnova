@@ -1,42 +1,143 @@
 ﻿@model BusinessLogicLayer.DTOs.PaymentDtos.PaymentModel
 
-<h2>Make a Payment</h2>
+@{
+    Layout = "_Layout2";
+    ViewData["Title"] = "Make Payment";
+}
 
-<form id="payment-form" asp-action="Create" asp-controller="Payment" method="post">
-    @Html.AntiForgeryToken()
-    <div class="form-group">
-        <label for="Amount">Amount</label>
-        <input asp-for="Amount" class="form-control" type="number" step="0.01" required />
+<div class="payment-page">
+    <div class="layout-container mt-5 pt-5">
+        <div class="payment-form-card">
+            <div class="payment-header">
+                <h2>Make a Payment</h2>
+                <p>Complete your payment information below</p>
+            </div>
+            
+            <form id="payment-form" asp-action="Create" asp-controller="Payment" method="post">
+                @Html.AntiForgeryToken()
+                <div class="form-group">
+                    <label for="Amount">Amount</label>
+                    <input asp-for="Amount" class="form-control" type="number" step="0.01" required />
+                </div>
+                <div class="form-group">
+                    <label for="Currency">Currency</label>
+                    <input asp-for="Currency" class="form-control" value="usd" required />
+                </div>
+                <div class="form-group">
+                    <label for="Description">Description</label>
+                    <input asp-for="Description" class="form-control" />
+                </div>
+                <div class="form-group">
+                    <label>Card Details</label>
+                    <div id="card-element" class="form-control"></div> 
+                </div>
+                <button type="submit" class="layout-btn layout-btn-primary payment-btn">Pay Now</button>
+                <div id="card-errors" role="alert" class="payment-error"></div>
+            </form>
+        </div>
     </div>
-    <div class="form-group">
-        <label for="Currency">Currency</label>
-        <input asp-for="Currency" class="form-control" value="usd" required />
-    </div>
-    <div class="form-group">
-        <label for="Description">Description</label>
-        <input asp-for="Description" class="form-control" />
-    </div>
-    <div class="form-group">
-        <label>Card Details</label>
-        <div id="card-element" class="form-control"></div> 
-    </div>
-    <button type="submit" class="btn btn-primary">Pay Now</button>
-    <div id="card-errors" role="alert" class="text-danger"></div>
-</form>
+</div>
+
+<style>
+    .payment-page {
+        padding-top: 80px;
+        padding-bottom: 120px;
+        min-height: calc(100vh - 200px);
+        height: 100vh;
+        margin-top: 80px;
+    }
+    
+    .payment-form-card {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        padding: 2.5rem;
+        max-width: 600px;
+        margin: 0 auto 3rem;
+    }
+    
+    .payment-header {
+        margin-bottom: 1.5rem;
+        text-align: center;
+    }
+    
+    .payment-header h2 {
+        color: #1A1F2C;
+        margin-bottom: 0.5rem;
+    }
+    
+    .payment-header p {
+        color: #4b5563;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #2A303C;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #00b8a9;
+        border-color: #00b8a9;
+    }
+    
+    .payment-btn {
+        width: 100%;
+        padding: 0.75rem 1.5rem;
+        margin-top: 1rem;
+        font-size: 1rem;
+    }
+    
+    .payment-error {
+        margin-top: 1rem;
+        color: #ef4444;
+        font-size: 0.875rem;
+    }
+    
+    @@media (max-width: 768px) {
+        .payment-form-card {
+            padding: 1.5rem;
+        }
+    }
+</style>
 
 <script src="https://js.stripe.com/v3/"></script>
 <script>
     var stripe = Stripe('@ViewBag.StripePublishableKey');
     var elements = stripe.elements();
 
-    var card = elements.create('card', {
-        style: {
-            base: {
-                fontSize: '16px',
-                color: '#32325d',
+    var style = {
+        base: {
+            fontSize: '16px',
+            color: '#32325d',
+            fontFamily: '"Inter", Helvetica, sans-serif',
+            fontSmoothing: 'antialiased',
+            '::placeholder': {
+                color: '#aab7c4'
             }
+        },
+        invalid: {
+            color: '#ef4444',
+            iconColor: '#ef4444'
         }
-    });
+    };
+
+    var card = elements.create('card', { style: style });
     card.mount('#card-element');
 
     card.addEventListener('change', function (event) {

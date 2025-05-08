@@ -30,10 +30,7 @@ namespace DataAccessLayer.Repositories
         public IGenericRepository<Role> Roles { get; private set; }
         public IGenericRepository<Studies> Studies { get; private set; }
         public IGenericRepository<Submission> Submissions { get; private set; }
-        public IGenericRepository<Order> Orders { get; private set; }
-
-        IGenericRepository<Stripe.Climate.Order> IUnitOfWork.Orders => throw new NotImplementedException();
-
+        public IGenericRepository<DataAccessLayer.Entities.Order> Orders { get; private set; }
 
         //public object CourseRepository => throw new NotImplementedException();
 
@@ -58,7 +55,7 @@ namespace DataAccessLayer.Repositories
             Roles = new GenericRepository<Role>(_context);
             Studies = new GenericRepository<Studies>(_context);
             Submissions = new GenericRepository<Submission>(_context);
-            Orders = new GenericRepository<Order>(_context);
+            Orders = new GenericRepository<DataAccessLayer.Entities.Order>(_context);
         }
 
 
@@ -103,10 +100,18 @@ namespace DataAccessLayer.Repositories
                 Console.WriteLine("Committing database transaction");
                 await _transaction.CommitAsync();
             }
+            catch
+            {
+                await RollbackTransactionAsync();
+                throw;
+            }
             finally
             {
-                await _transaction.DisposeAsync();
-                _transaction = null;
+                if (_transaction != null)
+                {
+                    _transaction.Dispose();
+                    _transaction = null;
+                }
             }
         }
 
@@ -119,9 +124,18 @@ namespace DataAccessLayer.Repositories
             }
             finally
             {
-                await _transaction.DisposeAsync();
-                _transaction = null;
+                if (_transaction != null)
+                {
+                    _transaction.Dispose();
+                    _transaction = null;
+                }
             }
+        }
+        
+        // Added for debugging
+        public ELearningDbContext GetDbContext()
+        {
+            return _context;
         }
     }
 }

@@ -21,6 +21,8 @@ namespace BusinessLogicLayer.DTOs.LessonDtos
         
         public string Description { get; set; }
         
+        public int? Quiz_ID { get; set; }
+        
         public IEnumerable<SelectListItem> CourseSelectList { get; set; }
     }
 } 

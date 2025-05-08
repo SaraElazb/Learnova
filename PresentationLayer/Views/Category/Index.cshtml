@@ -12,18 +12,18 @@
 <div class="page-main-container">
   <div class="app-container">
     <header class="header">
-      <button class="back-button" onclick="window.location.href='/course/adminindex'">
+      <a asp-controller="Admin" asp-action="Dashboard" class="back-button">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M10.5 12.5L5.5 7.5L10.5 2.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
         Back to Dashboard
-      </button>
-      <button class="add-category-button" onclick="window.location.href='/Category/Creator'">
+      </a>
+      <a asp-controller="Category" asp-action="Create" class="add-category-button">
         <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
           <path d="M8 3.5V12.5M3.5 8H12.5" stroke="#10B981" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
         </svg>
         Add New Category
-      </button>
+      </a>
     </header>
 
     <main class="page-main-content">

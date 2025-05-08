@@ -19,7 +19,6 @@ namespace BusinessLogicLayer.DTOs.QuizDtos
         [Range(1, 100, ErrorMessage = "Score must be between 1 and 100")]
         public int Score { get; set; }
         
-        [Required(ErrorMessage = "Right answer is required")]
         [MaxLength(200, ErrorMessage = "Right answer cannot be longer than 200 characters")]
         public string RightAns { get; set; }
         

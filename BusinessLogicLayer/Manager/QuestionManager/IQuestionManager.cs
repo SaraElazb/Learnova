@@ -11,5 +11,6 @@ namespace BusinessLogicLayer.Manager.QuestionManager
         Task<bool> EditQuestionAsync(int id, QuestionRequest model);
         Task<bool> DeleteQuestion(int id);
         Task<IEnumerable<QuestionDto>> GetQuestionsByQuizAsync(int quizId);
+        DataAccessLayer.Repositories.IUnitOfWork GetUnitOfWork();
     }
 } 

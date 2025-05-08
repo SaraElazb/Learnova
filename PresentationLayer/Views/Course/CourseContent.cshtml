@@ -1,0 +1,493 @@
+@using Microsoft.AspNetCore.Mvc.TagHelpers
+@using System.Linq
+@model BusinessLogicLayer.DTOs.CourseDtos.CourseDTO
+
+@{
+    ViewData["Title"] = Model.Title;
+    Layout = "_Layout2";
+    var lessons = ViewBag.Lessons as IEnumerable<BusinessLogicLayer.DTOs.LessonDtos.LessonDto>;
+    var firstLesson = lessons?.FirstOrDefault();
+    var completedLessonIds = ViewBag.CompletedLessonIds as IEnumerable<int> ?? Enumerable.Empty<int>();
+}
+
+@section CustomHeadContent {
+<link rel="stylesheet" href="~/css/course-content.css" />
+}
+
+
+<!-- Main Content -->
+<section class="course-content-section">
+    <div class="container">
+        <div class="course-layout">
+            <!-- Left Sidebar: Course Outline -->
+            <div class="course-sidebar">
+                <div class="course-progress">
+                    <div class="progress-circle" id="progress-circle" style="--progress-value: @Model.Progress">
+                        <div class="progress-circle-inner">
+                            <div class="progress-value">@Model.Progress%</div>
+                        </div>
+                    </div>
+                    <div class="progress-text">Your Progress</div>
+                </div>
+
+                <div class="lesson-list">
+                    <h3>Course Content</h3>
+                    @if (lessons != null && lessons.Any())
+                    {
+                        @foreach (var lesson in lessons)
+                        {
+                            bool isCompleted = completedLessonIds.Contains(lesson.Lesson_ID);
+                            <div class="lesson-item @(firstLesson?.Lesson_ID == lesson.Lesson_ID ? "active" : "") @(isCompleted ? "completed" : "")" data-lesson-id="@lesson.Lesson_ID">
+                                <a href="#" class="lesson-link" data-lesson-id="@lesson.Lesson_ID">
+                                    <div class="lesson-icon">
+                                        <i class="bi bi-play-circle"></i>
+                                    </div>
+                                    <div class="lesson-content">
+                                        <div class="lesson-title">@lesson.Title</div>
+                                        <div class="lesson-meta">
+                                            <span class="lesson-duration">@lesson.Duration min</span>
+                                            @if (lesson.Quiz_ID != null)
+                                            {
+                                                <span class="lesson-quiz">• Quiz</span>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="lesson-status">
+                                        <i class="bi @(isCompleted ? "bi-check-circle-fill" : "bi-circle")"></i>
+                                    </div>
+                                </a>
+                            </div>
+                        }
+                    }
+                    else
+                    {
+                        <div class="empty-lessons">
+                            <p>No lessons have been added to this course yet.</p>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="main-content">
+                <!-- Course Info Tab -->
+                <div class="content-tabs">
+                    <button class="tab-btn" data-tab="course-info">Course Info</button>
+                    <button class="tab-btn active" data-tab="lesson-content">Lesson Content</button>
+                </div>
+
+                <!-- Lesson Content Area -->
+                <div class="tab-content" id="lesson-content-tab">
+                    @if (firstLesson != null)
+                    {
+                        <div class="lesson-content-container" id="lesson-display">
+                            <div class="lesson-header">
+                                <h2 id="lesson-title">@firstLesson.Title</h2>
+                                <div class="lesson-meta-info">
+                                    <span><i class="bi bi-clock"></i> @firstLesson.Duration minutes</span>
+                                    @if (firstLesson.Quiz_ID != null)
+                                    {
+                                        <span><i class="bi bi-journal-check"></i> Includes Quiz</span>
+                                    }
+                                </div>
+                            </div>
+
+                            <!-- Prominent Quiz Button (if quiz exists) -->
+                            @if (firstLesson.Quiz_ID != null)
+                            {
+                                <div class="quiz-button-container" style="margin: 15px 0; text-align: center;">
+                                    <a href="@Url.Action("Details", "Quiz", new { id = firstLesson.Quiz_ID })" 
+                                       class="quiz-btn-large">
+                                        <i class="bi bi-journal-check"></i> Take Quiz for This Lesson
+                                    </a>
+                                </div>
+                            }
+
+                            <div class="lesson-video-container">
+                                @if (!string.IsNullOrEmpty(firstLesson.VideoUri))
+                                {
+                                    var videoUrl = firstLesson.VideoUri;
+                                    // Check if this is a YouTube URL and convert it to embed format
+                                    if (videoUrl.Contains("youtube.com/watch") || videoUrl.Contains("youtu.be/"))
+                                    {
+                                        // Extract video ID from YouTube URL
+                                        string videoId = "";
+                                        if (videoUrl.Contains("youtube.com/watch"))
+                                        {
+                                            var uri = new Uri(videoUrl);
+                                            var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+                                            videoId = query["v"];
+                                        }
+                                        else if (videoUrl.Contains("youtu.be/"))
+                                        {
+                                            videoId = videoUrl.Split(new[] { "youtu.be/" }, StringSplitOptions.None)[1];
+                                            if (videoId.Contains("?"))
+                                            {
+                                                videoId = videoId.Split('?')[0];
+                                            }
+                                        }
+                                        
+                                        if (!string.IsNullOrEmpty(videoId))
+                                        {
+                                            videoUrl = $"https://www.youtube.com/embed/{videoId}";
+                                        }
+                                    }
+                                    <iframe id="lesson-video" src="@videoUrl" 
+                                    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen></iframe>
+                                }
+                                else
+                                {
+                                    <div class="no-video">
+                                        <i class="bi bi-camera-video-off"></i>
+                                        <p>No video available for this lesson</p>
+                                    </div>
+                                }
+                            </div>
+
+                            <div class="lesson-description" id="lesson-description">
+                                <h3>Description</h3>
+                                <p>@firstLesson.Description</p>
+                            </div>
+
+                            <div class="lesson-actions">
+                                @if (firstLesson.Quiz_ID != null)
+                                {
+                                    <a href="@Url.Action("Details", "Quiz", new { id = firstLesson.Quiz_ID })" class="btn-quiz">
+                                        <i class="bi bi-check2-square"></i> Take Quiz
+                                    </a>
+                                }
+
+                                <button class="btn-mark-complete @(completedLessonIds.Contains(firstLesson.Lesson_ID) ? "completed" : "")" data-lesson-id="@firstLesson.Lesson_ID">
+                                    @if (completedLessonIds.Contains(firstLesson.Lesson_ID))
+                                    {
+                                        @:<i class="bi bi-check-circle-fill"></i> Completed
+                                    }
+                                    else
+                                    {
+                                        @:<i class="bi bi-check-circle"></i> Mark as Complete
+                                    }
+                                </button>
+                            </div>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-lesson-content">
+                            <div class="empty-state">
+                                <i class="bi bi-journal-text"></i>
+                                <h3>No Lessons Available</h3>
+                                <p>This course doesn't have any lessons yet. Please check back later.</p>
+                            </div>
+                        </div>
+                    }
+                </div>
+                
+                <!-- Course Info Tab Content -->
+                <div class="tab-content hidden" id="course-info-tab">
+                    <div class="content-section">
+                        <h3>About This Course</h3>
+                        <p>@Model.Description</p>
+                    </div>
+                    
+                    <div class="content-section">
+                        <h3>What You'll Learn</h3>
+                        <ul class="learning-outcomes">
+                            <li>Deep understanding of @Model.Title concepts and practices</li>
+                            <li>Practical skills applicable to real-world scenarios</li>
+                            <li>Confidence to apply @Model.CategoryName principles in your work</li>
+                            <li>Certificate of completion for your portfolio</li>
+                        </ul>
+                    </div>
+
+                    <div class="content-section">
+                        <h3>Your Instructor</h3>
+                        <div class="instructor-card">
+                            <div class="instructor-avatar">
+                                <img src="/assets/instructor-placeholder.jpg" alt="@Model.InstructorName" />
+                            </div>
+                            <div class="instructor-info">
+                                <h4>@Model.InstructorName</h4>
+                                <p>Expert in @Model.CategoryName</p>
+                                <div class="instructor-stats">
+                                    <div class="stat-item">
+                                        <i class="bi bi-star-fill"></i>
+                                        <span>@Model.Rating.ToString("0.0") Instructor Rating</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <i class="bi bi-people-fill"></i>
+                                        <span>@Model.EnrollmentCount Students</span>
+                                    </div>
+                                    <div class="stat-item">
+                                        <i class="bi bi-book"></i>
+                                        <span>@Model.LessonCount Lessons</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Debug information about initial lesson
+            console.log('Initial lesson data:');
+            @if (firstLesson != null)
+            {
+                @:console.log('Lesson ID: @firstLesson.Lesson_ID');
+                @:console.log('Lesson Title: @firstLesson.Title'); 
+                @:console.log('Quiz ID: @firstLesson.Quiz_ID');
+                @:console.log('Has Quiz: @(firstLesson.Quiz_ID != null ? "Yes" : "No")');
+            }
+            else
+            {
+                @:console.log('No first lesson available');
+            }
+            
+            // Debug quiz button visibility
+            const topQuizButton = document.querySelector('.quiz-button-container');
+            console.log('Top quiz button container exists:', topQuizButton ? true : false);
+            
+            const bottomQuizButton = document.querySelector('.btn-quiz');
+            console.log('Bottom quiz button exists:', bottomQuizButton ? true : false);
+            
+            // Tab switching functionality
+            const tabButtons = document.querySelectorAll('.tab-btn');
+            const tabContents = document.querySelectorAll('.tab-content');
+            
+            tabButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Remove active class from all buttons and hide all content
+                    tabButtons.forEach(btn => btn.classList.remove('active'));
+                    tabContents.forEach(content => content.classList.add('hidden'));
+                    
+                    // Add active class to clicked button and show corresponding content
+                    this.classList.add('active');
+                    document.getElementById(this.dataset.tab + '-tab').classList.remove('hidden');
+                });
+            });
+            
+            // Dynamic lesson loading
+            const lessonLinks = document.querySelectorAll('.lesson-link');
+            
+            lessonLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Remove active class from all lesson items
+                    document.querySelectorAll('.lesson-item').forEach(item => {
+                        item.classList.remove('active');
+                    });
+                    
+                    // Add active class to clicked lesson item
+                    this.closest('.lesson-item').classList.add('active');
+                    
+                    // Get lesson ID
+                    const lessonId = this.dataset.lessonId;
+                    console.log('Loading lesson ID:', lessonId);
+                    
+                    // Show loading state
+                    document.getElementById('lesson-display').classList.add('loading');
+                    
+                    // Fetch lesson content
+                    fetch(`/Lesson/GetLessonContent/${lessonId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            console.log('Lesson data received:', data);
+                            console.log('Quiz ID:', data.quizId);
+                            
+                            // Update lesson content
+                            document.getElementById('lesson-title').textContent = data.title;
+                            document.getElementById('lesson-description').innerHTML = `<h3>Description</h3><p>${data.description}</p>`;
+                            
+                            // Update video if available
+                            const videoContainer = document.querySelector('.lesson-video-container');
+                            if (data.videoUri) {
+                                let videoUrl = data.videoUri;
+                                
+                                // Convert YouTube URL to embed format if needed
+                                if (videoUrl.includes('youtube.com/watch') || videoUrl.includes('youtu.be/')) {
+                                    let videoId = '';
+                                    
+                                    if (videoUrl.includes('youtube.com/watch')) {
+                                        const url = new URL(videoUrl);
+                                        videoId = url.searchParams.get('v');
+                                    } else if (videoUrl.includes('youtu.be/')) {
+                                        const parts = videoUrl.split('youtu.be/');
+                                        videoId = parts[1];
+                                        if (videoId.includes('?')) {
+                                            videoId = videoId.split('?')[0];
+                                        }
+                                    }
+                                    
+                                    if (videoId) {
+                                        videoUrl = `https://www.youtube.com/embed/${videoId}`;
+                                    }
+                                }
+                                
+                                videoContainer.innerHTML = `<iframe id="lesson-video" src="${videoUrl}" 
+                                    frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                    allowfullscreen></iframe>`;
+                            } else {
+                                videoContainer.innerHTML = `<div class="no-video">
+                                    <i class="bi bi-camera-video-off"></i>
+                                    <p>No video available for this lesson</p>
+                                </div>`;
+                            }
+                            
+                            // Update prominent quiz button at the top
+                            const quizButtonContainer = document.querySelector('.quiz-button-container');
+                            if (quizButtonContainer) {
+                                quizButtonContainer.remove(); // Remove existing container if any
+                                console.log('Removed existing quiz button container');
+                            }
+                            
+                            // Create new quiz button container if quiz is available
+                            if (data.quizId) {
+                                console.log('Creating new quiz button for quiz ID:', data.quizId);
+                                const newQuizButtonContainer = document.createElement('div');
+                                newQuizButtonContainer.className = 'quiz-button-container';
+                                newQuizButtonContainer.style = 'margin: 15px 0; text-align: center;';
+                                
+                                const quizButton = document.createElement('a');
+                                quizButton.href = `/Quiz/Details/${data.quizId}`;
+                                quizButton.className = 'quiz-btn-large';
+                                quizButton.innerHTML = '<i class="bi bi-journal-check"></i> Take Quiz for This Lesson';
+                                
+                                newQuizButtonContainer.appendChild(quizButton);
+                                
+                                // Insert after lesson header
+                                const lessonHeader = document.querySelector('.lesson-header');
+                                lessonHeader.insertAdjacentElement('afterend', newQuizButtonContainer);
+                                console.log('Added new quiz button container');
+                            } else {
+                                console.log('No quiz ID available, not adding quiz button');
+                            }
+                            
+                            // Update quiz button if available
+                            const lessonActions = document.querySelector('.lesson-actions');
+                            if (data.quizId) {
+                                if (!lessonActions.querySelector('.btn-quiz')) {
+                                    const quizBtn = document.createElement('a');
+                                    quizBtn.href = `/Quiz/Details/${data.quizId}`;
+                                    quizBtn.className = 'btn-quiz';
+                                    quizBtn.innerHTML = '<i class="bi bi-check2-square"></i> Take Quiz';
+                                    lessonActions.prepend(quizBtn);
+                                } else {
+                                    lessonActions.querySelector('.btn-quiz').href = `/Quiz/Details/${data.quizId}`;
+                                }
+                            } else {
+                                const quizBtn = lessonActions.querySelector('.btn-quiz');
+                                if (quizBtn) {
+                                    quizBtn.remove();
+                                }
+                            }
+
+                            // Update the Mark as Complete button with the new lesson ID
+                            const completeButton = document.querySelector('.btn-mark-complete');
+                            completeButton.dataset.lessonId = data.id;
+
+                            // Check if this lesson is already completed
+                            const lessonItem = document.querySelector(`.lesson-item[data-lesson-id="${data.id}"]`);
+                            const isCompleted = lessonItem.classList.contains('completed');
+                            
+                            if (isCompleted) {
+                                completeButton.classList.add('completed');
+                                completeButton.innerHTML = '<i class="bi bi-check-circle-fill"></i> Completed';
+                            } else {
+                                completeButton.classList.remove('completed');
+                                completeButton.innerHTML = '<i class="bi bi-check-circle"></i> Mark as Complete';
+                            }
+                            
+                            // Show lesson content tab
+                            tabButtons.forEach(btn => btn.classList.remove('active'));
+                            tabContents.forEach(content => content.classList.add('hidden'));
+                            document.querySelector('[data-tab="lesson-content"]').classList.add('active');
+                            document.getElementById('lesson-content-tab').classList.remove('hidden');
+                            
+                            // Remove loading state
+                            document.getElementById('lesson-display').classList.remove('loading');
+                        })
+                        .catch(error => {
+                            console.error('Error loading lesson content:', error);
+                            document.getElementById('lesson-display').classList.remove('loading');
+                        });
+                });
+            });
+            
+            // Mark as complete button functionality
+            const completeButton = document.querySelector('.btn-mark-complete');
+            if (completeButton) {
+                completeButton.addEventListener('click', function() {
+                    if (this.classList.contains('completed')) {
+                        return; // Already completed, do nothing
+                    }
+
+                    // Show loading state
+                    this.disabled = true;
+                    this.innerHTML = '<i class="bi bi-hourglass-split"></i> Updating...';
+
+                    const lessonId = this.dataset.lessonId;
+                    
+                    // Call the API to mark the lesson as complete
+                    fetch(`/Lesson/MarkLessonAsComplete?lessonId=${lessonId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    })
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Network response was not ok');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.success) {
+                            // Update button state
+                            this.classList.add('completed');
+                            this.innerHTML = '<i class="bi bi-check-circle-fill"></i> Completed';
+                            
+                            // Update the lesson item in the sidebar
+                            const lessonItem = document.querySelector(`.lesson-item[data-lesson-id="${lessonId}"]`);
+                            lessonItem.classList.add('completed');
+                            lessonItem.querySelector('.lesson-status i').classList.remove('bi-circle');
+                            lessonItem.querySelector('.lesson-status i').classList.add('bi-check-circle-fill');
+                            
+                            // Update the progress indicator
+                            const progressCircle = document.getElementById('progress-circle');
+                            progressCircle.style.setProperty('--progress-value', data.progress);
+                            document.querySelector('.progress-value').textContent = `${data.progress}%`;
+                            
+                            // Update other completed lessons
+                            data.completedLessonIds.forEach(id => {
+                                const item = document.querySelector(`.lesson-item[data-lesson-id="${id}"]`);
+                                if (item && !item.classList.contains('completed')) {
+                                    item.classList.add('completed');
+                                    item.querySelector('.lesson-status i').classList.remove('bi-circle');
+                                    item.querySelector('.lesson-status i').classList.add('bi-check-circle-fill');
+                                }
+                            });
+                        } else {
+                            // Revert to original state
+                            this.classList.remove('completed');
+                            this.innerHTML = '<i class="bi bi-check-circle"></i> Mark as Complete';
+                            alert('Failed to mark lesson as complete: ' + data.message);
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error marking lesson as complete:', error);
+                        this.disabled = false;
+                        this.innerHTML = '<i class="bi bi-check-circle"></i> Mark as Complete';
+                        alert('Failed to mark lesson as complete. Please try again.');
+                    });
+                });
+            }
+        });
+    </script>
+} 

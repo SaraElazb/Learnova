@@ -197,6 +197,37 @@ namespace DataAccessLayer.Migrations
                     b.ToTable("OrderItems");
                 });
 
+            modelBuilder.Entity("DataAccessLayer.Entities.StudentAnswer", b =>
+                {
+                    b.Property<int>("ID")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
+
+                    b.Property<int>("Answer_ID")
+                        .HasColumnType("int");
+
+                    b.Property<bool>("IsCorrect")
+                        .HasColumnType("bit");
+
+                    b.Property<int>("Question_ID")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Submission_ID")
+                        .HasColumnType("int");
+
+                    b.HasKey("ID");
+
+                    b.HasIndex("Answer_ID");
+
+                    b.HasIndex("Question_ID");
+
+                    b.HasIndex("Submission_ID");
+
+                    b.ToTable("StudentAnswers");
+                });
+
             modelBuilder.Entity("Enrollment", b =>
                 {
                     b.Property<int>("Enrollment_ID")
@@ -598,6 +629,12 @@ namespace DataAccessLayer.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("ID"));
 
+                    b.Property<DateTime>("DateSubmitted")
+                        .HasColumnType("datetime2");
+
+                    b.Property<bool>("Passed")
+                        .HasColumnType("bit");
+
                     b.Property<int>("Quiz_ID")
                         .HasColumnType("int");
 
@@ -788,6 +825,33 @@ namespace DataAccessLayer.Migrations
                         .IsRequired();
 
                     b.Navigation("Order");
+                });
+
+            modelBuilder.Entity("DataAccessLayer.Entities.StudentAnswer", b =>
+                {
+                    b.HasOne("Answer", "Answer")
+                        .WithMany()
+                        .HasForeignKey("Answer_ID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Question", "Question")
+                        .WithMany()
+                        .HasForeignKey("Question_ID")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("Submission", "Submission")
+                        .WithMany()
+                        .HasForeignKey("Submission_ID")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Answer");
+
+                    b.Navigation("Question");
+
+                    b.Navigation("Submission");
                 });
 
             modelBuilder.Entity("Enrollment", b =>

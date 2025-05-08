@@ -11,5 +11,7 @@ namespace BusinessLogicLayer.Manager.LessonManager
         Task<bool> EditLessonAsync(int id, LessonRequest model);
         Task<bool> SoftDelete(LessonDto lesson);
         Task<IEnumerable<LessonDto>> GetLessonsByCourseAsync(int courseId);
+        Task<bool> MarkLessonAsCompleteAsync(int lessonId, string userId);
+        Task<IEnumerable<int>> GetCompletedLessonIdsForCourseAsync(int courseId, string userId);
     }
 } 

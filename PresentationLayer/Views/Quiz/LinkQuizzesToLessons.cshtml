@@ -1,0 +1,187 @@
+@model IEnumerable<BusinessLogicLayer.DTOs.QuizDtos.QuizDto>
+
+@{
+    ViewData["Title"] = "Link Quizzes to Lessons";
+    Layout = "_Layout2";
+    var lessons = ViewBag.Lessons as IEnumerable<BusinessLogicLayer.DTOs.LessonDtos.LessonDto>;
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Link Quizzes to Lessons</h2>
+    
+    <div class="alert alert-info">
+        <p><i class="bi bi-info-circle"></i> This page allows you to link quizzes to lessons. Once linked, students will see the quiz button when viewing the lesson content.</p>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Available Quizzes</h5>
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Quiz ID</th>
+                                <th>Title</th>
+                                <th>Current Lesson</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @if (Model.Any())
+                            {
+                                foreach (var quiz in Model)
+                                {
+                                    <tr>
+                                        <td>@quiz.Quiz_ID</td>
+                                        <td>@quiz.Title</td>
+                                        <td>
+                                            @if (quiz.Lesson_ID > 0)
+                                            {
+                                                <span class="text-success">
+                                                    <i class="bi bi-link"></i> Linked to: @quiz.LessonTitle
+                                                </span>
+                                            }
+                                            else
+                                            {
+                                                <span class="text-danger">Not linked to a lesson</span>
+                                            }
+                                        </td>
+                                        <td>
+                                            <div class="dropdown">
+                                                <button class="btn btn-sm btn-outline-primary dropdown-toggle" type="button" id="dropdownMenuButton@(quiz.Quiz_ID)" data-bs-toggle="dropdown" aria-expanded="false">
+                                                    Link to Lesson
+                                                </button>
+                                                <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton@(quiz.Quiz_ID)">
+                                                    @if (lessons != null && lessons.Any())
+                                                    {
+                                                        foreach (var lesson in lessons)
+                                                        {
+                                                            <li>
+                                                                <a class="dropdown-item link-to-lesson" 
+                                                                   href="#" 
+                                                                   data-quiz-id="@quiz.Quiz_ID" 
+                                                                   data-lesson-id="@lesson.Lesson_ID"
+                                                                   data-lesson-title="@lesson.Title">
+                                                                    @lesson.Title (@lesson.Lesson_ID)
+                                                                </a>
+                                                            </li>
+                                                        }
+                                                    }
+                                                    else
+                                                    {
+                                                        <li><span class="dropdown-item">No lessons available</span></li>
+                                                    }
+                                                </ul>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                            else
+                            {
+                                <tr>
+                                    <td colspan="4" class="text-center">No quizzes found</td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal for linking confirmation -->
+<div class="modal fade" id="linkModal" tabindex="-1" aria-labelledby="linkModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="linkModalLabel">Confirm Link</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p>Are you sure you want to link this quiz to the lesson: <span id="lessonTitle"></span>?</p>
+                <p class="text-muted">This will update both the quiz and the lesson.</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmLink">Link Quiz</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Store the quiz and lesson IDs for linking
+            let selectedQuizId = null;
+            let selectedLessonId = null;
+            
+            // Handle clicking on a lesson in the dropdown
+            document.querySelectorAll('.link-to-lesson').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    
+                    // Store the selected quiz and lesson IDs
+                    selectedQuizId = this.dataset.quizId;
+                    selectedLessonId = this.dataset.lessonId;
+                    
+                    // Update the modal with lesson information
+                    document.getElementById('lessonTitle').textContent = this.dataset.lessonTitle;
+                    
+                    // Show the confirmation modal
+                    const modal = new bootstrap.Modal(document.getElementById('linkModal'));
+                    modal.show();
+                });
+            });
+            
+            // Handle confirming the link
+            document.getElementById('confirmLink').addEventListener('click', function() {
+                if (selectedQuizId && selectedLessonId) {
+                    // Show loading state
+                    this.disabled = true;
+                    this.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Linking...';
+                    
+                    // Call the API to link the quiz to the lesson
+                    fetch('/Quiz/LinkQuizToLesson', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({
+                            quizId: selectedQuizId,
+                            lessonId: selectedLessonId
+                        })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            // Success - reload the page
+                            alert('Quiz linked successfully!');
+                            location.reload();
+                        } else {
+                            // Error
+                            alert('Error: ' + data.message);
+                            
+                            // Reset the button
+                            this.disabled = false;
+                            this.innerHTML = 'Link Quiz';
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error linking quiz:', error);
+                        alert('An error occurred while linking the quiz. Please try again.');
+                        
+                        // Reset the button
+                        this.disabled = false;
+                        this.innerHTML = 'Link Quiz';
+                    });
+                }
+            });
+        });
+    </script>
+} 

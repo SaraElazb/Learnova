@@ -35,6 +35,7 @@
             </div>
         }
         
+ 
         <div class="quiz-main">
             <form asp-action="Edit" method="post" class="quiz-form" id="editQuestionForm">
                 <div asp-validation-summary="ModelOnly" class="text-danger"></div>
@@ -59,6 +60,23 @@
                 <div class="form-group">
                     <label class="form-label">Answer Options</label>
                     <div class="answer-options-container" style="background-color: var(--brand-teal-light); padding: 1.5rem; border-radius: var(--border-radius);">
+                        <div class="quiz-alert quiz-alert-info" style="margin-bottom: 1rem;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="16" x2="12" y2="12"></line>
+                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
+                            </svg>
+                            <div>
+                                <p style="margin-bottom: 0.5rem;"><strong>Instructions:</strong></p>
+                                <ol style="margin-left: 1.5rem; margin-bottom: 0;">
+                                    <li>Fill in at least one answer option</li>
+                                    <li>Select the radio button next to the correct answer</li>
+                                    <li>Empty answer fields will be ignored</li>
+                                    <li>Maximum 200 characters per answer</li>
+                                </ol>
+                            </div>
+                        </div>
+                        
                         <div id="answer-options">
                             @if (Model.Answers != null && Model.Answers.Any())
                             {
@@ -73,7 +91,7 @@
                                         <div style="flex-grow: 1;">
                                             <label for="rightAnswer_@i" style="width: 100%;">
                                                 <input name="Answers[@i]" id="Answers_@i" class="form-input answer-input" 
-                                                       value="@Model.Answers[i]" placeholder="Answer option @(i+1)" />
+                                                       value="@Model.Answers[i]" placeholder="Answer option @(i+1)" maxlength="200" />
                                             </label>
                                         </div>
                                     </div>
@@ -96,21 +114,12 @@
                                         <div style="flex-grow: 1;">
                                             <label for="rightAnswer_@i" style="width: 100%;">
                                                 <input name="Answers[@i]" id="Answers_@i" class="form-input answer-input" 
-                                                       placeholder="Answer option @(i+1)" value="" />
+                                                       placeholder="Answer option @(i+1)" value="" maxlength="200" />
                                             </label>
                                         </div>
                                     </div>
                                 }
                             }
-                        </div>
-                        
-                        <div class="quiz-alert quiz-alert-info" style="margin-bottom: 0;">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <circle cx="12" cy="12" r="10"></circle>
-                                <line x1="12" y1="16" x2="12" y2="12"></line>
-                                <line x1="12" y1="8" x2="12.01" y2="8"></line>
-                            </svg>
-                            <p>Select the radio button next to the correct answer.</p>
                         </div>
                     </div>
                 </div>
@@ -141,11 +150,51 @@
                 element.classList.add('visible');
             });
             
-            // Track selected answer
+            // Set initial selection based on right answer
+            const rightAns = '@Model.RightAns';
+            let foundMatch = false;
+            
+            if (rightAns) {
+                $('.answer-input').each(function(index) {
+                    const value = $(this).val().trim();
+                    if (value && value === rightAns) {
+                        $(`#rightAnswer_${index}`).prop('checked', true);
+                        foundMatch = true;
+                    }
+                });
+            }
+            
+            // If no match was found and there are valid answers, select the first one
+            if (!foundMatch) {
+                let firstValidIndex = -1;
+                $('.answer-input').each(function(index) {
+                    if ($(this).val().trim() && firstValidIndex === -1) {
+                        firstValidIndex = index;
+                    }
+                });
+                
+                if (firstValidIndex !== -1) {
+                    $(`#rightAnswer_${firstValidIndex}`).prop('checked', true);
+                    const answerText = $(`#Answers_${firstValidIndex}`).val().trim();
+                    $('#RightAns').val(answerText);
+                }
+            }
+            
+            // Function to update the RightAns value based on selected radio
+            function updateRightAnswer() {
+                const selectedRadio = $('input[name="rightAnswerRadio"]:checked');
+                if (selectedRadio.length > 0) {
+                    const selectedIndex = selectedRadio.val();
+                    const answerText = $(`#Answers_${selectedIndex}`).val().trim();
+                    if (answerText) {
+                        $('#RightAns').val(answerText);
+                    }
+                }
+            }
+            
+            // Track selected answer when radio changes
             $('input[name="rightAnswerRadio"]').change(function() {
-                const selectedIndex = $(this).val();
-                const answerText = $(`#Answers_${selectedIndex}`).val().trim();
-                $('#RightAns').val(answerText);
+                updateRightAnswer();
             });
             
             // Update RightAns when answer text changes
@@ -178,14 +227,17 @@
                 }
                 
                 // Check if any answers are provided
-                let hasAnswer = false;
+                let validAnswers = [];
                 $('.answer-input').each(function() {
                     if ($(this).val().trim()) {
-                        hasAnswer = true;
+                        validAnswers.push({
+                            index: $(this).attr('id').split('_')[1],
+                            text: $(this).val().trim()
+                        });
                     }
                 });
                 
-                if (!hasAnswer) {
+                if (validAnswers.length === 0) {
                     alert('Please provide at least one answer option');
                     $('.answer-input:first').focus();
                     e.preventDefault();
@@ -195,27 +247,37 @@
                 // Make sure a correct answer is selected
                 const selectedRadio = $('input[name="rightAnswerRadio"]:checked');
                 if (selectedRadio.length === 0) {
-                    alert('Please select a correct answer');
-                    e.preventDefault();
-                    return false;
+                    // Auto-select the first valid answer
+                    const firstValidIndex = validAnswers[0].index;
+                    $(`#rightAnswer_${firstValidIndex}`).prop('checked', true);
+                    $('#RightAns').val(validAnswers[0].text);
+                } else {
+                    // Update RightAns based on selected radio
+                    const selectedIndex = selectedRadio.val();
+                    const answerText = $(`#Answers_${selectedIndex}`).val().trim();
+                    if (answerText) {
+                        $('#RightAns').val(answerText);
+                    } else {
+                        // If the selected answer is empty, update to first valid answer
+                        const firstValidIndex = validAnswers[0].index;
+                        $(`#rightAnswer_${firstValidIndex}`).prop('checked', true);
+                        $('#RightAns').val(validAnswers[0].text);
+                    }
                 }
                 
-                // Get the selected answer text and make sure it's not empty
-                const selectedIndex = selectedRadio.val();
-                const selectedAnswerText = $(`#Answers_${selectedIndex}`).val().trim();
-                
-                if (!selectedAnswerText) {
-                    alert('The selected correct answer cannot be empty');
-                    $(`#Answers_${selectedIndex}`).focus();
-                    e.preventDefault();
-                    return false;
+                // Final check on RightAns to make sure it's not empty
+                if (!$('#RightAns').val()) {
+                    $('#RightAns').val(validAnswers[0].text);
                 }
                 
-                // Set the RightAns value to the selected answer text
-                $('#RightAns').val(selectedAnswerText);
+                console.log('Form data:');
+                console.log('Question ID:', $('#QuestionID').val());
+                console.log('Quiz ID:', $('#QuizID').val());
+                console.log('Question Text:', $('#QuestionText').val());
+                console.log('Score:', $('#Score').val());
+                console.log('RightAns:', $('#RightAns').val());
                 
-                // Continue with form submission
-                return true;
+                // Let the form submit naturally
             });
         });
     </script>

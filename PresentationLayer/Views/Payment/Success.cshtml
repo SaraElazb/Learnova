@@ -1,3 +1,145 @@
-﻿<h2>Payment Successful</h2>
-<p>Thank you for your payment!</p>
-<a href="@Url.Action("Index", "Home")" class="btn btn-primary">Back to Home</a>
+﻿@model int
+
+@{
+    Layout = "_Layout2";
+    ViewData["Title"] = "Payment Successful";
+}
+
+<div class="success-page">
+    <div class="layout-container mt-5 pt-5">
+        <div class="success-card">
+            <div class="success-icon">
+                <i class="bi bi-check-circle-fill"></i>
+            </div>
+            <h2 class="success-title">Payment Successful!</h2>
+            <p class="success-message">Thank you for your purchase. Your order #@Model has been processed successfully.</p>
+            
+            <div class="success-alert">
+                <i class="bi bi-envelope-fill"></i>
+                <p>An invoice has been sent to your registered email address.</p>
+            </div>
+            
+            <p class="success-highlight">Your course(s) are now available in your dashboard!</p>
+            
+            <div class="success-actions">
+                <a href="@Url.Action("Dashboard", "Student")" class="layout-btn layout-btn-primary">
+                    <i class="bi bi-speedometer2"></i> Go to Dashboard
+                </a>
+                <a href="@Url.Action("OrderDetails", "Order", new { id = Model })" class="layout-btn layout-btn-outline">
+                    <i class="bi bi-receipt"></i> View Order Details
+                </a>
+                <a href="@Url.Action("Index", "Home")" class="layout-btn layout-btn-ghost">
+                    <i class="bi bi-house"></i> Return to Home
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .success-page {
+        padding-top: 80px;
+        padding-bottom: 120px;
+        min-height: calc(100vh - 200px);
+        background-color: #f9fafb;
+        height: 100vh;
+        margin-top: 80px;
+    }
+    
+    .success-card {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        padding: 3rem 2.5rem;
+        max-width: 600px;
+        margin: 2.5rem auto 3rem;
+        text-align: center;
+    }
+    
+    .success-icon {
+        font-size: 5rem;
+        color: #00b8a9;
+        margin-bottom: 1.5rem;
+    }
+    
+    .success-title {
+        color: #1A1F2C;
+        margin-bottom: 1rem;
+        font-size: 2rem;
+    }
+    
+    .success-message {
+        color: #4b5563;
+        font-size: 1.125rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .success-alert {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        background-color: rgba(0, 184, 169, 0.1);
+        padding: 1rem 1.5rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        text-align: left;
+    }
+    
+    .success-alert i {
+        font-size: 1.5rem;
+        color: #00b8a9;
+        flex-shrink: 0;
+    }
+    
+    .success-alert p {
+        margin: 0;
+        color: #2A303C;
+        font-weight: 500;
+    }
+    
+    .success-highlight {
+        color: #00b8a9;
+        font-weight: 600;
+        font-size: 1.125rem;
+        margin-bottom: 2rem;
+    }
+    
+    .success-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        flex-wrap: wrap;
+    }
+    
+    .success-actions .layout-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.75rem 1.25rem;
+    }
+    
+    .success-actions .layout-btn-ghost {
+        background-color: #f9fafb;
+        color: #4b5563;
+    }
+    
+    .success-actions .layout-btn-ghost:hover {
+        background-color: #f3f4f6;
+        color: #1A1F2C;
+    }
+    
+    @@media (max-width: 768px) {
+        .success-card {
+            padding: 1.75rem;
+            margin: 1.5rem 1rem 3rem;
+        }
+        
+        .success-actions {
+            flex-direction: column;
+        }
+        
+        .success-title {
+            font-size: 1.75rem;
+        }
+    }
+</style>

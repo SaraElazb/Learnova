@@ -3,15 +3,224 @@
 @{
     ViewData["Title"] = Model.Title;
     Layout = "_Layout2";
+    var questionCount = Model.Questions?.Count() ?? 0;
 }
 
 @section CustomHeadContent {
     <link rel="stylesheet" href="~/css/quiz.css">
+    <style>
+        .quiz-question {
+            background-color: var(--brand-teal-light);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+        }
+        
+        .question-text {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .answer-options {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+        
+        .answer-option {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            background-color: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .answer-option:hover {
+            background-color: var(--brand-teal-ultra-light);
+        }
+        
+        .answer-option.selected {
+            background-color: var(--brand-teal);
+            color: white;
+        }
+        
+        .answer-option input[type="radio"] {
+            width: 1.25rem;
+            height: 1.25rem;
+            margin-top: 0.2rem;
+        }
+        
+        .quiz-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+        
+        .quiz-summary {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: var(--brand-teal-light);
+            border-radius: var(--border-radius);
+        }
+        
+        .quiz-instructions {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: var(--brand-teal-ultra-light);
+            border-radius: var(--border-radius);
+        }
+
+        .quiz-progress {
+            margin-bottom: 2rem;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background-color: var(--brand-teal-ultra-light);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 0.5rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background-color: var(--brand-teal);
+            transition: width 0.3s ease;
+        }
+
+        .progress-text {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+        }
+
+        .question-container {
+            background-color: var(--brand-teal-light);
+            padding: 1.5rem;
+            border-radius: var(--border-radius);
+            margin-bottom: 1.5rem;
+        }
+
+        .answers-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            margin-top: 1rem;
+        }
+
+        .answer-item {
+            display: flex;
+            background-color: white;
+            padding: 1rem;
+            border-radius: var(--border-radius);
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .answer-item:hover {
+            background-color: var(--brand-teal-ultra-light);
+        }
+
+        .answer-item.selected {
+            background-color: var(--brand-teal);
+            color: white;
+        }
+
+        .answer-item input[type="radio"] {
+            display: none;
+        }
+
+        .answer-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid var(--brand-teal);
+            border-radius: 50%;
+            margin-right: 12px;
+            position: relative;
+            flex-shrink: 0;
+        }
+
+        .answer-item.selected .answer-checkbox {
+            border-color: white;
+        }
+
+        .answer-item.selected .answer-checkbox:after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: white;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .quiz-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 2rem;
+        }
+
+        .quiz-info {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background-color: var(--brand-teal-ultra-light);
+            border-radius: var(--border-radius);
+        }
+
+        .quiz-info-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-info-title {
+            margin: 0;
+            font-size: 1.2rem;
+        }
+
+        .quiz-badge {
+            background-color: var(--brand-teal);
+            color: white;
+            padding: 0.25rem 0.75rem;
+            border-radius: 100px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .quiz-meta {
+            display: flex;
+            gap: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .quiz-meta-label {
+            font-weight: 500;
+            margin-right: 0.25rem;
+        }
+
+        .no-questions {
+            text-align: center;
+            padding: 2rem;
+            background-color: var(--brand-teal-ultra-light);
+            border-radius: var(--border-radius);
+        }
+    </style>
 }
 
 <div class="quiz-container">
     <div class="quiz-breadcrumb animate-fade-in">
-        <a asp-controller="Lesson" asp-action="Details" asp-route-id="@Model.Lesson_ID">@Model.LessonTitle</a>
+        <a asp-controller="Course" asp-action="CourseContent" asp-route-id="@ViewBag.CourseId">@ViewBag.CourseName</a>
+        <span class="quiz-breadcrumb-separator">•</span>
+        <span>@ViewBag.LessonName</span>
         <span class="quiz-breadcrumb-separator">•</span>
         <span>Quiz</span>
     </div>
@@ -19,7 +228,7 @@
     <div class="quiz-header">
         <h1 class="quiz-title animate-fade-in">@Model.Title</h1>
     </div>
-
+    
     <div class="quiz-content animate-fade-in animate-delay-100">
         <div class="quiz-info">
             <div class="quiz-info-header">
@@ -30,7 +239,7 @@
             <div class="quiz-meta">
                 <div class="quiz-meta-item">
                     <span class="quiz-meta-label">Total Questions:</span>
-                    <span class="quiz-meta-value">@(Model.Questions?.Count ?? 0)</span>
+                    <span class="quiz-meta-value">@(Model.Questions?.Count() ?? 0)</span>
                 </div>
                 <div class="quiz-meta-item">
                     <span class="quiz-meta-label">Time Limit:</span>
@@ -46,24 +255,23 @@
         <div class="quiz-main">
             @if (Model.Questions != null && Model.Questions.Any())
             {
-                <form id="quizForm">
+                <form id="quizForm" method="post" asp-action="SubmitQuiz" asp-route-quizId="@Model.Quiz_ID">
                     <div class="quiz-progress">
                         <div class="progress-bar-container">
                             <div class="progress-bar" style="width: 0%"></div>
                         </div>
                         <div class="progress-text">
-                            <span>Question <span id="currentQuestion">1</span> of @Model.Questions.Count</span>
+                            <span>Question <span id="currentQuestion">1</span> of @Model.Questions.Count()</span>
                             <span id="progress-percentage">0%</span>
                         </div>
                     </div>
                     
-                    @for (int i = 0; i < Model.Questions.Count; i++)
+                    @for (int i = 0; i < Model.Questions.Count(); i++)
                     {
-                        var question = Model.Questions[i];
-                        var isActive = i == 0 ? "active" : "";
+                        var question = Model.Questions.ElementAt(i);
                         
                         <div class="question-container" id="question-@i" data-question-id="@question.QuestionID" style="display: @(i == 0 ? "block" : "none")">
-                            <div class="question-number">Question @(i+1) of @Model.Questions.Count</div>
+                            <div class="question-number">Question @(i+1) of @Model.Questions.Count()</div>
                             <h3 class="question-text">@question.QuestionText</h3>
                             
                             @if (question.Answers != null && question.Answers.Any())
@@ -72,7 +280,7 @@
                                     @foreach (var answer in question.Answers)
                                     {
                                         <div class="answer-item">
-                                            <input type="radio" id="answer_@answer.AnswerID" name="question_@question.QuestionID" value="@answer.Answers">
+                                            <input type="radio" id="answer_@answer.AnswerID" name="question_@question.QuestionID" value="@answer.AnswerID">
                                             <label for="answer_@answer.AnswerID">
                                                 <div class="answer-checkbox"></div>
                                                 <div class="answer-text">@answer.Answers</div>
@@ -83,11 +291,19 @@
                             }
                             else
                             {
-                                <p>No answers available for this question.</p>
+                                <div class="quiz-alert quiz-alert-warning" style="margin: 1rem 0;">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path>
+                                        <line x1="12" y1="9" x2="12" y2="13"></line>
+                                        <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                                    </svg>
+                                    <p>No answer options are available for this question. Please contact your instructor.</p>
+                                </div>
                             }
                         </div>
                     }
                     
+            
                     <div class="quiz-actions">
                         <button type="button" id="prevBtn" class="quiz-btn quiz-btn-secondary" disabled>Previous</button>
                         <button type="button" id="nextBtn" class="quiz-btn quiz-btn-primary">Next Question</button>
@@ -208,10 +424,8 @@
                     return;
                 }
                 
-                alert('Quiz submitted successfully!');
-                
-                // Redirect to lesson
-                window.location.href = '@Url.Action("Details", "Lesson", new { id = Model.Lesson_ID })';
+                // If all questions are answered, submit the form
+                this.submit();
             });
             
             // Initialize

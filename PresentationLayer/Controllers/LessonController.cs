@@ -281,5 +281,102 @@ namespace PresentationLayer.Controllers
                 Text = c.Title
             });
         }
+
+        [HttpGet]
+        public async Task<IActionResult> GetLessonContent(int id)
+        {
+            var lesson = await _lessonManager.FindAsync(id);
+            if (lesson == null) return NotFound();
+
+            Console.WriteLine($"[DEBUG] GetLessonContent for lesson {id}: Quiz_ID = {lesson.Quiz_ID}");
+
+            // Process YouTube URLs for embedding
+            string videoUri = lesson.VideoUri;
+            if (!string.IsNullOrEmpty(videoUri) && 
+                (videoUri.Contains("youtube.com/watch") || videoUri.Contains("youtu.be/")))
+            {
+                // Extract video ID from YouTube URL
+                string videoId = "";
+                if (videoUri.Contains("youtube.com/watch"))
+                {
+                    var uri = new Uri(videoUri);
+                    var query = System.Web.HttpUtility.ParseQueryString(uri.Query);
+                    videoId = query["v"];
+                }
+                else if (videoUri.Contains("youtu.be/"))
+                {
+                    videoId = videoUri.Split(new[] { "youtu.be/" }, StringSplitOptions.None)[1];
+                    if (videoId.Contains("?"))
+                    {
+                        videoId = videoId.Split('?')[0];
+                    }
+                }
+                
+                if (!string.IsNullOrEmpty(videoId))
+                {
+                    videoUri = $"https://www.youtube.com/embed/{videoId}";
+                }
+            }
+
+            return Json(new
+            {
+                id = lesson.Lesson_ID,
+                title = lesson.Title,
+                description = lesson.Description,
+                duration = lesson.Duration,
+                videoUri = videoUri,
+                quizId = lesson.Quiz_ID,
+                lessonOrder = lesson.LessonOrder,
+                courseId = lesson.Course_ID
+            });
+        }
+
+        [HttpPost]
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> MarkLessonAsComplete(int lessonId)
+        {
+            try
+            {
+                string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (string.IsNullOrEmpty(userId))
+                {
+                    return Unauthorized(new { success = false, message = "User not authenticated" });
+                }
+
+                var lesson = await _lessonManager.FindAsync(lessonId);
+                if (lesson == null)
+                {
+                    return NotFound(new { success = false, message = "Lesson not found" });
+                }
+
+                var result = await _lessonManager.MarkLessonAsCompleteAsync(lessonId, userId);
+                
+                if (result)
+                {
+                    // Get the course progress after marking the lesson as complete
+                    var completedLessons = await _lessonManager.GetCompletedLessonIdsForCourseAsync(lesson.Course_ID, userId);
+                    var allLessons = await _lessonManager.GetLessonsByCourseAsync(lesson.Course_ID);
+                    
+                    int totalLessons = allLessons.Count();
+                    int completedCount = completedLessons.Count();
+                    int progressPercentage = totalLessons > 0 ? (completedCount * 100) / totalLessons : 0;
+
+                    return Json(new {
+                        success = true,
+                        message = "Lesson marked as complete",
+                        progress = progressPercentage,
+                        completedLessonIds = completedLessons
+                    });
+                }
+                else
+                {
+                    return BadRequest(new { success = false, message = "Failed to mark lesson as complete" });
+                }
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { success = false, message = $"An error occurred: {ex.Message}" });
+            }
+        }
     }
 } 

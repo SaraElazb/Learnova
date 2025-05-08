@@ -97,6 +97,31 @@
     
     <div class="quiz-content animate-fade-in animate-delay-100" style="max-width: 100%">
         <div class="quiz-main">
+            @if (TempData["Debug"] != null)
+            {
+                <div class="quiz-alert quiz-alert-info" style="margin-bottom: 1rem;">
+                    <p><strong>Debug Info:</strong> @TempData["Debug"]</p>
+                </div>
+            }
+
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="quiz-alert" style="margin-bottom: 1rem; background-color: #c6f6d5; border-left: 4px solid #38a169; color: #276749;">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                    </svg>
+                    <p>@TempData["SuccessMessage"]</p>
+                </div>
+            }
+
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="quiz-alert quiz-alert-error" style="margin-bottom: 1rem;">
+                    <p>@TempData["ErrorMessage"]</p>
+                </div>
+            }
+        
             <div class="quiz-actions" style="margin-top: 0; padding-top: 0; border-top: none; margin-bottom: 2rem;">
                 <a asp-controller="Quiz" asp-action="Edit" asp-route-id="@ViewBag.QuizId" class="quiz-btn quiz-btn-secondary">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -112,6 +137,7 @@
                     </svg>
                     Add New Question
                 </a>
+                
             </div>
             
             @if (!Model.Any())
@@ -156,7 +182,17 @@
                                 }
                                 else
                                 {
-                                    <p style="color: var(--text-gray-400); margin-top: 1rem;">No answer options available.</p>
+                                    <div style="margin-top: 1rem; padding: 1rem; background-color: #fff5f5; border-radius: var(--border-radius); border-left: 4px solid #f56565;">
+                                        <p style="margin-bottom: 0.5rem; font-weight: 600; color: #e53e3e;">No answer options available.</p>
+                                        <p style="margin-bottom: 0.5rem;">This question needs answer options. Please click the button below to add them.</p>
+                                        <a asp-action="Edit" asp-route-id="@item.QuestionID" class="quiz-btn quiz-btn-primary" style="margin-top: 0.5rem; display: inline-block;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                                <line x1="5" y1="12" x2="19" y2="12"></line>
+                                            </svg>
+                                            Add Answers Now
+                                        </a>
+                                    </div>
                                 }
                             </div>
                             <div class="question-card-actions">

@@ -10,6 +10,7 @@ using Microsoft.EntityFrameworkCore;
 using System.Linq;
 using Microsoft.AspNetCore.Authorization;
 using System.Security.Claims;
+using DataAccessLayer.Repositories;
 
 namespace PresentationLayer.Controllers
 {
@@ -21,6 +22,7 @@ namespace PresentationLayer.Controllers
         private readonly IWebHostEnvironment _webHostEnvironment;
         private readonly ICourseManager _courseManager;
         private readonly ILessonManager _lessonManager;
+        private readonly IUnitOfWork _unitOfWork;
 
         private ICategoryManager _categoryManager { get; }
 
@@ -28,14 +30,16 @@ namespace PresentationLayer.Controllers
                              IMapper mapper, IWebHostEnvironment webHostEnvironment  , 
                              ICategoryManager categoryManager ,
                              ICourseManager courseManager,
-                             ILessonManager lessonManager)
+                             ILessonManager lessonManager,
+                             IUnitOfWork unitOfWork)
         {
             
             _mapper = mapper;
             _webHostEnvironment = webHostEnvironment;
             _categoryManager = categoryManager;
-             _courseManager = courseManager;
+            _courseManager = courseManager;
             _lessonManager = lessonManager;
+            _unitOfWork = unitOfWork;
         }
         private async Task<IEnumerable<SelectListItem>> GetCategoriesAsync()
         {
@@ -82,7 +86,62 @@ namespace PresentationLayer.Controllers
             var lessons = await _lessonManager.GetLessonsByCourseAsync(id);
             ViewBag.Lessons = lessons;
 
+            // Check if user is a student
+            if (User.IsInRole("Student"))
+            {
+                string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                
+                // Check if student is enrolled in this course
+                var enrollment = await _unitOfWork.Enrollments.FindAsync(
+                    e => e.User_ID == userId && e.Course_ID == id);
+                
+                if (enrollment != null)
+                {
+                    // Student is enrolled, redirect to course content
+                    return RedirectToAction("ViewCourse", new { id = id });
+                }
+            }
+
+            // User is not enrolled or not a student, show the enrollment page
             return View(courseDTO);
+        }
+
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> ViewCourse(int id)
+        {
+            var courseDTO = await _courseManager.FindAsync(id);
+            if (courseDTO == null) return NotFound();
+
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            
+            // Verify student is enrolled in this course
+            var enrollment = await _unitOfWork.Enrollments.FindAsync(
+                e => e.User_ID == userId && e.Course_ID == id);
+            
+            if (enrollment == null)
+            {
+                // Not enrolled, redirect to details for enrollment
+                return RedirectToAction("Details", new { id = id });
+            }
+
+            // Get lessons for this course
+            var lessons = await _lessonManager.GetLessonsByCourseAsync(id);
+            ViewBag.Lessons = lessons;
+
+            // Calculate progress
+            var completedLessons = await _lessonManager.GetCompletedLessonIdsForCourseAsync(id, userId);
+            int totalLessons = lessons.Count();
+            int completedCount = completedLessons.Count();
+            int progressPercentage = totalLessons > 0 ? (completedCount * 100) / totalLessons : 0;
+            
+            // Update the progress in the DTO
+            courseDTO.Progress = progressPercentage;
+            
+            // Store completed lesson IDs for the view
+            ViewBag.CompletedLessonIds = completedLessons;
+
+            // Return the course content view
+            return View("CourseContent", courseDTO);
         }
 
         // GET: Courses/Create

@@ -1,0 +1,505 @@
+@model PresentationLayer.Models.ProfileViewModel
+@{
+    ViewData["Title"] = "Your Profile";
+    Layout = "_Layout2";
+}
+
+<div class="profile-container">
+    <div class="profile-header">
+        <div class="profile-header-info">
+            <div class="profile-avatar large @(Model.IsInstructor ? "instructor" : Model.IsStudent ? "student" : "")">
+                @Model.FirstName[0]@Model.LastName[0]
+            </div>
+            <div class="profile-details">
+                <h1>@Model.FullName</h1>
+                <p class="profile-role">
+                    @if (Model.IsInstructor)
+                    {
+                        <i class="bi bi-mortarboard-fill"></i>
+                        <span>Instructor</span>
+                    }
+                    else if (Model.IsStudent)
+                    {
+                        <i class="bi bi-person-fill"></i>
+                        <span>Student</span>
+                    }
+                </p>
+                <p class="profile-member-since">
+                    <i class="bi bi-calendar3"></i>
+                    Member since @Model.DateJoined.ToString("MMM yyyy")
+                </p>
+            </div>
+        </div>
+        <div class="profile-actions">
+            <a href="@Url.Action("Edit", "Profile")" class="layout-btn layout-btn-secondary">
+                <i class="bi bi-pencil"></i> Edit Profile
+            </a>
+            <a href="@Url.Action("ChangePassword", "Profile")" class="layout-btn layout-btn-outline">
+                <i class="bi bi-shield-lock"></i> Change Password
+            </a>
+        </div>
+    </div>
+
+    <div class="profile-tabs">
+        <nav>
+            <div class="nav nav-tabs" id="nav-tab" role="tablist">
+                <button class="nav-link active" id="nav-personal-tab" data-bs-toggle="tab" data-bs-target="#nav-personal" type="button" role="tab" aria-controls="nav-personal" aria-selected="true">
+                    <i class="bi bi-person"></i> Personal Info
+                </button>
+                @if (Model.IsInstructor)
+                {
+                    <button class="nav-link" id="nav-instructor-tab" data-bs-toggle="tab" data-bs-target="#nav-instructor" type="button" role="tab" aria-controls="nav-instructor" aria-selected="false">
+                        <i class="bi bi-mortarboard"></i> Instructor Dashboard
+                    </button>
+                }
+                @if (Model.IsStudent)
+                {
+                    <button class="nav-link" id="nav-student-tab" data-bs-toggle="tab" data-bs-target="#nav-student" type="button" role="tab" aria-controls="nav-student" aria-selected="false">
+                        <i class="bi bi-book"></i> Learning Progress
+                    </button>
+                }
+            </div>
+        </nav>
+        
+        <div class="tab-content" id="nav-tabContent">
+            <!-- Personal Info Tab -->
+            <div class="tab-pane fade show active" id="nav-personal" role="tabpanel" aria-labelledby="nav-personal-tab">
+                <div class="profile-info-card">
+                    <div class="profile-info-section">
+                        <h3>Contact Information</h3>
+                        <div class="profile-info-item">
+                            <div class="info-label">
+                                <i class="bi bi-envelope"></i>
+                                Email
+                            </div>
+                            <div class="info-value">@Model.Email</div>
+                        </div>
+                        <div class="profile-info-item">
+                            <div class="info-label">
+                                <i class="bi bi-telephone"></i>
+                                Phone
+                            </div>
+                            <div class="info-value">@(string.IsNullOrEmpty(Model.PhoneNumber) ? "Not provided" : Model.PhoneNumber)</div>
+                        </div>
+                        <div class="profile-info-item">
+                            <div class="info-label">
+                                <i class="bi bi-person-badge"></i>
+                                Username
+                            </div>
+                            <div class="info-value">@Model.UserName</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Instructor Dashboard Tab -->
+            @if (Model.IsInstructor)
+            {
+                <div class="tab-pane fade" id="nav-instructor" role="tabpanel" aria-labelledby="nav-instructor-tab">
+                    <div class="profile-info-card">
+                        <div class="stats-cards">
+                            <div class="stat-card">
+                                <div class="stat-icon instructor">
+                                    <i class="bi bi-journal-richtext"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-value">@Model.TotalCourses</div>
+                                    <div class="stat-label">Courses</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon instructor">
+                                    <i class="bi bi-people"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-value">@Model.TotalStudents</div>
+                                    <div class="stat-label">Students</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-actions centered">
+                            <a href="@Url.Action("Dashboard", "Instructor")" class="layout-btn layout-btn-primary">
+                                <i class="bi bi-speedometer2"></i> Go to Instructor Dashboard
+                            </a>
+                            <a href="@Url.Action("Create", "Course")" class="layout-btn layout-btn-secondary">
+                                <i class="bi bi-plus-circle"></i> Create New Course
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            }
+            
+            <!-- Student Progress Tab -->
+            @if (Model.IsStudent)
+            {
+                <div class="tab-pane fade" id="nav-student" role="tabpanel" aria-labelledby="nav-student-tab">
+                    <div class="profile-info-card">
+                        <div class="stats-cards">
+                            <div class="stat-card">
+                                <div class="stat-icon student">
+                                    <i class="bi bi-journal-bookmark"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-value">@Model.EnrolledCourses</div>
+                                    <div class="stat-label">Enrolled Courses</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon student">
+                                    <i class="bi bi-check2-circle"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-value">@Model.CompletedLessons</div>
+                                    <div class="stat-label">Completed Lessons</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon student">
+                                    <i class="bi bi-award"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-value">@Model.QuizzesPassed</div>
+                                    <div class="stat-label">Quizzes Passed</div>
+                                </div>
+                            </div>
+                            <div class="stat-card">
+                                <div class="stat-icon student">
+                                    <i class="bi bi-graph-up"></i>
+                                </div>
+                                <div class="stat-info">
+                                    <div class="stat-value">@Model.QuizSuccessRate</div>
+                                    <div class="stat-label">Success Rate</div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="profile-actions centered">
+                            <a href="@Url.Action("Dashboard", "Student")" class="layout-btn layout-btn-primary">
+                                <i class="bi bi-speedometer2"></i> Go to Student Dashboard
+                            </a>
+                           
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@section CustomHeadContent {
+    <style>
+        /* Profile Container */
+        .profile-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 140px 1.5rem;
+        }
+        
+        /* Profile Header */
+        .profile-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 2rem;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+        }
+        
+        .profile-header-info {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+        
+        .profile-avatar.large {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2.5rem;
+            font-weight: 600;
+            background-color: #e9ecef;
+            color: #495057;
+        }
+        
+        .profile-avatar.instructor {
+            background-color: #d1f4f2;
+            color: #00b8a9;
+        }
+        
+        .profile-avatar.student {
+            background-color: #e1e8ff;
+            color: #4e73df;
+        }
+        
+        .profile-details h1 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .profile-role {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.5rem;
+        }
+        
+        .profile-member-since {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.9rem;
+            color: var(--text-tertiary);
+        }
+        
+        .profile-actions {
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
+        }
+        
+        .profile-actions.centered {
+            justify-content: center;
+            margin-top: 2rem;
+        }
+        
+        /* Tabs Styling */
+        .profile-tabs {
+            margin-top: 2rem;
+        }
+        
+        .nav-tabs {
+            border-bottom: 1px solid #e9ecef;
+            margin-bottom: 1.5rem;
+        }
+        
+        .nav-tabs .nav-link {
+            border: none;
+            color: var(--text-secondary);
+            padding: 0.75rem 1.25rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s ease;
+        }
+        
+        .nav-tabs .nav-link i {
+            font-size: 1.1rem;
+        }
+        
+        .nav-tabs .nav-link:hover {
+            color: var(--primary);
+            background-color: rgba(0, 184, 169, 0.05);
+        }
+        
+        .nav-tabs .nav-link.active {
+            color: var(--primary);
+            border-bottom: 2px solid var(--primary);
+            background-color: transparent;
+        }
+        
+        /* Profile Info Card */
+        .profile-info-card {
+            background-color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+        }
+        
+        .profile-info-section {
+            margin-bottom: 2rem;
+        }
+        
+        .profile-info-section h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            color: var(--text-primary);
+            padding-bottom: 0.5rem;
+            border-bottom: 1px solid #e9ecef;
+        }
+        
+        .profile-info-item {
+            display: flex;
+            margin-bottom: 1rem;
+            padding: 0.75rem;
+            border-radius: 8px;
+            transition: background-color 0.2s ease;
+        }
+        
+        .profile-info-item:hover {
+            background-color: #f8f9fa;
+        }
+        
+        .info-label {
+            width: 200px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 500;
+            color: var(--text-secondary);
+        }
+        
+        .info-label i {
+            color: var(--primary);
+            font-size: 1.1rem;
+        }
+        
+        .info-value {
+            flex: 1;
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        /* Stats Cards */
+        .stats-cards {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+        
+        .stat-card {
+            display: flex;
+            align-items: center;
+            background-color: #f8f9fa;
+            padding: 1.25rem;
+            border-radius: 12px;
+            min-width: 200px;
+            flex: 1;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+        
+        .stat-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 1rem;
+            font-size: 1.5rem;
+        }
+        
+        .stat-icon.instructor {
+            background-color: #d1f4f2;
+            color: #00b8a9;
+        }
+        
+        .stat-icon.student {
+            background-color: #e1e8ff;
+            color: #4e73df;
+        }
+        
+        .stat-info {
+            flex: 1;
+        }
+        
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+        
+        /* Layout Button Override */
+        .layout-btn-outline {
+            background-color: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+        }
+        
+        .layout-btn-outline:hover {
+            background-color: rgba(0, 184, 169, 0.1);
+        }
+        
+        /* Responsive */
+        @@media (max-width: 768px) {
+            .profile-header {
+                flex-direction: column;
+                align-items: center;
+                text-align: center;
+            }
+            
+            .profile-header-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .profile-actions {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .profile-info-item {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .info-label {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .info-value {
+                text-align: center;
+            }
+            
+            .nav-tabs {
+                display: flex;
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+            
+            .nav-tabs .nav-link {
+                flex-shrink: 0;
+            }
+            
+            .stats-cards {
+                flex-direction: column;
+            }
+            
+            .stat-card {
+                width: 100%;
+            }
+        }
+    </style>
+}
+
+@section CustomScripts {
+    <script>
+        // Enable Bootstrap tabs
+        document.addEventListener('DOMContentLoaded', function() {
+            var triggerTabList = [].slice.call(document.querySelectorAll('#nav-tab button'))
+            triggerTabList.forEach(function(triggerEl) {
+                var tabTrigger = new bootstrap.Tab(triggerEl)
+                
+                triggerEl.addEventListener('click', function(event) {
+                    event.preventDefault()
+                    tabTrigger.show()
+                })
+            })
+        });
+    </script>
+} 

@@ -23,7 +23,7 @@ namespace PresentationLayer.Controllers
             _webHostEnvironment = webHostEnvironment;
             _categoryManager = categoryManager;
         }
-        [Route("/categories-list")]
+        
         public async Task<IActionResult> Index()
         {
             var categoryDTOs = await _categoryManager.GetCategoriesAsync();
@@ -56,6 +56,21 @@ namespace PresentationLayer.Controllers
             var categoryRequest = await _categoryManager.GetCategoryForEditAsync(id);
             if (categoryRequest == null)
                 return NotFound();
+
+            // Get the current image info from the category
+            try
+            {
+                var allCategories = await _categoryManager.GetCategoriesAsync();
+                var category = allCategories.FirstOrDefault(c => c.Category_ID == id);
+                if (category != null && !string.IsNullOrEmpty(category.ImagePath))
+                {
+                    ViewBag.CurrentImage = category.ImagePath;
+                }
+            }
+            catch
+            {
+                // If we can't get the image, just continue without it
+            }
 
             return View(categoryRequest);
         }

@@ -1,0 +1,447 @@
+/* Mobile Responsiveness CSS
+ * This file contains global mobile responsiveness styles
+ * that apply across the entire application.
+ */
+
+/* Base Responsive Variables */
+:root {
+  --breakpoint-xs: 576px;
+  --breakpoint-sm: 768px;
+  --breakpoint-md: 992px;
+  --breakpoint-lg: 1200px;
+  
+  /* Touch-friendly sizing */
+  --touch-target-size: 48px;
+  --touch-spacing: 8px;
+}
+
+/* Global Responsive Rules */
+html {
+  box-sizing: border-box;
+  -webkit-text-size-adjust: 100%;
+}
+
+*, *:before, *:after {
+  box-sizing: inherit;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Responsive Images */
+img, video {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Responsive Typography */
+@media (max-width: 768px) {
+  h1 {
+    font-size: 1.75rem !important;
+  }
+  
+  h2 {
+    font-size: 1.5rem !important;
+  }
+  
+  h3 {
+    font-size: 1.25rem !important;
+  }
+  
+  p, li, a {
+    font-size: 0.9375rem !important;
+  }
+}
+
+/* Responsive Tables */
+table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+@media (max-width: 768px) {
+  .table-responsive {
+    display: block;
+    width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Convert tables to cards on mobile */
+  .table-to-cards thead {
+    display: none;
+  }
+  
+  .table-to-cards tr {
+    display: block;
+    margin-bottom: 1rem;
+    border: 1px solid #dee2e6;
+    border-radius: 0.25rem;
+  }
+  
+  .table-to-cards td {
+    display: block;
+    text-align: right;
+    padding: 0.75rem;
+    border-bottom: 1px solid #dee2e6;
+  }
+  
+  .table-to-cards td:last-child {
+    border-bottom: 0;
+  }
+  
+  .table-to-cards td:before {
+    content: attr(data-label);
+    float: left;
+    font-weight: bold;
+  }
+}
+
+/* Touch-Friendly UI Elements */
+@media (max-width: 992px) {
+  /* Increase form element sizes for touch */
+  input, select, textarea, button, .btn, .form-control {
+    min-height: var(--touch-target-size);
+    font-size: 1rem !important;
+  }
+  
+  /* Wider inputs on small screens */
+  input[type="text"],
+  input[type="email"],
+  input[type="password"],
+  input[type="number"],
+  input[type="search"],
+  input[type="tel"],
+  input[type="url"],
+  select,
+  textarea,
+  .form-control {
+    width: 100%;
+  }
+  
+  /* Larger spacing for touch targets */
+  .nav-link, 
+  .dropdown-item,
+  .list-group-item,
+  .card-link {
+    padding: 0.75rem 1rem;
+  }
+  
+  /* Increase spacing between interactive elements */
+  .btn + .btn,
+  .form-group,
+  .nav-item,
+  .list-group-item {
+    margin-bottom: var(--touch-spacing);
+  }
+  
+  /* Full width buttons for better touch targets */
+  .btn {
+    display: block;
+    width: 100%;
+    margin-bottom: 0.5rem;
+  }
+  
+  /* Smaller button groups can stay inline */
+  .btn-group .btn,
+  .input-group .btn,
+  .btn-sm {
+    display: inline-block;
+    width: auto;
+  }
+}
+
+/* Responsive Layouts */
+.container-fluid {
+  width: 100%;
+  padding-right: 15px;
+  padding-left: 15px;
+  margin-right: auto;
+  margin-left: auto;
+}
+
+/* Mobile-First Grid System Enhancements */
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  margin-right: -15px;
+  margin-left: -15px;
+}
+
+@media (max-width: 768px) {
+  .row {
+    margin-right: -10px;
+    margin-left: -10px;
+  }
+  
+  [class*="col-"] {
+    padding-right: 10px;
+    padding-left: 10px;
+  }
+  
+  /* Stack all columns on mobile */
+  .mobile-stack {
+    flex: 0 0 100%;
+    max-width: 100%;
+  }
+}
+
+/* Optimized Image Loading */
+.lazy-load {
+  transition: opacity 0.3s;
+  opacity: 0;
+}
+
+.lazy-load.loaded {
+  opacity: 1;
+}
+
+/* Mobile-specific visibility classes */
+.hide-on-mobile {
+  display: initial;
+}
+
+@media (max-width: 768px) {
+  .hide-on-mobile {
+    display: none !important;
+  }
+  
+  .show-on-mobile {
+    display: initial !important;
+  }
+}
+
+/* Mobile Navigation Enhancements */
+@media (max-width: 992px) {
+  .mobile-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    display: flex;
+    justify-content: space-around;
+    padding: 0.5rem 0;
+    box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+  }
+  
+  .mobile-nav-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    font-size: 0.75rem;
+    padding: 0.5rem;
+  }
+  
+  .mobile-nav-icon {
+    font-size: 1.25rem;
+    margin-bottom: 0.25rem;
+  }
+}
+
+/* Course Cards for Mobile */
+@media (max-width: 768px) {
+  .course-card {
+    margin-bottom: 1rem;
+  }
+  
+  .course-thumbnail {
+    height: 160px !important;
+  }
+  
+  .course-card-content {
+    padding: 1rem;
+  }
+  
+  .course-card-title {
+    font-size: 1.125rem !important;
+    margin-bottom: 0.5rem;
+  }
+  
+  .course-card-meta {
+    font-size: 0.875rem !important;
+  }
+}
+
+/* Quiz and Assessment Styling for Mobile */
+@media (max-width: 768px) {
+  .quiz-container {
+    padding: 1rem;
+  }
+  
+  .quiz-question {
+    margin-bottom: 1.5rem;
+  }
+  
+  .quiz-options label {
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+  }
+  
+  .quiz-navigation {
+    margin-top: 1.5rem;
+  }
+}
+
+/* Lesson Content for Mobile */
+@media (max-width: 768px) {
+  .lesson-content {
+    padding: 1rem;
+  }
+  
+  .lesson-video {
+    margin-bottom: 1rem;
+  }
+  
+  .lesson-video iframe,
+  .lesson-video video {
+    border-radius: 8px;
+    max-height: 240px;
+  }
+  
+  .lesson-navigation {
+    flex-direction: column;
+  }
+  
+  .lesson-navigation-button {
+    margin-bottom: 0.5rem;
+    width: 100%;
+  }
+}
+
+/* Helper Classes */
+.text-center-mobile {
+  text-align: inherit;
+}
+
+@media (max-width: 768px) {
+  .text-center-mobile {
+    text-align: center !important;
+  }
+  
+  .p-mobile-0 {
+    padding: 0 !important;
+  }
+  
+  .m-mobile-0 {
+    margin: 0 !important;
+  }
+}
+
+/* Admin Dashboard Mobile Responsiveness */
+@media (max-width: 992px) {
+  /* Responsive sidebar for admin layout */
+  .sidebar {
+    position: fixed;
+    top: 0;
+    left: -280px;
+    height: 100vh;
+    width: 280px;
+    z-index: 1050;
+    transition: left 0.3s ease;
+    box-shadow: none;
+  }
+  
+  .sidebar-open {
+    left: 0;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+  }
+  
+  .mobile-menu-btn {
+    display: flex !important;
+  }
+  
+  .mobile-close-btn {
+    display: flex !important;
+  }
+  
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
+  }
+  
+  /* Dashboard cards layout */
+  .stats-grid {
+    grid-template-columns: repeat(1, 1fr) !important;
+  }
+  
+  .dashboard-card {
+    padding: 1rem !important;
+  }
+  
+  /* Admin forms */
+  .admin-form-container {
+    padding: 1rem !important;
+  }
+  
+  .form-grid {
+    grid-template-columns: 1fr !important;
+  }
+  
+  /* Admin tables */
+  .admin-table th, 
+  .admin-table td {
+    padding: 0.75rem 0.5rem !important;
+  }
+  
+  .admin-table .actions-cell {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .admin-table .action-btn {
+    margin-bottom: 0.25rem;
+  }
+  
+  /* Admin table filters and search */
+  .table-filters {
+    flex-direction: column !important;
+    align-items: flex-start !important;
+  }
+  
+  .table-filters > * {
+    margin-bottom: 0.5rem;
+    width: 100%;
+  }
+}
+
+/* Enhanced Touch-Friendly Admin Controls */
+@media (max-width: 768px) {
+  .admin-btn {
+    min-height: var(--touch-target-size);
+    font-size: 0.9rem !important;
+    padding: 0.75rem 1rem !important;
+  }
+  
+  .admin-card {
+    padding: 1rem !important;
+    margin-bottom: 1rem !important;
+  }
+  
+  .content-container {
+    padding: 1rem !important;
+  }
+  
+  .user-menu {
+    margin-left: auto;
+  }
+  
+  .user-name {
+    display: none !important;
+  }
+  
+  .breadcrumb {
+    display: none !important;
+  }
+  
+  /* Admin modals */
+  .admin-modal-content {
+    width: 95% !important;
+    padding: 1rem !important;
+  }
+} 

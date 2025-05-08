@@ -19,16 +19,21 @@
 
             <div class="course-meta">
                 <div class="meta-item">
-                    <span class="star-icon">★</span>
+                    <i class="bi bi-star-fill"></i>
                     <span>@Model.Rating.ToString("0.0")</span>
                     <span class="meta-text">(Rating)</span>
                 </div>
                 <div class="meta-item">
-                    <span class="meta-icon">👥</span>
+                    <i class="bi bi-people-fill"></i>
+                    <span>@Model.EnrollmentCount</span>
                     <span class="meta-text">Students enrolled</span>
                 </div>
                 <div class="meta-item">
-                    <span class="meta-icon">⏱️</span>
+                    <i class="bi bi-clock"></i>
+                    <span class="meta-text">@Model.LessonCount Lessons</span>
+                </div>
+                <div class="meta-item">
+                    <i class="bi bi-calendar"></i>
                     <span class="meta-text">Created @Model.CreatedDate.ToString("MMM dd, yyyy")</span>
                 </div>
             </div>
@@ -37,28 +42,39 @@
                 @Model.Description
             </p>
 
-            <a href="#curriculum" class="btn btn-outline view-curriculum-btn">View Curriculum</a>
+            <a href="#curriculum" class="btn btn-outline view-curriculum-btn">
+                <i class="bi bi-list-check"></i> View Curriculum
+            </a>
         </div>
 
         <div class="course-card">
-            <img src="@(string.IsNullOrEmpty(Model.ImagePath) ? "/assets/course-placeholder.jpg" : Model.ImagePath)" 
-                 alt="@Model.Title" 
-                 class="course-thumbnail">
+            <div class="course-image-container">
+                <img src="@(string.IsNullOrEmpty(Model.ImagePath) ? "/assets/course-placeholder.jpg" : Model.ImagePath)"
+                     alt="@Model.Title"
+                     class="course-thumbnail"
+                     onerror="this.src='/assets/course-placeholder.jpg'">
+            </div>
             <div class="card-content">
                 <div class="course-price">$@Model.Price</div>
-                <a href="/AddToCart/@Model.Course_ID" class="btn btn-enroll" data-course-id="@Model.Course_ID">Enroll Now</a>
-                <div class="guarantee">30-Day Money-Back Guarantee</div>
+                <form action="/ShoppingCart/AddToCart/@Model.Course_ID" method="post" style="display:inline;">
+                    <button type="submit" class="btn btn-enroll" data-course-id="@Model.Course_ID">
+                        <i class="bi bi-cart-plus"></i> Enroll Now
+                    </button>
+                </form>
+                <div class="guarantee">
+                    <i class="bi bi-shield-check"></i> 30-Day Money-Back Guarantee
+                </div>
                 <div class="course-includes">
                     <div class="include-item">
-                        <span class="include-icon">📹</span>
+                        <i class="bi bi-camera-video"></i>
                         <span>Full lifetime access</span>
                     </div>
                     <div class="include-item">
-                        <span class="include-icon">📱</span>
+                        <i class="bi bi-phone"></i>
                         <span>Access on mobile and desktop</span>
                     </div>
                     <div class="include-item">
-                        <span class="include-icon">🏆</span>
+                        <i class="bi bi-award"></i>
                         <span>Certificate of completion</span>
                     </div>
                 </div>
@@ -67,19 +83,33 @@
     </div>
 </section>
 
+<!-- Mobile Enroll Button (visible only on mobile) -->
+<div class="mobile-cta">
+    <div class="mobile-price">$@Model.Price</div>
+    <form action="/ShoppingCart/AddToCart/@Model.Course_ID" method="post" style="display:inline;">
+        <button type="submit" class="btn btn-enroll" data-course-id="@Model.Course_ID">
+            <i class="bi bi-cart-plus"></i> Enroll Now
+        </button>
+    </form>
+</div>
+
 <!-- Main Content -->
 <section class="main-content">
     <div class="container">
         <div class="course-content">
             <div class="content-section" id="description">
-                <h2 class="section-title">Course Description</h2>
-                <p>@Model.Description</p>
-                
-        
+                <h2 class="section-title">
+                    <i class="bi bi-info-circle"></i> Course Description
+                </h2>
+                <div class="description-content">
+                    <p>@Model.Description</p>
+                </div>
             </div>
 
             <div class="content-section" id="curriculum">
-                <h2 class="section-title">Course Curriculum</h2>
+                <h2 class="section-title">
+                    <i class="bi bi-list-check"></i> Course Curriculum
+                </h2>
                 <div class="curriculum-list">
                     @if (ViewBag.Lessons != null && ((IEnumerable<BusinessLogicLayer.DTOs.LessonDtos.LessonDto>)ViewBag.Lessons).Any())
                     {
@@ -87,63 +117,121 @@
                         {
                             <div class="curriculum-item">
                                 <div class="curriculum-header">
-                                    <h3 class="curriculum-title">@lesson.Title</h3>
-                                    <span class="curriculum-toggle">+</span>
-                                </div>
-                                <div class="curriculum-content">
-                                    <ul class="curriculum-list-items">
-                                        <li>@lesson.Description</li>
-                                        <li>Duration: @lesson.Duration minutes</li>
-                                        @if (!string.IsNullOrEmpty(lesson.VideoUri))
-                                        {
-                                            <li>Video: <a href="@lesson.VideoUri" target="_blank">Watch Video</a></li>
-                                        }
+                                    <div class="curriculum-title-container">
+                                        <i class="bi bi-play-circle"></i>
+                                        <h3 class="curriculum-title">@lesson.Title</h3>
+                                    </div>
+                                    <div class="curriculum-meta">
+                                        <span class="duration">
+                                            <i class="bi bi-clock"></i> @lesson.Duration min
+                                        </span>
                                         @if (lesson.Quiz_ID != null)
                                         {
-                                            <li>Quiz: <a href="@Url.Action("Details", "Quiz", new { id = lesson.Quiz_ID })">Take Quiz</a></li>
+                                            <span class="quiz-badge">
+                                                <i class="bi bi-journal-check"></i> Quiz
+                                            </span>
                                         }
-                                    </ul>
+                                        <span class="curriculum-toggle">+</span>
+                                    </div>
+                                </div>
+                                <div class="curriculum-content">
+                                    <div class="curriculum-details">
+                                        <p class="lesson-description">@lesson.Description</p>
+                                        <div class="lesson-resources">
+                                            @if (!string.IsNullOrEmpty(lesson.VideoUri))
+                                            {
+                                                <div class="resource-item">
+                                                    <i class="bi bi-camera-video"></i>
+                                                    <span>Video Lesson</span>
+                                                </div>
+                                            }
+                                            @if (lesson.Quiz_ID != null)
+                                            {
+                                                <div class="resource-item">
+                                                    <i class="bi bi-journal-check"></i>
+                                                    <span>Practice Quiz</span>
+                                                </div>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
                             </div>
                         }
                     }
                     else
                     {
-                        <div class="no-lessons-message">
-                            <p>No lessons available for this course yet.</p>
+                        <div class="empty-curriculum">
+                            <i class="bi bi-journal-text"></i>
+                            <p>No lessons have been added to this course yet.</p>
                         </div>
                     }
                 </div>
             </div>
 
-            <div class="content-section">
-                <h2 class="section-title">Your Instructor</h2>
-                <div class="instructor">
-                    <img src="/assets/instructor-placeholder.jpg" alt="Instructor" class="instructor-avatar">
-                    <div class="instructor-info">
-                        <h3 class="instructor-name">@Model.InstructorName</h3>
-                        <p class="instructor-title">Expert in @Model.CategoryName</p>
-                        <p class="instructor-bio">
-                            Our instructors are experts in their fields with real-world experience. 
-                            They provide high-quality education to help you achieve your goals.
-                        </p>
+            <div class="content-section instructor-section">
+                <h2 class="section-title">
+                    <i class="bi bi-person-workspace"></i> Your Instructor
+                </h2>
+                <div class="instructor-card">
+                    <div class="instructor-header">
+                        <img src="/assets/instructor-placeholder.jpg" 
+                             alt="@Model.InstructorName" 
+                             class="instructor-avatar">
+                        <div class="instructor-info">
+                            <h3 class="instructor-name">@Model.InstructorName</h3>
+                            <p class="instructor-title">Expert in @Model.CategoryName</p>
+                            <div class="instructor-stats">
+                                <div class="stat-item">
+                                    <i class="bi bi-star-fill"></i>
+                                    <span>@Model.Rating.ToString("0.0") Instructor Rating</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="bi bi-people-fill"></i>
+                                    <span>@Model.EnrollmentCount Students</span>
+                                </div>
+                                <div class="stat-item">
+                                    <i class="bi bi-book"></i>
+                                    <span>@Model.LessonCount Lessons</span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="instructor-bio">
+                        <p>This instructor is an expert in their field and has created this course to share their knowledge and experience with students around the world.</p>
                     </div>
                 </div>
             </div>
-
         </div>
     </div>
 </section>
 
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Curriculum toggle
+            const curriculumHeaders = document.querySelectorAll('.curriculum-header');
 
+            curriculumHeaders.forEach(header => {
+                header.addEventListener('click', function () {
+                    const content = this.nextElementSibling;
+                    const toggle = this.querySelector('.curriculum-toggle');
 
-<!-- Fixed CTA for mobile -->
-<div class="mobile-cta">
-    <div class="mobile-price">$@Model.Price</div>
-    <a href="/ShoppingCart/AddToCart/@Model.Course_ID" class="btn btn-enroll" data-course-id="@Model.Course_ID">Enroll Now</a>
-</div>
+                    // Toggle content visibility
+                    content.classList.toggle('active');
 
-@section CustomScripts {
-    <script src="~/js/course-details.js"></script>
+                    // Change toggle symbol
+                    toggle.textContent = content.classList.contains('active') ? '-' : '+';
+                });
+            });
+
+            // Smooth scroll for curriculum link
+            document.querySelector('.view-curriculum-btn').addEventListener('click', function(e) {
+                e.preventDefault();
+                document.querySelector('#curriculum').scrollIntoView({ 
+                    behavior: 'smooth' 
+                });
+            });
+        });
+    </script>
 }
 

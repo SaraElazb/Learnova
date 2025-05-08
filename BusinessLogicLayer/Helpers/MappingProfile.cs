@@ -2,7 +2,9 @@
 using BusinessLogicLayer.DTOs.CategoryDtos;
 using BusinessLogicLayer.DTOs.CourseDtos;
 using BusinessLogicLayer.DTOs.LessonDtos;
+using BusinessLogicLayer.DTOs.OrderDtos;
 using BusinessLogicLayer.DTOs.QuizDtos;
+using DataAccessLayer.Entities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -63,6 +65,12 @@ namespace BusinessLogicLayer.Helpers
                     src.Question != null && src.Answers == src.Question.RightAns));
             
             CreateMap<AnswerDto, Answer>();
+
+            //////////////////
+
+            // Order mappings
+            CreateMap<Order, OrderDto>();
+            CreateMap<OrderItem, OrderItemDto>();
         }
     }
 }

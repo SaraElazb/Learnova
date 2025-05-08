@@ -480,31 +480,32 @@ svg {
 }
 
 .user-name {
-    font-size: 0.9rem;
-    font-weight: 500;
     display: none;
 }
 
 @media (min-width: 1024px) {
     .user-name {
         display: block;
+        font-weight: 500;
     }
 }
 
 .profile-dropdown {
     position: absolute;
-    top: calc(100% + 10px);
+    top: 100%;
     right: 0;
-    width: 200px;
+    width: 220px;
     background-color: var(--layout-color-card-bg);
     border-radius: var(--layout-border-radius-md);
-    box-shadow: var(--layout-shadow-lg);
+    box-shadow: var(--layout-shadow-md);
+    z-index: 100;
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.3s ease;
-    z-index: 100;
-    overflow: hidden;
+    transform: translateY(10px);
+    transition: opacity var(--layout-transition-speed) ease,
+                visibility var(--layout-transition-speed) ease,
+                transform var(--layout-transition-speed) ease;
+    margin-top: 0.5rem;
 }
 
 .profile-dropdown.active {
@@ -513,28 +514,41 @@ svg {
     transform: translateY(0);
 }
 
-.profile-dropdown ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
+.dropdown-content {
+    padding: 0.5rem;
 }
 
-.profile-dropdown ul li {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+.dropdown-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    color: var(--layout-color-sidebar-text);
+    border-radius: var(--layout-border-radius-sm);
+    transition: background-color var(--layout-transition-speed) ease;
+    cursor: pointer;
+    width: 100%;
+    text-align: left;
 }
 
-.profile-dropdown ul li:last-child {
-    border-bottom: none;
+.dropdown-item:hover {
+    background-color: rgba(255, 255, 255, 0.1);
 }
 
-.profile-dropdown ul li a {
-    padding: 0.75rem 1rem;
-    display: block;
-    transition: all 0.2s ease;
+.dropdown-logout-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--layout-color-error);
+    font-weight: 500;
+    width: 100%;
+    text-align: left;
+    background: none;
+    border: none;
 }
 
-.profile-dropdown ul li a:hover {
-    background-color: rgba(255, 255, 255, 0.05);
+.dropdown-item svg {
+    flex-shrink: 0;
 }
 
 /* Dropdown Logout Button */

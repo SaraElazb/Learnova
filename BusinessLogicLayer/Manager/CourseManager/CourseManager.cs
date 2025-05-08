@@ -178,5 +178,23 @@ namespace BusinessLogicLayer.Manager.CourseManager
                 return new List<CourseDTO>();
             }
         }
+
+        public async Task<bool> GetStudentCourseAccessAsync(string studentId, int courseId)
+        {
+            try
+            {
+                // Check if the student is enrolled in the course
+                var enrollment = await _unitOfWork.Enrollments.FindAsync(
+                    e => e.User_ID == studentId && e.Course_ID == courseId
+                );
+                
+                return enrollment != null;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error in GetStudentCourseAccessAsync: {ex.Message}");
+                return false;
+            }
+        }
     }
 }

@@ -1,25 +1,180 @@
 ﻿@model Grad_Project.Models.ErrorViewModel
 @{
     ViewData["Title"] = "Error";
+    Layout = "_Layout2";
 }
 
-<h1 class="text-danger">Error.</h1>
-<h2 class="text-danger">An error occurred while processing your request.</h2>
+<div class="error-page">
+    <div class="layout-container mt-5 pt-5">
+        <div class="error-card">
+            <div class="error-icon">
+                <i class="bi bi-exclamation-triangle-fill"></i>
+            </div>
+            <h1 class="error-title">Oops! Something went wrong.</h1>
+            <p class="error-message">An error occurred while processing your request.</p>
+            
+            @if (Model.ShowRequestId)
+            {
+                <div class="error-request-id">
+                    <p>
+                        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+                    </p>
+                </div>
+            }
+            
+            <div class="error-details">
+                <h3>What might have happened?</h3>
+                <ul>
+                    <li>The page you're looking for might have been moved or deleted</li>
+                    <li>You might have typed the address incorrectly</li>
+                    <li>A temporary error might have occurred on our servers</li>
+                </ul>
+            </div>
+            
+            <div class="error-actions">
+                <a href="/" class="layout-btn layout-btn-primary">
+                    <i class="bi bi-house-door mr-2"></i> Return to Home
+                </a>
+                <a href="javascript:history.back()" class="layout-btn layout-btn-outline">
+                    <i class="bi bi-arrow-left mr-2"></i> Go Back
+                </a>
+            </div>
+            
+            @if (System.Diagnostics.Debugger.IsAttached || 
+                 Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") == "Development")
+            {
+                <div class="error-development-note">
+                    <h3>Development Mode</h3>
+                    <p>
+                        Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
+                    </p>
+                    <p>
+                        <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
+                        It can result in displaying sensitive information from exceptions to end users.
+                        For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
+                        and restarting the app.
+                    </p>
+                </div>
+            }
+        </div>
+    </div>
+</div>
 
-@if (Model.ShowRequestId)
-{
-    <p>
-        <strong>Request ID:</strong> <code>@Model.RequestId</code>
-    </p>
-}
-
-<h3>Development Mode</h3>
-<p>
-    Swapping to <strong>Development</strong> environment will display more detailed information about the error that occurred.
-</p>
-<p>
-    <strong>The Development environment shouldn't be enabled for deployed applications.</strong>
-    It can result in displaying sensitive information from exceptions to end users.
-    For local debugging, enable the <strong>Development</strong> environment by setting the <strong>ASPNETCORE_ENVIRONMENT</strong> environment variable to <strong>Development</strong>
-    and restarting the app.
-</p>
+<style>
+    .error-page {
+        padding-top: 80px;
+        padding-bottom: 120px;
+        min-height: calc(100vh - 200px);
+        background-color: #f9fafb;
+    }
+    
+    .error-card {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        padding: 2.5rem;
+        max-width: 800px;
+        margin: 2.5rem auto 3rem;
+        text-align: center;
+    }
+    
+    .error-icon {
+        font-size: 4rem;
+        color: #ef4444;
+        margin-bottom: 1rem;
+    }
+    
+    .error-title {
+        color: #1A1F2C;
+        margin-bottom: 1rem;
+        font-size: 2rem;
+    }
+    
+    .error-message {
+        color: #4b5563;
+        font-size: 1.125rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .error-request-id {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        margin-bottom: 1.5rem;
+        display: inline-block;
+    }
+    
+    .error-request-id code {
+        background-color: #e9ecef;
+        padding: 0.2rem 0.4rem;
+        border-radius: 0.25rem;
+        font-family: monospace;
+    }
+    
+    .error-details {
+        text-align: left;
+        margin-bottom: 2rem;
+    }
+    
+    .error-details h3 {
+        color: #1A1F2C;
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+    }
+    
+    .error-details ul {
+        list-style-type: disc;
+        padding-left: 1.5rem;
+        color: #4b5563;
+    }
+    
+    .error-details li {
+        margin-bottom: 0.5rem;
+    }
+    
+    .error-actions {
+        display: flex;
+        justify-content: center;
+        gap: 1rem;
+        margin-bottom: 2rem;
+    }
+    
+    .error-actions .layout-btn {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+    
+    .error-development-note {
+        margin-top: 2rem;
+        padding-top: 1.5rem;
+        border-top: 1px solid #e9ecef;
+        text-align: left;
+    }
+    
+    .error-development-note h3 {
+        color: #1A1F2C;
+        margin-bottom: 0.75rem;
+        font-size: 1.25rem;
+    }
+    
+    .error-development-note p {
+        margin-bottom: 1rem;
+        color: #4b5563;
+    }
+    
+    @@media (max-width: 768px) {
+        .error-card {
+            padding: 1.75rem;
+            margin: 1.5rem 1rem 3rem;
+        }
+        
+        .error-actions {
+            flex-direction: column;
+        }
+        
+        .error-title {
+            font-size: 1.5rem;
+        }
+    }
+</style>

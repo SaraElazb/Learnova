@@ -1,0 +1,354 @@
+@using BusinessLogicLayer.DTOs.PaymentDtos
+@model BusinessLogicLayer.DTOs.OrderDtos.OrderDto
+
+@{
+    Layout = "_Layout2";
+    ViewData["Title"] = "Checkout";
+    var checkoutModel = new CheckoutViewModel
+    {
+        OrderId = Model.OrderId,
+        TotalAmount = Model.TotalAmount,
+        Email = User.Identity?.Name ?? string.Empty
+    };
+}
+
+<div class="checkout-page">
+    <div class="layout-container mt-5 pt-5">
+        <h2 class="checkout-title">Complete Your Purchase</h2>
+        
+        <div class="checkout-grid">
+            <div class="order-summary">
+                <div class="checkout-card">
+                    <div class="checkout-card-header">
+                        <h4>Order Summary</h4>
+                    </div>
+                    <div class="checkout-card-body">
+                        <table class="checkout-table">
+                            <thead>
+                                <tr>
+                                    <th>Course</th>
+                                    <th>Price</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var item in Model.Items)
+                                {
+                                    <tr>
+                                        <td>@item.CourseTitle</td>
+                                        <td>@item.Price.ToString("C")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                            <tfoot>
+                                <tr>
+                                    <th>Total</th>
+                                    <th class="checkout-total">@Model.TotalAmount.ToString("C")</th>
+                                </tr>
+                            </tfoot>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="payment-details">
+                <div class="checkout-card">
+                    <div class="checkout-card-header">
+                        <h4>Payment Information</h4>
+                    </div>
+                    <div class="checkout-card-body">
+                        <form id="payment-form" asp-action="ProcessPayment" asp-controller="Payment" method="post">
+                            <input type="hidden" name="orderId" value="@Model.OrderId" />
+                            
+                            <div class="form-group">
+                                <label asp-for="@checkoutModel.Email">Email</label>
+                                <input asp-for="@checkoutModel.Email" name="Email" class="form-control" type="email" required />
+                                <span asp-validation-for="@checkoutModel.Email" class="validation-error"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label asp-for="@checkoutModel.Name">Full Name</label>
+                                <input asp-for="@checkoutModel.Name" name="Name" class="form-control" required />
+                                <span asp-validation-for="@checkoutModel.Name" class="validation-error"></span>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label asp-for="@checkoutModel.Address">Address</label>
+                                <input asp-for="@checkoutModel.Address" name="Address" class="form-control" required />
+                                <span asp-validation-for="@checkoutModel.Address" class="validation-error"></span>
+                            </div>
+                            
+                            <div class="form-row">
+                                <div class="form-group form-group-half">
+                                    <label asp-for="@checkoutModel.City">City</label>
+                                    <input asp-for="@checkoutModel.City" name="City" class="form-control" required />
+                                    <span asp-validation-for="@checkoutModel.City" class="validation-error"></span>
+                                </div>
+                                <div class="form-group form-group-half">
+                                    <label asp-for="@checkoutModel.PostalCode">ZIP/Postal Code</label>
+                                    <input asp-for="@checkoutModel.PostalCode" name="PostalCode" class="form-control" required />
+                                    <span asp-validation-for="@checkoutModel.PostalCode" class="validation-error"></span>
+                                </div>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label asp-for="@checkoutModel.Country">Country</label>
+                                <input asp-for="@checkoutModel.Country" name="Country" class="form-control" required />
+                                <span asp-validation-for="@checkoutModel.Country" class="validation-error"></span>
+                            </div>
+                            
+                            <div class="checkout-divider"></div>
+
+                            <div class="form-group">
+                                <label for="card-element">Credit or Debit Card</label>
+                                <div id="card-element" class="form-control"></div>
+                                <div id="card-errors" role="alert" class="validation-error mt-2"></div>
+                            </div>
+                            
+                            <button type="submit" class="layout-btn layout-btn-primary checkout-btn" id="submit-button">
+                                Pay @Model.TotalAmount.ToString("C")
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .checkout-page {
+        padding-top: 80px;
+        padding-bottom: 120px;
+        min-height: calc(100vh - 200px);
+        background-color: #f9fafb;
+        height: 100vh;
+        margin-top: 80px;
+    }
+    
+    .checkout-title {
+        text-align: center;
+        margin-bottom: 2.5rem;
+        color: #1A1F2C;
+    }
+    
+    .checkout-grid {
+        display: grid;
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+    
+    .checkout-card {
+        background-color: white;
+        border-radius: 0.5rem;
+        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        overflow: hidden;
+    }
+    
+    .checkout-card-header {
+        background-color: #f8f9fa;
+        padding: 1rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .checkout-card-header h4 {
+        margin: 0;
+        color: #1A1F2C;
+    }
+    
+    .checkout-card-body {
+        padding: 2rem;
+    }
+    
+    .checkout-table {
+        width: 100%;
+        border-collapse: collapse;
+    }
+    
+    .checkout-table th,
+    .checkout-table td {
+        padding: 0.75rem;
+        text-align: left;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .checkout-table th {
+        font-weight: 600;
+        color: #1A1F2C;
+    }
+    
+    .checkout-table tbody tr:last-child td {
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .checkout-total {
+        color: #00b8a9;
+        font-weight: 700;
+    }
+    
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+    }
+    
+    .form-group-half {
+        flex: 1;
+        min-width: 120px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 0.5rem;
+        font-weight: 500;
+        color: #2A303C;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        border: 1px solid #e5e7eb;
+        border-radius: 0.5rem;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        box-shadow: 0 0 0 2px #00b8a9;
+        border-color: #00b8a9;
+    }
+    
+    .validation-error {
+        display: block;
+        margin-top: 0.5rem;
+        color: #ef4444;
+        font-size: 0.875rem;
+    }
+    
+    .checkout-divider {
+        height: 1px;
+        background-color: #e9ecef;
+        margin: 1.5rem 0;
+    }
+    
+    .checkout-btn {
+        width: 100%;
+        padding: 0.75rem 1.5rem;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+    
+    @@media (min-width: 768px) {
+        .checkout-grid {
+            grid-template-columns: 1fr 1fr;
+        }
+    }
+    
+    @@media (max-width: 768px) {
+        .checkout-card {
+            margin-bottom: 3rem;
+        }
+        
+        .form-row {
+            flex-direction: column;
+            gap: 0;
+        }
+    }
+</style>
+
+@section Scripts {
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check if Stripe key is available
+            var stripeKey = '@ViewBag.StripePublishableKey';
+            if (!stripeKey) {
+                document.getElementById('submit-button').disabled = true;
+                document.getElementById('card-errors').textContent = 'Stripe configuration is missing. Please contact support.';
+                return;
+            }
+            
+            var stripe = Stripe(stripeKey);
+            var elements = stripe.elements();
+
+            var style = {
+                base: {
+                    fontSize: '16px',
+                    color: '#32325d',
+                    fontFamily: '"Inter", Helvetica, sans-serif',
+                    fontSmoothing: 'antialiased',
+                    '::placeholder': {
+                        color: '#aab7c4'
+                    }
+                },
+                invalid: {
+                    color: '#ef4444',
+                    iconColor: '#ef4444'
+                }
+            };
+
+            var card = elements.create('card', { style: style });
+            card.mount('#card-element');
+
+            card.addEventListener('change', function(event) {
+                var displayError = document.getElementById('card-errors');
+                if (event.error) {
+                    displayError.textContent = event.error.message;
+                } else {
+                    displayError.textContent = '';
+                }
+            });
+
+            var form = document.getElementById('payment-form');
+            var submitButton = document.getElementById('submit-button');
+
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                
+                // Disable the submit button to prevent repeated clicks
+                submitButton.disabled = true;
+                submitButton.textContent = 'Processing...';
+
+                // Validate the form
+                if (!form.checkValidity()) {
+                    event.stopPropagation();
+                    form.classList.add('was-validated');
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Pay @Model.TotalAmount.ToString("C")';
+                    return;
+                }
+
+                // Create a token
+                stripe.createToken(card).then(function(result) {
+                    if (result.error) {
+                        // Show error in UI
+                        var errorElement = document.getElementById('card-errors');
+                        errorElement.textContent = result.error.message;
+                        submitButton.disabled = false;
+                        submitButton.textContent = 'Pay @Model.TotalAmount.ToString("C")';
+                    } else {
+                        // Send token to server
+                        var hiddenInput = document.createElement('input');
+                        hiddenInput.setAttribute('type', 'hidden');
+                        hiddenInput.setAttribute('name', 'stripeToken');
+                        hiddenInput.setAttribute('value', result.token.id);
+                        form.appendChild(hiddenInput);
+                        
+                        // Submit the form
+                        form.submit();
+                    }
+                }).catch(function(error) {
+                    console.error('Stripe error:', error);
+                    var errorElement = document.getElementById('card-errors');
+                    errorElement.textContent = 'An error occurred while processing your payment. Please try again.';
+                    submitButton.disabled = false;
+                    submitButton.textContent = 'Pay @Model.TotalAmount.ToString("C")';
+                });
+            });
+        });
+    </script>
+} 

@@ -34,7 +34,7 @@ namespace PresentationLayer
             builder.Services.AddScoped<IQuizManager, QuizManager>();
             builder.Services.AddScoped<IQuestionManager, QuestionManager>();
             builder.Services.AddScoped<IStudentDashboardService, StudentDashboardService>();
-            //builder.Services.AddScoped<IOrderManager, OrderManager>();
+            builder.Services.AddScoped<IOrderManager, OrderManager>();
             builder.Services.AddScoped<ICategoryManager, CategoryManager>();
             builder.Services.AddScoped(typeof(IGenericRepository<>), typeof(GenericRepository<>));
             builder.Services.AddDbContext<ELearningDbContext>(options =>

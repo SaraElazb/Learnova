@@ -46,8 +46,17 @@ namespace PresentationLayer.Controllers
 
                 cartManager.AddToCart(courseDto); 
                 HttpContext.Session.SetObject("Cart", cart);
+                TempData["Success"] = $"{course.Title} has been added to your cart.";
+                
+                // Use returnUrl if provided, otherwise default to course index
+                var returnUrl = Request.Headers["Referer"].ToString();
+                if (!string.IsNullOrEmpty(returnUrl) && returnUrl.Contains("/Course/"))
+                {
+                    return Redirect(returnUrl);
+                }
+                return RedirectToAction("UserIndex", "Course");
             }
-            return RedirectToAction("Index");
+            return RedirectToAction("UserIndex", "Course");
         }
 
 
